@@ -7,12 +7,30 @@ import MemoryGallery2 from './components/MemoryGallery2'
 import StepQuestions2 from './components/StepQuestions2'
 import FinalSummary2 from './components/FinalSummary2'
 import LoveLetter from './components/LoveLetter'
+import SparkCustomizer from './components/SparkCustomizer'
 import FloatingHearts from './components/FloatingHearts'
 import HeartRain from './components/HeartRain'
 import './App.css'
+import { getAllTemplates } from './templateConfigs'
 
 // ⬇️ ЭНДЭЭС ӨӨРЧЛӨХ: Хосын эхлэсэн огноо
 const RELATIONSHIP_START = new Date('2024-03-15')
+
+// TEMP: skip any auth/login/register and jump to Spark dashboard
+const JUMP_TO_SPARK_DASHBOARD = true
+
+const getInitialSparkTemplate = () => {
+  if (!JUMP_TO_SPARK_DASHBOARD) return null
+  return getAllTemplates().find(t => t.id === 'spark') || null
+}
+
+const buildInitialChoices = (tmpl) => {
+  const initChoices = {}
+  tmpl?.steps?.forEach(s => {
+    initChoices[s.key] = s.multiSelect ? [] : null
+  })
+  return initChoices
+}
 
 /*
   FLOW:
@@ -26,12 +44,20 @@ const RELATIONSHIP_START = new Date('2024-03-15')
 */
 
 function App() {
-  const [category, setCategory] = useState(null) // selected category id
-  const [template, setTemplate] = useState(null) // selected template config
-  const [page, setPage] = useState(0) // 0 = category selector
-  const [choices, setChoices] = useState({})
+  const initialSpark = getInitialSparkTemplate()
+
+  const [category, setCategory] = useState(() => initialSpark?.category || null) // selected category id
+  const [template, setTemplate] = useState(() => initialSpark) // selected template config
+  const [page, setPage] = useState(() => (initialSpark ? 2 : 0)) // 0 = category selector
+  const [choices, setChoices] = useState(() => (initialSpark ? buildInitialChoices(initialSpark) : {}))
   const [heartRain, setHeartRain] = useState(false)
   const [showLoveLetter, setShowLoveLetter] = useState(false)
+  const [customizerDone, setCustomizerDone] = useState(false)
+  const [customizerData, setCustomizerData] = useState(() => (
+    initialSpark?.customizer === 'spark'
+      ? { youtubeUrl: '', title: '', mediaKind: 'image', mediaUrl: '', embedVideoUrl: '' }
+      : null
+  ))
 
   // Apply theme CSS variables when template changes
   useEffect(() => {
@@ -51,11 +77,11 @@ function App() {
 
   const handleSelectTemplate = useCallback((tmpl) => {
     setTemplate(tmpl)
-    const initChoices = {}
-    tmpl.steps.forEach(s => {
-      initChoices[s.key] = s.multiSelect ? [] : null
-    })
-    setChoices(initChoices)
+    setCustomizerDone(false)
+    setCustomizerData(tmpl?.customizer === 'spark'
+      ? { youtubeUrl: '', title: '', mediaKind: 'image', mediaUrl: '', embedVideoUrl: '' }
+      : null)
+    setChoices(buildInitialChoices(tmpl))
     setPage(2)
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [])
@@ -77,6 +103,8 @@ function App() {
     setChoices({})
     setHeartRain(false)
     setShowLoveLetter(false)
+    setCustomizerDone(false)
+    setCustomizerData(null)
     const root = document.documentElement
     ;['--t-primary', '--t-secondary', '--t-accent', '--t-accent2', '--t-soft', '--t-light', '--t-bg', '--t-bg2', '--t-glass', '--t-glass-border'].forEach(k => {
       root.style.removeProperty(k)
@@ -90,6 +118,8 @@ function App() {
     setChoices({})
     setHeartRain(false)
     setShowLoveLetter(false)
+    setCustomizerDone(false)
+    setCustomizerData(null)
     const root = document.documentElement
     ;['--t-primary', '--t-secondary', '--t-accent', '--t-accent2', '--t-soft', '--t-light', '--t-bg', '--t-bg2', '--t-glass', '--t-glass-border'].forEach(k => {
       root.style.removeProperty(k)
@@ -115,6 +145,7 @@ function App() {
 
   const themeClass = template ? template.theme : ''
   const hasLoveLetter = template?.loveLetter?.enabled
+  const needsCustomizer = template?.customizer === 'spark'
 
   // After welcome, show love letter overlay or go to question
   const handleAfterWelcome = useCallback(() => {
@@ -163,12 +194,20 @@ function App() {
       {page === 0 && <CategorySelector onSelect={handleSelectCategory} />}
       {page === 1 && <TemplateSelector onSelect={handleSelectTemplate} category={category} />}
       {page === 2 && template && (
-        <Welcome2
-          startDate={RELATIONSHIP_START}
-          onOpen={handleAfterWelcome}
-          template={template}
-          category={category}
-        />
+        needsCustomizer && !customizerDone ? (
+          <SparkCustomizer
+            value={customizerData}
+            onChange={setCustomizerData}
+            onContinue={() => setCustomizerDone(true)}
+          />
+        ) : (
+          <Welcome2
+            startDate={RELATIONSHIP_START}
+            onOpen={handleAfterWelcome}
+            template={template}
+            category={category}
+          />
+        )
       )}
       {page === 3 && template && (
         <Question2 onYes={() => goTo(4)} template={template} />
