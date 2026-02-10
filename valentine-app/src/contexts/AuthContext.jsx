@@ -1,5 +1,9 @@
-import { createContext, useEffect, useState } from 'react';
-import { onAuthChange, loginAnonymously, logout } from '../services/authService';
+import { createContext, useEffect, useState } from "react";
+import {
+  onAuthChange,
+  loginAnonymously,
+  logout,
+} from "../services/authService";
 
 const AuthContext = createContext(null);
 
@@ -22,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       try {
         await loginAnonymously();
       } catch (error) {
-        console.error('Anonymous sign in failed:', error);
+        console.error("Anonymous sign in failed:", error);
       }
     }
   };
@@ -32,14 +36,10 @@ export const AuthProvider = ({ children }) => {
     loading,
     isAuthenticated: !!user,
     signInAnonymouslyIfNeeded,
-    logout
+    logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

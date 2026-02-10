@@ -1,5 +1,5 @@
 // Firebase core exports
-export { auth, db, storage } from '../firebase';
+export { auth, db, storage } from "../firebase";
 
 // Auth service exports
 export {
@@ -9,8 +9,8 @@ export {
   loginWithGoogle,
   logout,
   onAuthChange,
-  getCurrentUser
-} from './authService';
+  getCurrentUser,
+} from "./authService";
 
 // Firestore service exports
 export {
@@ -27,8 +27,8 @@ export {
   getValentineResponse,
   saveMemory,
   getMemories,
-  subscribeToMemories
-} from './firestoreService';
+  subscribeToMemories,
+} from "./firestoreService";
 
 // Storage service exports
 export {
@@ -41,5 +41,5 @@ export {
   uploadMemoryPhotoWithProgress,
   uploadMemoryVideo,
   getUserMemoryPhotos,
-  uploadCouplePhoto
-} from './storageService';
+  uploadCouplePhoto,
+} from "./storageService";

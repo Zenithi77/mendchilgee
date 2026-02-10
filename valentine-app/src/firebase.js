@@ -11,7 +11,7 @@ const firebaseConfig = {
   projectId: "valentine-59463",
   storageBucket: "valentine-59463.firebasestorage.app",
   messagingSenderId: "73323650380",
-  appId: "1:73323650380:web:fdf31ba860a73ea9ad03e9"
+  appId: "1:73323650380:web:fdf31ba860a73ea9ad03e9",
 };
 
 // Initialize Firebase
