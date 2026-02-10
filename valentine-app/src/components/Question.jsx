@@ -19,11 +19,11 @@ export default function Question({ onYes }) {
   const [yesScale, setYesScale] = useState(1)
 
   const handleNo = useCallback(() => {
-    const rx = (Math.random() - 0.5) * 220
-    const ry = (Math.random() - 0.5) * 160
+    const rx = (Math.random() - 0.2) * 440
+    const ry = (Math.random() - 0.2) * 240
 
     setNoStyle({
-      position: 'absolute',
+      position: 'relative',
       left: `calc(50% + ${rx}px)`,
       top: `calc(50% + ${ry}px)`,
       transform: 'translate(-50%, -50%)',
