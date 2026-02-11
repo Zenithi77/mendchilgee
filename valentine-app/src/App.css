@@ -2481,6 +2481,148 @@
   box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
 }
 
+/* ── Love Letter Music Bar ── */
+.ll-music-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 12px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 107, 157, 0.08),
+    rgba(196, 113, 237, 0.08)
+  );
+  border: 1px solid rgba(255, 107, 157, 0.18);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.ll-music-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--t-primary, #ff6b9d),
+    var(--t-secondary, #ff4081)
+  );
+  border-radius: 50%;
+}
+
+.ll-music-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.ll-eq-bar {
+  width: 3px;
+  background: white;
+  border-radius: 2px;
+  animation: llEqBounce 0.8s ease-in-out infinite;
+}
+
+.ll-eq-bar:nth-child(1) {
+  height: 8px;
+  animation-delay: 0s;
+}
+.ll-eq-bar:nth-child(2) {
+  height: 14px;
+  animation-delay: 0.15s;
+}
+.ll-eq-bar:nth-child(3) {
+  height: 10px;
+  animation-delay: 0.3s;
+}
+.ll-eq-bar:nth-child(4) {
+  height: 12px;
+  animation-delay: 0.45s;
+}
+
+@keyframes llEqBounce {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.ll-music-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ll-music-title {
+  font-size: 0.8rem;
+  color: rgba(80, 40, 60, 0.8);
+  font-weight: 600;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ll-music-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ll-music-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 107, 157, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ll-music-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--t-primary, #ff6b9d),
+    var(--t-secondary, #ff4081)
+  );
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+.ll-music-time {
+  font-size: 0.7rem;
+  color: rgba(80, 40, 60, 0.5);
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+}
+
+.ll-music-toggle {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 107, 157, 0.1);
+  border: 1px solid rgba(255, 107, 157, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.ll-music-toggle:hover {
+  background: rgba(255, 107, 157, 0.2);
+  transform: scale(1.1);
+}
+
 /* ================================================
    FLOWER BLOOM
    ================================================ */
@@ -2926,6 +3068,196 @@
 .theme-spark .btn-love {
   background: linear-gradient(135deg, var(--pink), var(--purple));
   box-shadow: 0 10px 40px rgba(255, 107, 181, 0.28);
+}
+
+/* ================================================
+   LONG-DISTANCE THEME: Sunset Galaxy
+   ================================================ */
+.theme-ld-sunset {
+  --pink: #ff6b6b;
+  --hot-pink: #ee5a24;
+  --purple: #f9ca24;
+  --deep-purple: #ff9ff3;
+  --rose: #ffcccc;
+  --light-pink: #fff3e0;
+  --bg-dark: #1a0a0a;
+  --bg-mid: #2d1010;
+  --glass: rgba(255, 107, 107, 0.06);
+  --glass-border: rgba(255, 107, 107, 0.18);
+}
+
+.theme-ld-sunset .btn-love {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  box-shadow: 0 10px 40px rgba(255, 107, 107, 0.35);
+}
+
+.theme-ld-sunset .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(255, 107, 107, 0.45);
+}
+
+.theme-ld-sunset .btn-magic {
+  background: linear-gradient(135deg, #ff6b6b, #f9ca24, #ff9ff3);
+  box-shadow: 0 10px 40px rgba(249, 202, 36, 0.2);
+}
+
+.theme-ld-sunset .yes-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+}
+
+.theme-ld-sunset .timer-box {
+  background: rgba(255, 107, 107, 0.08);
+  border-color: rgba(255, 107, 107, 0.18);
+}
+
+.theme-ld-sunset .timer-num {
+  color: #ff6b6b;
+}
+
+.theme-ld-sunset .step-option.selected {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.12);
+  box-shadow: 0 0 24px rgba(255, 107, 107, 0.15);
+}
+
+.theme-ld-sunset .meter-fill {
+  background: linear-gradient(90deg, #ff6b6b, #ee5a24, #f9ca24, #ff9ff3);
+}
+
+/* ================================================
+   LONG-DISTANCE THEME: Moonlight
+   ================================================ */
+.theme-ld-moonlight {
+  --pink: #667eea;
+  --hot-pink: #764ba2;
+  --purple: #a29bfe;
+  --deep-purple: #dfe6e9;
+  --rose: #b8c5f2;
+  --light-pink: #e8eaf6;
+  --bg-dark: #0a0a2e;
+  --bg-mid: #12124a;
+  --glass: rgba(102, 126, 234, 0.06);
+  --glass-border: rgba(102, 126, 234, 0.18);
+}
+
+.theme-ld-moonlight .btn-love {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.35);
+}
+
+.theme-ld-moonlight .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(102, 126, 234, 0.45);
+}
+
+.theme-ld-moonlight .btn-magic {
+  background: linear-gradient(135deg, #667eea, #a29bfe, #764ba2);
+  box-shadow: 0 10px 40px rgba(162, 155, 254, 0.2);
+}
+
+.theme-ld-moonlight .yes-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+}
+
+.theme-ld-moonlight .timer-box {
+  background: rgba(102, 126, 234, 0.08);
+  border-color: rgba(102, 126, 234, 0.18);
+}
+
+.theme-ld-moonlight .timer-num {
+  color: #667eea;
+}
+
+.theme-ld-moonlight .step-option.selected {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.12);
+  box-shadow: 0 0 24px rgba(102, 126, 234, 0.15);
+}
+
+.theme-ld-moonlight .step-dot.active {
+  background: #667eea;
+  box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
+}
+
+.theme-ld-moonlight .step-dot.done {
+  background: #a29bfe;
+}
+
+.theme-ld-moonlight .meter-fill {
+  background: linear-gradient(90deg, #667eea, #764ba2, #a29bfe);
+}
+
+.theme-ld-moonlight .summary-box {
+  background: rgba(102, 126, 234, 0.07);
+  border-color: rgba(102, 126, 234, 0.15);
+}
+
+/* ================================================
+   LONG-DISTANCE THEME: Ocean Breeze
+   ================================================ */
+.theme-ld-ocean {
+  --pink: #0abde3;
+  --hot-pink: #48dbfb;
+  --purple: #00cec9;
+  --deep-purple: #81ecec;
+  --rose: #b2eaf5;
+  --light-pink: #dff9fb;
+  --bg-dark: #051a2e;
+  --bg-mid: #0a2a45;
+  --glass: rgba(10, 189, 227, 0.06);
+  --glass-border: rgba(10, 189, 227, 0.18);
+}
+
+.theme-ld-ocean .btn-love {
+  background: linear-gradient(135deg, #0abde3, #48dbfb);
+  box-shadow: 0 10px 40px rgba(10, 189, 227, 0.35);
+}
+
+.theme-ld-ocean .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(10, 189, 227, 0.45);
+}
+
+.theme-ld-ocean .btn-magic {
+  background: linear-gradient(135deg, #0abde3, #00cec9, #48dbfb);
+  box-shadow: 0 10px 40px rgba(0, 206, 201, 0.2);
+}
+
+.theme-ld-ocean .yes-btn {
+  background: linear-gradient(135deg, #0abde3, #48dbfb);
+  box-shadow: 0 8px 30px rgba(10, 189, 227, 0.4);
+}
+
+.theme-ld-ocean .timer-box {
+  background: rgba(10, 189, 227, 0.08);
+  border-color: rgba(10, 189, 227, 0.18);
+}
+
+.theme-ld-ocean .timer-num {
+  color: #0abde3;
+}
+
+.theme-ld-ocean .step-option.selected {
+  border-color: #0abde3;
+  background: rgba(10, 189, 227, 0.12);
+  box-shadow: 0 0 24px rgba(10, 189, 227, 0.15);
+}
+
+.theme-ld-ocean .step-dot.active {
+  background: #0abde3;
+  box-shadow: 0 0 12px rgba(10, 189, 227, 0.5);
+}
+
+.theme-ld-ocean .step-dot.done {
+  background: #00cec9;
+}
+
+.theme-ld-ocean .meter-fill {
+  background: linear-gradient(90deg, #0abde3, #48dbfb, #00cec9);
+}
+
+.theme-ld-ocean .summary-box {
+  background: rgba(10, 189, 227, 0.07);
+  border-color: rgba(10, 189, 227, 0.15);
 }
 
 .yt-audio-iframe {
