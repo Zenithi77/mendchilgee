@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { giftToTemplate, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import HeartRain from "./HeartRain";
@@ -28,8 +28,8 @@ function buildInitialChoices(gift) {
  *  - Customizer state (for sparkCustomizer)
  *  - HeartRain visual effect
  */
-export default function GiftRenderer({ gift, startDate, category }) {
-  const [sectionIndex, setSectionIndex] = useState(0);
+export default function GiftRenderer({ gift, startDate, category, initialSectionIndex = 0 }) {
+  const [sectionIndex, setSectionIndex] = useState(initialSectionIndex || 0);
   const [choices, setChoices] = useState(() => buildInitialChoices(gift));
   const [customizerData, setCustomizerData] = useState({});
   const [heartRain, setHeartRain] = useState(false);
@@ -49,6 +49,11 @@ export default function GiftRenderer({ gift, startDate, category }) {
     },
     [gift.sections],
   );
+
+  // respond to external initial section index changes (deep-linking)
+  useEffect(() => {
+    setSectionIndex(initialSectionIndex || 0);
+  }, [initialSectionIndex]);
 
   const goNext = useCallback(() => {
     const nextIndex = sectionIndex + 1;
