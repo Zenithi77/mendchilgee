@@ -1,0 +1,27 @@
+# Build output
+dist/
+
+# Vite cache
+.vite/
+
+# Start folder
+start/
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# Editor directories
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db

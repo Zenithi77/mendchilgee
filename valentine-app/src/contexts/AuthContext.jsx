@@ -1,11 +1,22 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthChange,
   loginAnonymously,
+  loginWithEmail,
+  registerWithEmail,
+  loginWithGoogle,
   logout,
 } from "../services/authService";
 
 const AuthContext = createContext(null);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -35,7 +46,12 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     isAuthenticated: !!user,
+    isAnonymous: user?.isAnonymous ?? false,
     signInAnonymouslyIfNeeded,
+    loginWithEmail,
+    registerWithEmail,
+    loginWithGoogle,
+    loginAnonymously,
     logout,
   };
 
