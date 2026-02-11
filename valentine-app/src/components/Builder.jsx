@@ -54,12 +54,17 @@ export default function Builder({ onBack, initialGift }) {
   const navigate = useNavigate();
 
   const [gift, setGift] = useState(() => {
-    const g = initialGift ? { ...initialGift } : createEmptyGift();
+    const g = initialGift
+      ? JSON.parse(JSON.stringify(initialGift))
+      : createEmptyGift();
     if (!g.theme?.className) g.theme = { ...DEFAULT_BUILDER_THEME };
     if (!g.effects?.floatingHearts) g.effects = { ...DEFAULT_EFFECTS };
     return g;
   });
-  const [selectedSectionId, setSelectedSectionId] = useState(null);
+  const [selectedSectionId, setSelectedSectionId] = useState(() => {
+    if (initialGift?.sections?.length > 0) return initialGift.sections[0].id;
+    return null;
+  });
   const [showAddModal, setShowAddModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // "saved" | "error" | null

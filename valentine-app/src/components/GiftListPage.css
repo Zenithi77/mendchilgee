@@ -1,0 +1,314 @@
+/* ========================================
+   GIFT LIST PAGE STYLES
+   ======================================== */
+
+.gift-list-page {
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.gift-list-container {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* ===== Loading ===== */
+.gift-list-loading {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.gift-list-loading-icon {
+  font-size: 3rem;
+  animation: giftPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes giftPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+/* ===== Header ===== */
+.gift-list-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.gift-list-header-emoji {
+  font-size: 3.5rem;
+  animation: giftPulse 2s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+
+.gift-list-title {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #ff6b9d, #c471ed, #7c4dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px;
+}
+
+.gift-list-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ===== Actions ===== */
+.gift-list-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+
+.btn-create-gift {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b9d, #c471ed);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+}
+
+.btn-create-gift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 107, 157, 0.45);
+}
+
+.btn-create-icon {
+  font-size: 1.2rem;
+}
+
+/* ===== Gift Cards Grid ===== */
+.gift-list-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gift-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px 24px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.gift-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 107, 157, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Header */
+.gift-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.gift-card-emoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.gift-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gift-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gift-card-date {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Card Meta */
+.gift-card-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.gift-card-badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(255, 107, 157, 0.12);
+  color: rgba(255, 107, 157, 0.9);
+  border: 1px solid rgba(255, 107, 157, 0.15);
+}
+
+.gift-card-badge-cat {
+  background: rgba(124, 77, 255, 0.12);
+  color: rgba(196, 113, 237, 0.9);
+  border-color: rgba(124, 77, 255, 0.15);
+  text-transform: capitalize;
+}
+
+/* Card Actions */
+.gift-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.gift-action-btn {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.78rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gift-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.gift-action-edit:hover {
+  border-color: rgba(255, 193, 7, 0.4);
+  color: #ffc107;
+}
+
+.gift-action-preview:hover {
+  border-color: rgba(100, 181, 246, 0.4);
+  color: #64b5f6;
+}
+
+.gift-action-share:hover {
+  border-color: rgba(129, 199, 132, 0.4);
+  color: #81c784;
+}
+
+.gift-action-delete:hover {
+  border-color: rgba(244, 67, 54, 0.4);
+  color: #f44336;
+}
+
+/* Delete Confirm */
+.gift-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: rgba(244, 67, 54, 0.9);
+}
+
+.gift-action-delete-yes {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gift-action-delete-yes:hover {
+  background: rgba(244, 67, 54, 0.3);
+}
+
+.gift-action-delete-no {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gift-action-delete-no:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Empty State ===== */
+.gift-list-empty {
+  text-align: center;
+  padding: 60px 20px;
+  margin-top: 20px;
+}
+
+.gift-list-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: giftPulse 2s ease-in-out infinite;
+}
+
+.gift-list-empty-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .gift-list-page {
+    padding: 24px 12px 60px;
+  }
+
+  .gift-list-title {
+    font-size: 2rem;
+  }
+
+  .gift-card {
+    padding: 16px;
+  }
+
+  .gift-card-actions {
+    gap: 6px;
+  }
+
+  .gift-action-btn {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+}

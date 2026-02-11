@@ -3,9 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { templateToGift } from "./models/gift";
 import AuthPage from "./components/AuthPage";
+import GiftListPage from "./components/GiftListPage";
 import CategorySelector from "./components/CategorySelector";
 import TemplateSelector from "./components/TemplateSelector";
-import GiftRenderer from "./components/GiftRenderer";
 import Builder from "./components/Builder";
 import GiftPreviewPage from "./components/GiftPreviewPage";
 import FloatingHearts from "./components/FloatingHearts";
@@ -36,9 +36,9 @@ function MainApp() {
   const { user, loading, logout } = useAuth();
   const [category, setCategory] = useState(null);
   const [template, setTemplate] = useState(null); // kept for theme/effects at app level
-  const [gift, setGift] = useState(null);
-  const [page, setPage] = useState(0); // 0 = category, 1 = template, 2 = gift
+  const [page, setPage] = useState("list"); // "list" | "category" | "template"
   const [showBuilder, setShowBuilder] = useState(false);
+  const [builderGift, setBuilderGift] = useState(null);
 
   // Apply theme CSS variables when template changes
   useEffect(() => {
@@ -50,16 +50,21 @@ function MainApp() {
     }
   }, [template]);
 
+  const handleCreateNew = useCallback(() => {
+    setPage("category");
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   const handleSelectCategory = useCallback((catId) => {
     setCategory(catId);
-    setPage(1); // go to template selector
+    setPage("template");
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
   const handleSelectTemplate = useCallback((tmpl) => {
     setTemplate(tmpl);
-    setGift(templateToGift(tmpl));
-    setPage(2);
+    setBuilderGift(templateToGift(tmpl));
+    setShowBuilder(true);
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
@@ -79,22 +84,31 @@ function MainApp() {
     ].forEach((k) => root.style.removeProperty(k));
   }, []);
 
-  const resetToCategory = useCallback(() => {
+  const resetToList = useCallback(() => {
     setTemplate(null);
-    setGift(null);
+    setBuilderGift(null);
     setCategory(null);
-    setPage(0);
+    setPage("list");
     setShowBuilder(false);
     clearThemeVars();
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [clearThemeVars]);
-  const resetToTemplates = useCallback(() => {
+
+  const resetToCategory = useCallback(() => {
     setTemplate(null);
-    setGift(null);
-    setPage(1);
+    setBuilderGift(null);
+    setCategory(null);
+    setPage("category");
+    setShowBuilder(false);
     clearThemeVars();
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [clearThemeVars]);
+
+  const handleEditGift = useCallback((gift) => {
+    setBuilderGift(gift);
+    setShowBuilder(true);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   // Click sparkle effect
   useEffect(() => {
@@ -133,7 +147,7 @@ function MainApp() {
 
   // Builder takes over the full viewport
   if (showBuilder) {
-    return <Builder onBack={resetToCategory} />;
+    return <Builder onBack={resetToList} initialGift={builderGift} />;
   }
 
   return (
@@ -158,34 +172,32 @@ function MainApp() {
       <FloatingHearts emojis={template?.effects?.floatingHearts} />
 
       {/* Back buttons */}
-      {page === 1 && (
+      {page === "category" && (
+        <button className="back-to-selector" onClick={resetToList}>
+          ← My Gifts
+        </button>
+      )}
+      {page === "template" && (
         <button className="back-to-selector" onClick={resetToCategory}>
           ← Категори солих
         </button>
       )}
-      {page === 2 && (
-        <button className="back-to-selector" onClick={resetToTemplates}>
-          ← Загвар солих
-        </button>
-      )}
 
       {/* Pages */}
-      {page === 0 && (
+      {page === "list" && (
+        <GiftListPage
+          onCreateNew={handleCreateNew}
+          onEditGift={handleEditGift}
+        />
+      )}
+      {page === "category" && (
         <CategorySelector
           onSelect={handleSelectCategory}
           onOpenBuilder={() => setShowBuilder(true)}
         />
       )}
-      {page === 1 && (
+      {page === "template" && (
         <TemplateSelector onSelect={handleSelectTemplate} category={category} />
-      )}
-      {page === 2 && gift && (
-        <GiftRenderer
-          key={gift.templateId}
-          gift={gift}
-          startDate={RELATIONSHIP_START}
-          category={category}
-        />
       )}
     </div>
   );
