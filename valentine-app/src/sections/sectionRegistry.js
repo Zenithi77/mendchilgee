@@ -1,0 +1,98 @@
+// ═══════════════════════════════════════════════════════════════
+// Section Registry
+// ═══════════════════════════════════════════════════════════════
+//
+// Maps each section type to its renderer component and metadata.
+// Used by GiftRenderer to resolve which component to render.
+// Also useful for the future Builder UI (icons, labels).
+// ═══════════════════════════════════════════════════════════════
+
+import Welcome2 from "../components/Welcome2";
+import LoveLetter from "../components/LoveLetter";
+import Question2 from "../components/Question2";
+import MemoryGallery2 from "../components/MemoryGallery2";
+import StepQuestions2 from "../components/StepQuestions2";
+import FinalSummary2 from "../components/FinalSummary2";
+import SparkCustomizer from "../components/SparkCustomizer";
+import { SECTION_TYPES } from "../models/gift";
+
+export const SECTION_REGISTRY = {
+  [SECTION_TYPES.WELCOME]: {
+    component: Welcome2,
+    label: "Welcome",
+    labelMn: "Нүүр хэсэг",
+    descMn: "Хайрын түүхээ хамгийн сайхнаар эхлүүлээрэй",
+    icon: "🎉",
+    iconBg: "#fce7f3",
+    iconColor: "#ec4899",
+  },
+  [SECTION_TYPES.LOVE_LETTER]: {
+    component: LoveLetter,
+    label: "Love Letter",
+    labelMn: "Захидал хэсэг",
+    descMn: "Зүрхний үгээ цаасан дээр биш энд үлдээгээрэй",
+    icon: "💌",
+    iconBg: "#fefce8",
+    iconColor: "#eab308",
+  },
+  [SECTION_TYPES.QUESTION]: {
+    component: Question2,
+    label: "Question",
+    labelMn: "Асуулга хэсэг",
+    descMn: "Бие биенээ хэр сайн мэдэх вэ? Сонирхолтой асуултууд",
+    icon: "💝",
+    iconBg: "#f3e8ff",
+    iconColor: "#9d81ba",
+  },
+  [SECTION_TYPES.MEMORY_GALLERY]: {
+    component: MemoryGallery2,
+    label: "Memory Gallery",
+    labelMn: "Зургийн цомог",
+    descMn: "Дурсамж дүүрэн зургуудаа гулсдаг хэлбэрээр үзүүлээрэй",
+    icon: "📸",
+    iconBg: "#fff7ed",
+    iconColor: "#f97316",
+  },
+  [SECTION_TYPES.STEP_QUESTIONS]: {
+    component: StepQuestions2,
+    label: "Step Questions",
+    labelMn: "Болзооны төлөвлөгөө",
+    descMn: "Хамтдаа юу хийх, хаана уулзах зэргийг алхам алхмаар сонгоорой",
+    icon: "📝",
+    iconBg: "#ecfdf5",
+    iconColor: "#22c55e",
+  },
+  [SECTION_TYPES.FINAL_SUMMARY]: {
+    component: FinalSummary2,
+    label: "Final Summary",
+    labelMn: "Хураангуй хэсэг",
+    descMn: "Бүх сонголтуудаа нэг дороос харж, хайрын түүхээ дуусгаарай",
+    icon: "🎊",
+    iconBg: "#fef2f2",
+    iconColor: "#f87171",
+  },
+  [SECTION_TYPES.SPARK_CUSTOMIZER]: {
+    component: SparkCustomizer,
+    label: "Spark Customizer",
+    labelMn: "Хүслийн хэсэг",
+    descMn: "Valentine-д зориулсан маш гоё болзооны урилга бүтээгээрэй",
+    icon: "✨",
+    iconBg: "#eef2ff",
+    iconColor: "#6366f1",
+  },
+};
+
+/**
+ * Get list of available section types for the builder UI.
+ */
+export function getAvailableSectionTypes() {
+  return Object.entries(SECTION_REGISTRY).map(([type, meta]) => ({
+    type,
+    label: meta.label,
+    labelMn: meta.labelMn,
+    descMn: meta.descMn,
+    icon: meta.icon,
+    iconBg: meta.iconBg,
+    iconColor: meta.iconColor,
+  }));
+}

@@ -1,0 +1,111 @@
+/* ═══════════════════════════════════════════════════════════════
+   GIFT PREVIEW PAGE — Standalone full-screen preview
+   ═══════════════════════════════════════════════════════════════ */
+
+.gift-preview-page {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ── Loading ── */
+
+.gift-preview-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0d0015;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "Quicksand", "Poppins", sans-serif;
+}
+
+.gift-preview-spinner {
+  font-size: 3rem;
+  animation: gpp-pulse 1.2s ease-in-out infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes gpp-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* ── Error ── */
+
+.gift-preview-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0d0015;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "Quicksand", "Poppins", sans-serif;
+  text-align: center;
+  padding: 32px;
+}
+
+.gift-preview-error-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.gift-preview-error h2 {
+  color: #ff6b9d;
+  margin: 0 0 8px;
+}
+
+.gift-preview-error p {
+  margin: 0 0 24px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.gift-preview-back-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.gift-preview-back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Floating back button ── */
+
+.gift-preview-back-floating {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 9990;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: "Quicksand", "Poppins", sans-serif;
+}
+
+.gift-preview-back-floating:hover {
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+}

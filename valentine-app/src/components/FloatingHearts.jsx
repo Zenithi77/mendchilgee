@@ -1,30 +1,48 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from "react";
 
-const hearts = ['❤️', '💕', '💖', '💗', '💝', '🥰', '✨', '💘', '💓', '💞']
+const DEFAULT_HEARTS = [
+  "❤️",
+  "💕",
+  "💖",
+  "💗",
+  "💝",
+  "🥰",
+  "✨",
+  "💘",
+  "💓",
+  "💞",
+];
 
-export default function FloatingHearts() {
-  const [items, setItems] = useState([])
-  const id = useRef(0)
+export default function FloatingHearts({ emojis }) {
+  const heartsArr = emojis || DEFAULT_HEARTS;
+  const [items, setItems] = useState([]);
+  const id = useRef(0);
 
   useEffect(() => {
     const iv = setInterval(() => {
-      const i = id.current++
-      setItems(prev => [...prev, {
-        id: i,
-        emoji: hearts[Math.floor(Math.random() * hearts.length)],
-        left: Math.random() * 100,
-        size: 14 + Math.random() * 22,
-        dur: 10 + Math.random() * 15,
-        delay: Math.random() * 3,
-      }])
-      setTimeout(() => setItems(prev => prev.filter(h => h.id !== i)), 28000)
-    }, 600)
-    return () => clearInterval(iv)
-  }, [])
+      const i = id.current++;
+      setItems((prev) => [
+        ...prev,
+        {
+          id: i,
+          emoji: heartsArr[Math.floor(Math.random() * heartsArr.length)],
+          left: Math.random() * 100,
+          size: 14 + Math.random() * 22,
+          dur: 10 + Math.random() * 15,
+          delay: Math.random() * 3,
+        },
+      ]);
+      setTimeout(
+        () => setItems((prev) => prev.filter((h) => h.id !== i)),
+        28000,
+      );
+    }, 600);
+    return () => clearInterval(iv);
+  }, [heartsArr]);
 
   return (
     <div className="hearts-canvas">
-      {items.map(h => (
+      {items.map((h) => (
         <span
           key={h.id}
           className="float-heart"
@@ -39,5 +57,5 @@ export default function FloatingHearts() {
         </span>
       ))}
     </div>
-  )
+  );
 }

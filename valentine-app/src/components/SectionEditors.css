@@ -1,0 +1,501 @@
+/* ═══════════════════════════════════════════════════════════════
+   SECTION EDITORS — Styling for all section editor forms
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Editor container ── */
+
+.se-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Group ── */
+
+.se-group {
+  background: #fff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.se-group-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+  margin: 0 0 4px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* ── Field ── */
+
+.se-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.se-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.se-field-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Inputs ── */
+
+.se-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #334155;
+  background: #fff;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.se-input:focus {
+  outline: none;
+  border-color: #f9a8d4;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+}
+
+.se-input-short {
+  width: 60px !important;
+  flex-shrink: 0;
+}
+
+.se-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #334155;
+  background: #fff;
+  transition: all 0.15s ease;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.se-textarea:focus {
+  outline: none;
+  border-color: #f9a8d4;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+}
+
+.se-input-with-emoji {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.se-input-with-emoji .se-input,
+.se-input-with-emoji .se-textarea {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Toggle ── */
+
+.se-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.se-toggle input[type="checkbox"] {
+  display: none;
+}
+
+.se-toggle-slider {
+  width: 40px;
+  height: 22px;
+  background: #e2e8f0;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.se-toggle-slider::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.se-toggle input:checked + .se-toggle-slider {
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+}
+
+.se-toggle input:checked + .se-toggle-slider::after {
+  left: 20px;
+}
+
+.se-toggle-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ── List (for messages, quotes) ── */
+
+.se-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.se-list-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 6px 8px;
+}
+
+.se-list-item .se-input {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 10px;
+}
+
+.se-list-item .se-input:focus {
+  border-color: #f9a8d4;
+  background: #fff;
+}
+
+.se-list-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.se-remove-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.se-remove-btn:hover {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.se-add-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.se-add-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+}
+
+.se-add-btn-sm {
+  padding: 4px 12px;
+  border: 1px dashed #f9a8d4;
+  border-radius: 8px;
+  background: transparent;
+  color: #ec4899;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.se-add-btn-sm:hover {
+  background: #fdf2f8;
+  border-color: #ec4899;
+}
+
+/* ── Cards (for memories) ── */
+
+.se-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.se-card {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.se-card:hover {
+  border-color: #fce7f3;
+  box-shadow: 0 2px 10px rgba(236, 72, 153, 0.06);
+}
+
+.se-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.se-card-number {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.se-add-card-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 2px dashed #f9a8d4;
+  border-radius: 14px;
+  background: transparent;
+  color: #ec4899;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.se-add-card-btn:hover {
+  background: #fdf2f8;
+  border-color: #ec4899;
+}
+
+/* ── Steps (for stepQuestions) ── */
+
+.se-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.se-step {
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  transition: all 0.15s ease;
+}
+
+.se-step:hover {
+  border-color: #fce7f3;
+}
+
+.se-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.se-step-header:hover {
+  background: #fdf2f8;
+}
+
+.se-step-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.se-step-emoji {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.se-step-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.se-step-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.se-step-header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.se-step-chevron {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-left: 4px;
+}
+
+.se-action-btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.se-action-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.se-action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.se-action-delete:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.se-step-body {
+  padding: 4px 14px 16px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: se-slide-down 0.2s ease;
+}
+
+@keyframes se-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Options within a step ── */
+
+.se-options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.se-options-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.se-option-card {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.se-option-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.se-option-row .se-input {
+  padding: 7px 10px;
+  font-size: 0.82rem;
+}
+
+/* ── Hint text ── */
+
+.se-hint {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .se-group {
+    padding: 14px;
+  }
+
+  .se-option-row {
+    flex-wrap: wrap;
+  }
+}

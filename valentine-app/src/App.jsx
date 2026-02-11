@@ -1,16 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
+import { templateToGift } from "./models/gift";
 import AuthPage from "./components/AuthPage";
 import CategorySelector from "./components/CategorySelector";
 import TemplateSelector from "./components/TemplateSelector";
-import Welcome2 from "./components/Welcome2";
-import Question2 from "./components/Question2";
-import MemoryGallery2 from "./components/MemoryGallery2";
-import StepQuestions2 from "./components/StepQuestions2";
-import FinalSummary2 from "./components/FinalSummary2";
-import LoveLetter from "./components/LoveLetter";
+import GiftRenderer from "./components/GiftRenderer";
+import Builder from "./components/Builder";
+import GiftPreviewPage from "./components/GiftPreviewPage";
 import FloatingHearts from "./components/FloatingHearts";
-import HeartRain from "./components/HeartRain";
 import "./App.css";
 
 // ⬇️ ЭНДЭЭС ӨӨРЧЛӨХ: Хосын эхлэсэн огноо
@@ -20,27 +18,33 @@ const RELATIONSHIP_START = new Date("2024-03-15");
   FLOW:
   0. CategorySelector — Категори сонгох (crush, new-couple, long-term, y2k)
   1. TemplateSelector — Загвар сонгох (категориор шүүсэн)
-  2. Welcome — Урилга нээх + Love Letter overlay
-  3. Question — "Чи намайг хайрладаг юу?"
-  4. MemoryGallery — Зураг swipe
-  5. StepQuestions — Асуултууд
-  6. FinalSummary — Хураангуй + effects
+  2. GiftRenderer — Data-driven section renderer
+     (welcome → loveLetter → question → memoryGallery → stepQuestions → finalSummary)
+  Builder — Standalone full-screen gift builder (separate from the numbered flow)
 */
 
 function App() {
+  return (
+    <Routes>
+      <Route path="/preview/:giftId" element={<GiftPreviewPage />} />
+      <Route path="*" element={<MainApp />} />
+    </Routes>
+  );
+}
+
+function MainApp() {
   const { user, loading, logout } = useAuth();
-  const [category, setCategory] = useState(null); // selected category id
-  const [template, setTemplate] = useState(null); // selected template config
-  const [page, setPage] = useState(0); // 0 = category selector
-  const [choices, setChoices] = useState({});
-  const [heartRain, setHeartRain] = useState(false);
-  const [showLoveLetter, setShowLoveLetter] = useState(false);
+  const [category, setCategory] = useState(null);
+  const [template, setTemplate] = useState(null); // kept for theme/effects at app level
+  const [gift, setGift] = useState(null);
+  const [page, setPage] = useState(0); // 0 = category, 1 = template, 2 = gift
+  const [showBuilder, setShowBuilder] = useState(false);
 
   // Apply theme CSS variables when template changes
   useEffect(() => {
     if (template) {
       const root = document.documentElement;
-      Object.entries(template.colors).forEach(([key, val]) => {
+      Object.entries(template.theme.colors).forEach(([key, val]) => {
         root.style.setProperty(key, val);
       });
     }
@@ -54,77 +58,47 @@ function App() {
 
   const handleSelectTemplate = useCallback((tmpl) => {
     setTemplate(tmpl);
-    const initChoices = {};
-    tmpl.steps.forEach((s) => {
-      initChoices[s.key] = s.multiSelect ? [] : null;
-    });
-    setChoices(initChoices);
+    setGift(templateToGift(tmpl));
     setPage(2);
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  const goTo = useCallback((p) => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setPage(p);
-    if (p === 4) setHeartRain(true);
-  }, []);
-
-  const updateChoice = useCallback((key, val) => {
-    setChoices((prev) => ({ ...prev, [key]: val }));
+  const clearThemeVars = useCallback(() => {
+    const root = document.documentElement;
+    [
+      "--t-primary",
+      "--t-secondary",
+      "--t-accent",
+      "--t-accent2",
+      "--t-soft",
+      "--t-light",
+      "--t-bg",
+      "--t-bg2",
+      "--t-glass",
+      "--t-glass-border",
+    ].forEach((k) => root.style.removeProperty(k));
   }, []);
 
   const resetToCategory = useCallback(() => {
     setTemplate(null);
+    setGift(null);
     setCategory(null);
     setPage(0);
-    setChoices({});
-    setHeartRain(false);
-    setShowLoveLetter(false);
-    const root = document.documentElement;
-    [
-      "--t-primary",
-      "--t-secondary",
-      "--t-accent",
-      "--t-accent2",
-      "--t-soft",
-      "--t-light",
-      "--t-bg",
-      "--t-bg2",
-      "--t-glass",
-      "--t-glass-border",
-    ].forEach((k) => {
-      root.style.removeProperty(k);
-    });
+    setShowBuilder(false);
+    clearThemeVars();
     window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
-
+  }, [clearThemeVars]);
   const resetToTemplates = useCallback(() => {
     setTemplate(null);
+    setGift(null);
     setPage(1);
-    setChoices({});
-    setHeartRain(false);
-    setShowLoveLetter(false);
-    const root = document.documentElement;
-    [
-      "--t-primary",
-      "--t-secondary",
-      "--t-accent",
-      "--t-accent2",
-      "--t-soft",
-      "--t-light",
-      "--t-bg",
-      "--t-bg2",
-      "--t-glass",
-      "--t-glass-border",
-    ].forEach((k) => {
-      root.style.removeProperty(k);
-    });
+    clearThemeVars();
     window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
+  }, [clearThemeVars]);
 
   // Click sparkle effect
   useEffect(() => {
-    const emojis = ["✨", "💖", "💕", "⭐"];
+    const emojis = template?.effects?.clickSparkles || ["✨", "💖", "💕", "⭐"];
     const handle = (e) => {
       const el = document.createElement("span");
       el.className = "click-sparkle";
@@ -136,24 +110,9 @@ function App() {
     };
     document.addEventListener("click", handle);
     return () => document.removeEventListener("click", handle);
-  }, []);
+  }, [template]);
 
-  const themeClass = template ? template.theme : "";
-  const hasLoveLetter = template?.loveLetter?.enabled;
-
-  // After welcome, show love letter overlay or go to question
-  const handleAfterWelcome = useCallback(() => {
-    if (hasLoveLetter) {
-      setShowLoveLetter(true);
-    } else {
-      goTo(3);
-    }
-  }, [hasLoveLetter, goTo]);
-
-  const handleCloseLetter = useCallback(() => {
-    setShowLoveLetter(false);
-    goTo(3);
-  }, [goTo]);
+  const themeClass = template ? template.theme.className : "";
 
   // Show loading spinner while checking auth state
   if (loading) {
@@ -170,6 +129,11 @@ function App() {
   // Show auth page if not authenticated
   if (!user) {
     return <AuthPage />;
+  }
+
+  // Builder takes over the full viewport
+  if (showBuilder) {
+    return <Builder onBack={resetToCategory} />;
   }
 
   return (
@@ -191,13 +155,7 @@ function App() {
         <div className="bg-orb" />
       </div>
 
-      <FloatingHearts />
-      {heartRain && <HeartRain active={heartRain} />}
-
-      {/* Love Letter Overlay */}
-      {showLoveLetter && template && (
-        <LoveLetter letter={template.loveLetter} onClose={handleCloseLetter} />
-      )}
+      <FloatingHearts emojis={template?.effects?.floatingHearts} />
 
       {/* Back buttons */}
       {page === 1 && (
@@ -205,59 +163,27 @@ function App() {
           ← Категори солих
         </button>
       )}
-      {page > 1 && page < 6 && (
+      {page === 2 && (
         <button className="back-to-selector" onClick={resetToTemplates}>
           ← Загвар солих
         </button>
       )}
 
       {/* Pages */}
-      {page === 0 && <CategorySelector onSelect={handleSelectCategory} />}
+      {page === 0 && (
+        <CategorySelector
+          onSelect={handleSelectCategory}
+          onOpenBuilder={() => setShowBuilder(true)}
+        />
+      )}
       {page === 1 && (
         <TemplateSelector onSelect={handleSelectTemplate} category={category} />
       )}
-      {page === 2 && template && (
-        needsCustomizer && !customizerDone ? (
-          <SparkCustomizer
-            value={customizerData}
-            onChange={setCustomizerData}
-            onContinue={() => setCustomizerDone(true)}
-          />
-        ) : (
-          <Welcome2
-            startDate={RELATIONSHIP_START}
-            onOpen={handleAfterWelcome}
-            template={template}
-            category={category}
-          />
-        )
-      )}
-      {page === 3 && template && (
-        <Question2 onYes={() => goTo(4)} template={template} />
-      )}
-      {page === 4 && template && (
-        <MemoryGallery2
-          memories={template.memories}
-          onContinue={() => goTo(5)}
-          theme={template.theme}
-        />
-      )}
-      {page === 5 && template && (
-        <StepQuestions2
-          steps={template.steps}
-          choices={choices}
-          updateChoice={updateChoice}
-          onDone={() => goTo(6)}
-          onBack={() => goTo(4)}
-          theme={template.theme}
-        />
-      )}
-      {page === 6 && template && (
-        <FinalSummary2
-          choices={choices}
-          quotes={template.quotes}
-          theme={template.theme}
-          template={template}
+      {page === 2 && gift && (
+        <GiftRenderer
+          key={gift.templateId}
+          gift={gift}
+          startDate={RELATIONSHIP_START}
           category={category}
         />
       )}

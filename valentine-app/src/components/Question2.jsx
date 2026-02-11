@@ -1,48 +1,58 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from "react";
 
-const noMsgs = [
-  'Үгүй гэж болохгүй 🥺',
-  'Дахиад бодоод үз 💭',
-  'Зүрх минь эвдэрч байна 💔',
-  'Яг үнэндээ? 😢',
-  'Чи дуртайл байгаа биздээ 🤔',
-  'Чи битий нэрэлхээд байлдаа 😤',
-  'Миний зүрх... 😭',
-  'Плиииз 🥹',
-  'Сүүлийн боломж чинь шүү 🤡',
-]
+const DEFAULT_NO_MSGS = [
+  "Үгүй гэж болохгүй 🥺",
+  "Дахиад бодоод үз 💭",
+  "Зүрх минь эвдэрч байна 💔",
+  "Яг үнэндээ? 😢",
+  "Чи дуртайл байгаа биздээ 🤔",
+  "Чи битий нэрэлхээд байлдаа 😤",
+  "Миний зүрх... 😭",
+  "Плиииз 🥹",
+  "Сүүлийн боломж чинь шүү 🤡",
+];
 
 export default function Question2({ onYes, template }) {
-  const [noCount, setNoCount] = useState(0)
-  const [noStyle, setNoStyle] = useState({})
-  const [noText, setNoText] = useState('Үгүй 💔')
-  const [yesScale, setYesScale] = useState(1)
+  const question = template?.question || {};
+  const character = question.character;
+  const noMessages = question.noButton?.messages || DEFAULT_NO_MSGS;
+  const defaultNoText = question.noButton?.defaultText || "Үгүй 💔";
 
-  const charType = template?.character || 'bear'
+  const [noCount, setNoCount] = useState(0);
+  const [noStyle, setNoStyle] = useState({});
+  const [noText, setNoText] = useState(defaultNoText);
+  const [yesScale, setYesScale] = useState(1);
 
   const handleNo = useCallback(() => {
-    const rx = (Math.random() - 0.5) * 220
-    const ry = (Math.random() - 0.5) * 160
+    const rx = (Math.random() - 0.5) * 220;
+    const ry = (Math.random() - 0.5) * 160;
 
     setNoStyle({
-      position: 'absolute',
+      position: "absolute",
       left: `calc(50% + ${rx}px)`,
       top: `calc(50% + ${ry}px)`,
-      transform: 'translate(-50%, -50%)',
-    })
+      transform: "translate(-50%, -50%)",
+    });
 
-    const next = noCount + 1
-    setNoCount(next)
-    setNoText(next < noMsgs.length ? noMsgs[next] : '...')
-    setYesScale(prev => Math.min(prev + 0.1, 1.6))
-  }, [noCount])
+    const next = noCount + 1;
+    setNoCount(next);
+    setNoText(next < noMessages.length ? noMessages[next] : "...");
+    setYesScale((prev) => Math.min(prev + 0.1, 1.6));
+  }, [noCount, noMessages]);
 
   return (
     <div className="page page-enter">
-      <div className="glass" style={{ padding: '44px 36px', textAlign: 'center', maxWidth: 500, width: '100%' }}>
-
+      <div
+        className="glass"
+        style={{
+          padding: "44px 36px",
+          textAlign: "center",
+          maxWidth: 500,
+          width: "100%",
+        }}
+      >
         {/* Character */}
-        {charType === 'bear' && (
+        {character?.type === "bear" ? (
           <div className="bear-wrap">
             <div className="bear">
               <div className="bear-ear bear-ear-l" />
@@ -56,42 +66,38 @@ export default function Question2({ onYes, template }) {
                 <div className="bear-blush bear-blush-r" />
               </div>
               <div className="bear-body" />
-              <div className="bear-love">💗</div>
+              <div className="bear-love">{character.loveEmoji || "💗"}</div>
             </div>
-            <div className="pulse-ring" />
+            <div className={character.pulseRingClass || "pulse-ring"} />
           </div>
-        )}
-
-        {charType === 'moon' && (
-          <div className="question-char moon-question">
-            <div className="moon-q-body">🌙</div>
-            <div className="moon-q-stars">
-              <span className="mq-star s1">⭐</span>
-              <span className="mq-star s2">💫</span>
-              <span className="mq-star s3">✨</span>
+        ) : character?.type === "emoji" ? (
+          <div className={character.wrapClass || "question-char"}>
+            <div className={character.bodyClass || ""}>
+              {character.bodyEmoji}
             </div>
-            <div className="pulse-ring pulse-ring-blue" />
-          </div>
-        )}
-
-        {charType === 'cat' && (
-          <div className="question-char cat-question">
-            <div className="cat-q-body">🐱</div>
-            <div className="cat-q-items">
-              <span className="cq-item s1">🍬</span>
-              <span className="cq-item s2">💕</span>
-              <span className="cq-item s3">🧁</span>
+            <div className={character.accentContainerClass || ""}>
+              {(character.accents || []).map((emoji, i) => (
+                <span
+                  key={i}
+                  className={`${character.accentItemClass || ""} s${i + 1}`}
+                >
+                  {emoji}
+                </span>
+              ))}
             </div>
-            <div className="pulse-ring pulse-ring-pink" />
+            <div className={character.pulseRingClass || "pulse-ring"} />
           </div>
-        )}
+        ) : null}
 
-        <h2 className="font-script" style={{
-          fontSize: '2.1rem',
-          color: 'var(--t-primary, var(--pink))',
-          marginBottom: 32
-        }}>
-          {template?.questionText || 'Чи намайг хайрладаг юу? 🥺'}
+        <h2
+          className="font-script"
+          style={{
+            fontSize: "2.1rem",
+            color: "var(--t-primary, var(--pink))",
+            marginBottom: 32,
+          }}
+        >
+          {question.text || "Чи намайг хайрладаг юу? 🥺"}
         </h2>
 
         <div className="q-btn-wrap">
@@ -100,7 +106,8 @@ export default function Question2({ onYes, template }) {
             style={{ transform: `scale(${yesScale})` }}
             onClick={onYes}
           >
-            Тийм ❤️
+            {question.yesButton?.text || "Тийм"}{" "}
+            {question.yesButton?.emoji || "❤️"}
           </button>
           <button
             className="no-btn"
@@ -113,5 +120,5 @@ export default function Question2({ onYes, template }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
