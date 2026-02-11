@@ -217,12 +217,20 @@ function App() {
         <TemplateSelector onSelect={handleSelectTemplate} category={category} />
       )}
       {page === 2 && template && (
-        <Welcome2
-          startDate={RELATIONSHIP_START}
-          onOpen={handleAfterWelcome}
-          template={template}
-          category={category}
-        />
+        needsCustomizer && !customizerDone ? (
+          <SparkCustomizer
+            value={customizerData}
+            onChange={setCustomizerData}
+            onContinue={() => setCustomizerDone(true)}
+          />
+        ) : (
+          <Welcome2
+            startDate={RELATIONSHIP_START}
+            onOpen={handleAfterWelcome}
+            template={template}
+            category={category}
+          />
+        )
       )}
       {page === 3 && template && (
         <Question2 onYes={() => goTo(4)} template={template} />
