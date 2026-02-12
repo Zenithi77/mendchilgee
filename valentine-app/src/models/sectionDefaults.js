@@ -56,6 +56,82 @@ const SECTION_DEFAULTS = {
     noButton: { ...DEFAULT_NO_BUTTON },
   },
 
+  [SECTION_TYPES.MOVIE_SELECTION]: {
+    title: "Кино сонголт 🎬",
+    subtitle: "Дуртай киногоо сонгоод ticketing нээгээрэй 💞",
+    hint: "Poster дээр дарахад шинэ tab нээгдэнэ",
+    continueButton: "Үргэлжлүүлэх 💕",
+    spinSeconds: 20,
+    movies: [
+      {
+        title: "Avatar",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001809",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001809",
+      },
+      {
+        title: "Avatar fire and ash",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001738",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001738",
+      },
+      {
+        title: "Zootopia 2",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001694",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001694",
+      },
+      {
+        title: "GOAT",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001744",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001744",
+      },
+      {
+        title: "Wuthering Heights IMAX",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001827",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001827",
+      },
+      {
+        title: "Whistle",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001828",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001828",
+      },
+      {
+        title: "Хайрын Дурсамж",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001837",
+        linkUrl: "https://ticketing.urgoo.mn/movie/HO00001837",
+      },
+      {
+        title: "Wuthering Heights",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001780",
+        linkUrl: "",
+      },
+      {
+        title: "Аавын Охин",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001838",
+        linkUrl: "",
+      },
+      {
+        title: "Greenland 2: Migration",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001802",
+        linkUrl: "",
+      },
+      {
+        title: "Задлаагүй Захиа",
+        posterUrl:
+          "https://booking.urgoo.mn/CDN/media/entity/get/FilmPosterGraphic/HO00001826",
+        linkUrl: "",
+      },
+    ],
+  },
+
   [SECTION_TYPES.MEMORY_GALLERY]: {
     headerIcon: "💝",
     headerTitle: "Бидний дурсамжууд",
@@ -130,8 +206,21 @@ const SECTION_DEFAULTS = {
     summaryFields: [
       { key: "place", emoji: "📍", label: "Уулзах газар" },
       { key: "time", emoji: "⏰", label: "Цаг" },
+      { key: "movie", emoji: "🎬", label: "Кино" },
     ],
     quotes: ["Чамтай хамт байх мөч бүр онцгой 💕", "Чи бол миний бүх зүйл 💝"],
+  },
+
+  [SECTION_TYPES.MEMORY_VIDEO]: {
+    title: "Видео хэсэг 🎬",
+    continueButton: "Үргэлжлүүлэх 💕",
+    videos: [
+      {
+        src: "",
+        caption: "Анхны бичлэг 🎬",
+        date: "Дурсамж 1",
+      },
+    ],
   },
 
   [SECTION_TYPES.SPARK_CUSTOMIZER]: {

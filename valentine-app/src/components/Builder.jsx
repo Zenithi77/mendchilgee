@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-
+import Logo from "../assets/Logo";
 import { createEmptyGift, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import { createDefaultSection } from "../models/sectionDefaults";
@@ -21,9 +21,11 @@ import { IoMdPhonePortrait, IoIosTabletLandscape, IoMdDesktop } from "react-icon
 import {
   WelcomeLetterEditor,
   QuestionEditor,
+  MovieSelectionEditor,
   MemoryGalleryEditor,
   StepQuestionsEditor,
   FinalSummaryEditor,
+  MemoryVideoEditor,
   GenericEditor,
 } from "./SectionEditors";
 
@@ -104,15 +106,23 @@ export default function Builder({ onBack, initialGift }) {
 
   const selectedSection = gift.sections.find((s) => s.id === selectedSectionId);
 
-  const startDate = useMemo(() => {
-    const welcomeSec = gift.sections.find((s) => s.type === SECTION_TYPES.WELCOME);
-    const dateStr = welcomeSec?.data?.startDate;
-    return dateStr ? new Date(dateStr) : new Date();
-  }, [gift.sections]);
-
   const addSection = useCallback((type) => {
     const section = createDefaultSection(type);
-    setGift((prev) => ({ ...prev, sections: [...prev.sections, section] }));
+    setGift((prev) => {
+      // Place video section right after photo gallery by default
+      if (type === SECTION_TYPES.MEMORY_VIDEO) {
+        const galleryIndex = prev.sections.findIndex(
+          (s) => s.type === SECTION_TYPES.MEMORY_GALLERY,
+        );
+        if (galleryIndex !== -1) {
+          const nextSections = [...prev.sections];
+          nextSections.splice(galleryIndex + 1, 0, section);
+          return { ...prev, sections: nextSections };
+        }
+      }
+
+      return { ...prev, sections: [...prev.sections, section] };
+    });
     setSelectedSectionId(section.id);
     setShowAddModal(false);
     setEditorOpen(true);
@@ -230,6 +240,9 @@ export default function Builder({ onBack, initialGift }) {
     if (type === SECTION_TYPES.QUESTION)
       return <QuestionEditor section={selectedSection} onUpdate={updateSectionData} />;
 
+    if (type === SECTION_TYPES.MOVIE_SELECTION)
+      return <MovieSelectionEditor section={selectedSection} onUpdate={updateSectionData} />;
+
     if (type === SECTION_TYPES.MEMORY_GALLERY)
       return <MemoryGalleryEditor section={selectedSection} onUpdate={updateSectionData} />;
 
@@ -238,6 +251,9 @@ export default function Builder({ onBack, initialGift }) {
 
     if (type === SECTION_TYPES.FINAL_SUMMARY)
       return <FinalSummaryEditor section={selectedSection} onUpdate={updateSectionData} />;
+
+    if (type === SECTION_TYPES.MEMORY_VIDEO)
+      return <MemoryVideoEditor section={selectedSection} onUpdate={updateSectionData} />;
 
     return <GenericEditor section={selectedSection} />;
   };
@@ -259,7 +275,7 @@ export default function Builder({ onBack, initialGift }) {
 
           <div className="builder-divider" />
 
-          <span className="builder-project-name">💝 Gift Builder</span>
+          <span className="builder-project-name"><Logo />Builder</span>
 
           {/* ✅ Mobile/Tablet menu button */}
           <button
@@ -396,36 +412,21 @@ export default function Builder({ onBack, initialGift }) {
                         key={tmpl.id || i}
                         type="button"
                         className={`template-tile template-${i + 1} ${isSelected ? "selected" : ""}`}
-                        onClick={() => {
+                        onClick={async () => {
                           applyTemplate(tmpl);
+                          // Persist immediately so the iframe preview (loaded from Firestore)
+                          // reflects the selected template without needing an extra button.
+                          await handleSave();
                           setSidebarOpen(false); // ✅ сонгосны дараа хаах
                         }}
                         title={tmpl.card?.name || tmpl.id}
                         style={{ background: bg }}
+                        disabled={saving}
                       >
                         <div className="template-tile-label">{tmpl.card?.name || tmpl.id}</div>
                       </button>
                     );
                   })}
-                </div>
-
-                <div style={{ marginTop: 10 }}>
-                  <button
-                    type="button"
-                    className="builder-btn builder-btn-save"
-                    onClick={handleSave}
-                    disabled={saving}
-                    title="Хадгалах"
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <span>{saving ? "Сонгож байна..." : "Сонгох"}</span>
-                  </button>
                 </div>
               </div>
             )}
