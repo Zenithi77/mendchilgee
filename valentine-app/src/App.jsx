@@ -121,17 +121,18 @@ function MainApp() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  // Click sparkle effect
+  // Click heart effect — growing heart that fades
   useEffect(() => {
-    const emojis = template?.effects?.clickSparkles || ["✨", "💖", "💕", "⭐"];
+    let heartCount = 0;
     const handle = (e) => {
+      heartCount++;
       const el = document.createElement("span");
-      el.className = "click-sparkle";
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.className = "click-heart-grow";
+      el.textContent = "❤️";
       el.style.left = `${e.clientX}px`;
       el.style.top = `${e.clientY}px`;
       document.body.appendChild(el);
-      setTimeout(() => el.remove(), 800);
+      setTimeout(() => el.remove(), 1200);
     };
     document.addEventListener("click", handle);
     return () => document.removeEventListener("click", handle);
