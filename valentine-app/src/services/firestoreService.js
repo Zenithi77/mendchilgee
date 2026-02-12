@@ -14,7 +14,7 @@ import {
   onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db } from "../firebase";
 
 // Add a new document with auto-generated ID
 export const addDocument = async (collectionName, data) => {
@@ -151,4 +151,28 @@ export const getMemories = async () => {
 // Subscribe to memories in real-time
 export const subscribeToMemories = (callback) => {
   return subscribeToCollection("memories", callback);
+};
+
+// ============================================
+// Terms & Privacy Agreement Functions
+// ============================================
+
+// Save terms agreement for a user
+export const saveTermsAgreement = async (userId, termsVersion) => {
+  return setDocument("userProfiles", userId, {
+    termsAccepted: true,
+    termsAcceptedAt: serverTimestamp(),
+    termsVersion,
+  });
+};
+
+// Get user's terms agreement status
+export const getTermsAgreement = async (userId) => {
+  const profile = await getDocument("userProfiles", userId);
+  if (!profile) return null;
+  return {
+    termsAccepted: profile.termsAccepted || false,
+    termsAcceptedAt: profile.termsAcceptedAt || null,
+    termsVersion: profile.termsVersion || null,
+  };
 };

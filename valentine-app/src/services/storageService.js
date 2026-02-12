@@ -6,7 +6,7 @@ import {
   deleteObject,
   listAll,
 } from "firebase/storage";
-import { storage } from "./firebase";
+import { storage } from "../firebase";
 
 // Upload a file and get download URL
 export const uploadFile = async (file, path) => {

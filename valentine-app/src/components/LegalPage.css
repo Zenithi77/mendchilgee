@@ -1,0 +1,327 @@
+/* ========================================
+   LEGAL PAGES (Terms & Privacy)
+   ======================================== */
+
+.legal-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #e0e0e0;
+  padding: 0;
+}
+
+/* Navigation */
+.legal-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(20, 10, 40, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.legal-nav-home {
+  color: #f0a0c0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.legal-nav-home:hover {
+  color: #ff6b9d;
+}
+
+.legal-nav-link {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.legal-nav-link:hover {
+  color: #f0a0c0;
+}
+
+/* Content area */
+.legal-content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.legal-body h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.legal-body h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #f0a0c0;
+  margin-top: 36px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(240, 160, 192, 0.15);
+}
+
+.legal-body h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #d4a0d0;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.legal-body p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 14px;
+}
+
+.legal-body ul {
+  margin: 8px 0 16px 20px;
+  padding: 0;
+}
+
+.legal-body ul li {
+  font-size: 0.93rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 6px;
+  position: relative;
+  padding-left: 8px;
+}
+
+.legal-body ul li::marker {
+  color: #f0a0c0;
+}
+
+.legal-body strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.legal-body em {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.legal-updated {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+}
+
+/* ========================================
+   TERMS AGREEMENT CHECKBOX (AuthPage)
+   ======================================== */
+
+.auth-terms-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0 4px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s;
+}
+
+.auth-terms-group:has(input:focus-visible) {
+  border-color: rgba(240, 160, 192, 0.4);
+}
+
+.auth-terms-group.auth-terms-error {
+  border-color: #ff4d6a;
+  background: rgba(255, 77, 106, 0.06);
+}
+
+.auth-terms-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  margin-top: 1px;
+}
+
+.auth-terms-checkbox:checked {
+  background: #f0a0c0;
+  border-color: #f0a0c0;
+}
+
+.auth-terms-checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a0a2e;
+}
+
+.auth-terms-checkbox:focus-visible {
+  outline: 2px solid #f0a0c0;
+  outline-offset: 2px;
+}
+
+.auth-terms-label {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  user-select: none;
+}
+
+.auth-terms-label a {
+  color: #f0a0c0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+}
+
+.auth-terms-label a:hover {
+  color: #ff6b9d;
+}
+
+.auth-terms-error-msg {
+  color: #ff4d6a;
+  font-size: 0.78rem;
+  margin: 4px 0 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ========================================
+   TERMS RE-ACCEPTANCE MODAL
+   ======================================== */
+
+.terms-reaccept-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.terms-reaccept-card {
+  background: linear-gradient(145deg, #1e1040, #16213e);
+  border: 1px solid rgba(240, 160, 192, 0.15);
+  border-radius: 16px;
+  padding: 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.terms-reaccept-card h2 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.terms-reaccept-card p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.terms-reaccept-card .auth-terms-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.terms-reaccept-btn {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f0a0c0, #ff6b9d);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    opacity 0.2s,
+    transform 0.1s;
+}
+
+.terms-reaccept-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.terms-reaccept-btn:not(:disabled):hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.terms-reaccept-links {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.terms-reaccept-links a {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.terms-reaccept-links a:hover {
+  color: #f0a0c0;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 600px) {
+  .legal-content {
+    padding: 24px 16px 60px;
+  }
+
+  .legal-body h1 {
+    font-size: 1.5rem;
+  }
+
+  .legal-body h2 {
+    font-size: 1.15rem;
+  }
+
+  .legal-nav {
+    padding: 12px 16px;
+  }
+
+  .terms-reaccept-card {
+    padding: 24px 20px;
+  }
+}

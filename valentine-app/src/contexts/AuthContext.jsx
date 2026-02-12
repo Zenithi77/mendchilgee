@@ -7,6 +7,11 @@ import {
   loginWithGoogle,
   logout,
 } from "../services/authService";
+import {
+  getTermsAgreement,
+  saveTermsAgreement,
+} from "../services/firestoreService";
+import { TERMS_VERSION } from "../legal/terms";
 
 const AuthContext = createContext(null);
 
@@ -21,10 +26,27 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [needsTermsReaccept, setNeedsTermsReaccept] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthChange((user) => {
-      setUser(user);
+    const unsubscribe = onAuthChange(async (authUser) => {
+      setUser(authUser);
+      // Check terms version for non-anonymous authenticated users
+      if (authUser && !authUser.isAnonymous) {
+        try {
+          const agreement = await getTermsAgreement(authUser.uid);
+          if (!agreement || agreement.termsVersion !== TERMS_VERSION) {
+            setNeedsTermsReaccept(true);
+          } else {
+            setNeedsTermsReaccept(false);
+          }
+        } catch (err) {
+          console.error("Error checking terms agreement:", err);
+          setNeedsTermsReaccept(false);
+        }
+      } else {
+        setNeedsTermsReaccept(false);
+      }
       setLoading(false);
     });
 
@@ -42,11 +64,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Accept updated terms
+  const acceptTerms = async () => {
+    if (!user || user.isAnonymous) return;
+    try {
+      await saveTermsAgreement(user.uid, TERMS_VERSION);
+      setNeedsTermsReaccept(false);
+    } catch (err) {
+      console.error("Error saving terms agreement:", err);
+      throw err;
+    }
+  };
+
   const value = {
     user,
     loading,
     isAuthenticated: !!user,
     isAnonymous: user?.isAnonymous ?? false,
+    needsTermsReaccept,
+    acceptTerms,
     signInAnonymouslyIfNeeded,
     loginWithEmail,
     registerWithEmail,

@@ -5,7 +5,10 @@ import {
   loginWithGoogle,
   loginAnonymously,
 } from "../services/authService";
+import { saveTermsAgreement } from "../services/firestoreService";
+import { TERMS_VERSION } from "../legal/terms";
 import "./AuthPage.css";
+import "./LegalPage.css";
 
 const AuthPage = ({ onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +17,8 @@ const AuthPage = ({ onAuthSuccess }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +29,12 @@ const AuthPage = ({ onAuthSuccess }) => {
       if (isLogin) {
         await loginWithEmail(email, password);
       } else {
+        if (!termsAccepted) {
+          setTermsError(true);
+          setError("Үйлчилгээний нөхцөл зөвшөөрөх шаардлагатай");
+          setLoading(false);
+          return;
+        }
         if (password !== confirmPassword) {
           setError("Passwords do not match");
           setLoading(false);
@@ -34,7 +45,9 @@ const AuthPage = ({ onAuthSuccess }) => {
           setLoading(false);
           return;
         }
-        await registerWithEmail(email, password);
+        const userCredential = await registerWithEmail(email, password);
+        // Save terms agreement after successful signup
+        await saveTermsAgreement(userCredential.user.uid, TERMS_VERSION);
       }
       onAuthSuccess?.();
     } catch (err) {
@@ -101,6 +114,8 @@ const AuthPage = ({ onAuthSuccess }) => {
     setError("");
     setPassword("");
     setConfirmPassword("");
+    setTermsAccepted(false);
+    setTermsError(false);
   };
 
   return (
@@ -177,12 +192,52 @@ const AuthPage = ({ onAuthSuccess }) => {
               </div>
             )}
 
+            {!isLogin && (
+              <>
+                <div
+                  className={`auth-terms-group${termsError ? " auth-terms-error" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    id="termsAccepted"
+                    className="auth-terms-checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => {
+                      setTermsAccepted(e.target.checked);
+                      if (e.target.checked) setTermsError(false);
+                    }}
+                    disabled={loading}
+                  />
+                  <label htmlFor="termsAccepted" className="auth-terms-label">
+                    Би{" "}
+                    <a href="/terms" target="_blank" rel="noopener noreferrer">
+                      Үйлчилгээний нөхцөл
+                    </a>{" "}
+                    болон{" "}
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Нууцлалын бодлого
+                    </a>
+                    -г уншиж, зөвшөөрч байна.
+                  </label>
+                </div>
+                {termsError && (
+                  <p className="auth-terms-error-msg">
+                    ⚠ Үйлчилгээний нөхцөл зөвшөөрөх шаардлагатай
+                  </p>
+                )}
+              </>
+            )}
+
             {error && <div className="auth-error">{error}</div>}
 
             <button
               type="submit"
               className="auth-button auth-button-primary"
-              disabled={loading}
+              disabled={loading || (!isLogin && !termsAccepted)}
             >
               {loading ? (
                 <span className="auth-spinner"></span>

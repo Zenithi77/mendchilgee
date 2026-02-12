@@ -8,6 +8,12 @@ import CategorySelector from "./components/CategorySelector";
 import TemplateSelector from "./components/TemplateSelector";
 import Builder from "./components/Builder";
 import GiftPreviewPage from "./components/GiftPreviewPage";
+import DemoPaymentPage from "./components/DemoPaymentPage";
+import PaymentSuccessPage from "./components/PaymentSuccessPage";
+import PaymentCancelPage from "./components/PaymentCancelPage";
+import TermsPage from "./components/TermsPage";
+import PrivacyPage from "./components/PrivacyPage";
+import TermsReacceptModal from "./components/TermsReacceptModal";
 import FloatingHearts from "./components/FloatingHearts";
 import "./App.css";
 
@@ -27,13 +33,18 @@ function App() {
   return (
     <Routes>
       <Route path="/preview/:giftId" element={<GiftPreviewPage />} />
+      <Route path="/demo-payments" element={<DemoPaymentPage />} />
+      <Route path="/demo-payments/success" element={<PaymentSuccessPage />} />
+      <Route path="/demo-payments/cancel" element={<PaymentCancelPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<MainApp />} />
     </Routes>
   );
 }
 
 function MainApp() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, needsTermsReaccept } = useAuth();
   const [category, setCategory] = useState(null);
   const [template, setTemplate] = useState(null); // kept for theme/effects at app level
   const [page, setPage] = useState("list"); // "list" | "category" | "template"
@@ -143,6 +154,15 @@ function MainApp() {
   // Show auth page if not authenticated
   if (!user) {
     return <AuthPage />;
+  }
+
+  // Show terms re-acceptance modal if policy version changed
+  if (needsTermsReaccept && !user.isAnonymous) {
+    return (
+      <div className="app">
+        <TermsReacceptModal />
+      </div>
+    );
   }
 
   // Builder takes over the full viewport
