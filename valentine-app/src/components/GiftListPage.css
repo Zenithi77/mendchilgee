@@ -191,6 +191,9 @@
 }
 
 .gift-action-btn {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
   font-family: "Poppins", sans-serif;
   font-size: 0.78rem;
   padding: 6px 14px;
@@ -225,6 +228,13 @@
 .gift-action-delete:hover {
   border-color: rgba(244, 67, 54, 0.4);
   color: #f44336;
+}
+.gift-action-check-response {
+  margin-left: auto;
+}
+.gift-action-check-response:hover {
+  border-color: rgba(76, 175, 80, 0.4);
+  color: #4caf50;
 }
 
 /* Delete Confirm */

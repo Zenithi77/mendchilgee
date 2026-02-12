@@ -110,12 +110,13 @@ export default function GiftPreviewPage() {
 
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
-
       <GiftRenderer
         gift={gift}
         startDate={startDate}
         category={gift.category}
         initialSectionIndex={initialIndex}
+        giftId={giftId}
+        persistResponses={true}
       />
     </div>
   );

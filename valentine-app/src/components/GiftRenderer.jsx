@@ -1,7 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { giftToTemplate, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import HeartRain from "./HeartRain";
+import { saveGiftResponse } from "../services/giftResponseService";
 
 /** Build initial choices state from the stepQuestions section data. */
 function buildInitialChoices(gift) {
@@ -28,11 +29,82 @@ function buildInitialChoices(gift) {
  *  - Customizer state (for sparkCustomizer)
  *  - HeartRain visual effect
  */
-export default function GiftRenderer({ gift, startDate, category, initialSectionIndex = 0 }) {
+export default function GiftRenderer({
+  gift,
+  startDate,
+  category,
+  initialSectionIndex = 0,
+  giftId,
+  persistResponses = false,
+}) {
   const [sectionIndex, setSectionIndex] = useState(initialSectionIndex || 0);
   const [choices, setChoices] = useState(() => buildInitialChoices(gift));
   const [customizerData, setCustomizerData] = useState({});
   const [heartRain, setHeartRain] = useState(false);
+
+  const latestChoicesRef = useRef(choices);
+  const savingRef = useRef(false);
+  const dirtyRef = useRef(false);
+  const debounceTimerRef = useRef(null);
+
+  const hasAnyChoice = useCallback((c) => {
+    if (!c) return false;
+    return Object.values(c).some((v) => {
+      if (Array.isArray(v)) return v.length > 0;
+      if (v == null) return false;
+      if (typeof v === "string") return v.trim().length > 0;
+      return true;
+    });
+  }, []);
+
+  const flushSave = useCallback(async () => {
+    if (!persistResponses || !giftId) return;
+    if (savingRef.current) return;
+    if (!dirtyRef.current) return;
+
+    const snapshot = latestChoicesRef.current;
+    if (!hasAnyChoice(snapshot)) {
+      dirtyRef.current = false;
+      return;
+    }
+
+    savingRef.current = true;
+    dirtyRef.current = false;
+    try {
+      await saveGiftResponse(giftId, snapshot);
+    } catch (err) {
+      console.error("Failed to save gift response:", err);
+    } finally {
+      savingRef.current = false;
+      if (dirtyRef.current) {
+        // If changes happened while saving, run one more save.
+        flushSave();
+      }
+    }
+  }, [persistResponses, giftId, hasAnyChoice]);
+
+  // Persist recipient responses (only when enabled, i.e. preview page)
+  useEffect(() => {
+    latestChoicesRef.current = choices;
+    if (!persistResponses || !giftId) return;
+    if (!hasAnyChoice(choices)) return;
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      dirtyRef.current = true;
+      flushSave();
+    }, 700);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+    };
+  }, [choices, persistResponses, giftId, hasAnyChoice, flushSave]);
 
   // Reconstruct template-like object so existing components work unchanged
   const template = useMemo(() => giftToTemplate(gift), [gift]);
