@@ -103,7 +103,7 @@ export default function Builder({ onBack, initialGift }) {
   const [editorOpen, setEditorOpen] = useState(false);
 
   // ✅ Sidebar drawer open/close (mobile/tablet)
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const selectedSection = gift.sections.find((s) => s.id === selectedSectionId);
 

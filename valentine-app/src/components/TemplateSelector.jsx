@@ -3,7 +3,7 @@ import { getTemplatesByCategory } from "../templateConfigs";
 
 const CATEGORY_NAMES = {
   crush: "Crush / Дурлал 😍",
-  "new-couple": "Шинэ хос 💑",
+  "new-couple": "Шинэ хос 👩‍❤️‍👨",
   "long-term": "Удаан хос 💍",
   y2k: "2000s Хосууд 📟",
   "long-distance": "Холын хайр 🌍",
