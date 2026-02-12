@@ -1633,12 +1633,14 @@
 }
 
 .yes-btn {
+  position: relative;
+  z-index: 2;
   background: linear-gradient(135deg, var(--pink), var(--hot-pink));
   color: #fff;
   border: none;
-  padding: 15px 52px;
-  border-radius: 50px;
-  font-size: 1.1rem;
+  padding: 10px 38px;
+  border-radius: 10px;
+  font-size: 1rem;
   font-family: "Poppins", sans-serif;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1650,12 +1652,14 @@
 }
 
 .no-btn {
+  position: relative;
+  z-index: 1;
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 15px 52px;
-  border-radius: 50px;
-  font-size: 1.1rem;
+  padding: 10px 40px;
+  border-radius: 10px;
+  font-size: 1rem;
   font-family: "Poppins", sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
