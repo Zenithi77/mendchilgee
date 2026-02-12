@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import "./GiftListPage.css";
-import Logo from "assets/Logo";
+import Logo from "../assets/Logo";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
   const { user } = useAuth();
