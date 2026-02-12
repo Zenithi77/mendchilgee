@@ -119,11 +119,11 @@ export default function MemoryGallery({ onContinue }) {
 
         <div className="gallery-continue">
           <p className="font-script" style={{ fontSize: '1.3rem', color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
-            Бүх дурсамж гайхалтай... 💕<br />
+            Бүх дурсамж үнэ цэнэтэй... 💕<br />
             Одоо Valentine's Day-г төлөвлөе!
           </p>
           <button className="btn btn-magic" onClick={onContinue}>
-            Болзоо төлөвлөх 💑
+            Болзоо төлөвлөх 👩‍❤️‍👨
           </button>
         </div>
       </div>

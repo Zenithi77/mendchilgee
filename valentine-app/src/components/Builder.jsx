@@ -15,7 +15,7 @@ import { IoMdMenu } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { IoColorPalette } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { IoMdPhonePortrait, IoIosTabletLandscape, IoMdDesktop } from "react-icons/io";
 
 import {
@@ -158,6 +158,24 @@ export default function Builder({ onBack, initialGift }) {
         s.id === sectionId ? { ...s, data: newData } : s,
       ),
     }));
+  }, []);
+
+  const deleteSection = useCallback((sectionId) => {
+    setGift((prev) => {
+      const idx = prev.sections.findIndex((s) => s.id === sectionId);
+      if (idx === -1) return prev;
+      if (prev.sections.length <= 1) return prev;
+
+      const nextSections = prev.sections.filter((s) => s.id !== sectionId);
+      const nextSelectedId =
+        prev.sections[idx + 1]?.id ?? prev.sections[idx - 1]?.id ?? null;
+
+      setSelectedSectionId((current) =>
+        current === sectionId ? nextSelectedId : current,
+      );
+
+      return { ...prev, sections: nextSections };
+    });
   }, []);
 
   const applyTemplate = useCallback((tmpl) => {
@@ -497,20 +515,39 @@ export default function Builder({ onBack, initialGift }) {
                                   </span>
                                 </div>
 
-                                {/* ✅ Edit opens drawer */}
-                                <button
-                                  type="button"
-                                  className="builder-section-edit-btn"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedSectionId(section.id);
-                                    setEditorOpen(true);
-                                    setSidebarOpen(false); // ✅ mobile дээр хаах
-                                  }}
-                                  title="Edit"
+                                <div
+                                  className="builder-section-item-actions"
+                                  onClick={(e) => e.stopPropagation()}
                                 >
-                                  <MdEdit />
-                                </button>
+                                  {/* ✅ Edit opens drawer */}
+                                  <button
+                                    type="button"
+                                    className="builder-action-btn builder-action-edit"
+                                    onClick={() => {
+                                      setSelectedSectionId(section.id);
+                                      setEditorOpen(true);
+                                      setSidebarOpen(false); // ✅ mobile дээр хаах
+                                    }}
+                                    title="Edit"
+                                  >
+                                    <MdEdit />
+                                  </button>
+
+                                  {/* ✅ Delete section */}
+                                  <button
+                                    type="button"
+                                    className="builder-action-btn builder-action-delete"
+                                    onClick={() => deleteSection(section.id)}
+                                    title={
+                                      gift.sections.length <= 1
+                                        ? "At least 1 section must remain"
+                                        : "Delete"
+                                    }
+                                    disabled={gift.sections.length <= 1}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </Draggable>
