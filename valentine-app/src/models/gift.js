@@ -26,7 +26,6 @@
 // ═══════════════════════════════════════════════════════════════
 
 export const SECTION_TYPES = {
-  SPARK_CUSTOMIZER: "sparkCustomizer",
   WELCOME: "welcome",
   LOVE_LETTER: "loveLetter",
   QUESTION: "question",
@@ -51,15 +50,6 @@ export function generateSectionId() {
 
 export function templateToGift(template) {
   const sections = [];
-
-  // Spark customizer (only for templates that use it)
-  if (template.customizer === "spark" && template.sparkCustomizer) {
-    sections.push({
-      id: generateSectionId(),
-      type: SECTION_TYPES.SPARK_CUSTOMIZER,
-      data: { ...template.sparkCustomizer },
-    });
-  }
 
   // Welcome
   if (template.welcome) {

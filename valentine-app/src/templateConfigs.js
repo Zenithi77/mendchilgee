@@ -13,7 +13,6 @@
   ─ stepQuestions:    Step questions (UI labels, steps array)
   ─ finalSummary:    Final summary (fields, meter, quotes, signature)
   ─ effects:         Visual effects (emojis, colors, stickers, flowers)
-  ─ sparkCustomizer: (optional) Spark customizer specific data
 */
 
 // ═══════════════════════════════════════════════════════════════
@@ -717,7 +716,7 @@ const NEW_COUPLE_TEMPLATES = [
   {
     id: "spark",
     category: "new-couple",
-    customizer: "spark",
+    customizer: null,
     card: {
       name: "The Spark ✨",
       desc: "Invitation for new beginnings",
@@ -895,39 +894,6 @@ const NEW_COUPLE_TEMPLATES = [
       ],
     },
     effects: { ...DEFAULT_EFFECTS, stickers: STICKERS_CUTE },
-    sparkCustomizer: {
-      stickers: ["💘", "🌹", "🎀", "🍫", "💌", "✨"],
-      badge: "2.14",
-      title: "Happy Valentine's Day",
-      subtitle: "Valentine-д зориулсан маш гоё болзооны урилга 💖",
-      quizTitle: "How well do you know me?",
-      defaultQuestions: [
-        { q: "How well do you know me?", a1: "Movies 🎬", a2: "Partying 💃" },
-        { q: "Coffee or Tea?", a1: "Coffee ☕", a2: "Tea 🍵" },
-      ],
-      phoneStickers: ["💞", "🌸", "✨", "💗"],
-      phonePlaceholder: {
-        heart: "💖",
-        text: "Happy Valentine's Day",
-        sub: "Will you go on a date with me? 💌",
-      },
-      phoneCTA: {
-        title: "Be My Valentine? 💘",
-        sub: "2.14 — болзоонд хамт гарах уу? 🌹",
-      },
-      musicBar: { icon: "🎵", title: "Your Song", sub: "YouTube" },
-      continueButton: "Continue 💌",
-      note: "YouTube audio нь browser policy-оос шалтгаалаад зөвхөн Play дарсны дараа асна.",
-      revealFace: "🙂",
-      revealPill: "HOVER TO REVEAL",
-      labels: {
-        youtubeLink: "YouTube link / embed",
-        youtubeHintOk: "OK — audio can play after you press Play",
-        youtubeHintTip: "Tip: paste a YouTube link (watch / youtu.be / embed)",
-        coverLabel: "Cover image / video (shown вместо iframe)",
-        coverHint: "Iframe харагдахгүй, зөвхөн audio явна.",
-      },
-    },
   },
 
   {

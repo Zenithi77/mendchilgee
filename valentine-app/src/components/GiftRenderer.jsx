@@ -26,7 +26,6 @@ function buildInitialChoices(gift) {
  * Manages:
  *  - Section navigation (current index, next/back)
  *  - User choices state (for stepQuestions / finalSummary)
- *  - Customizer state (for sparkCustomizer)
  *  - HeartRain visual effect
  */
 export default function GiftRenderer({
@@ -39,7 +38,6 @@ export default function GiftRenderer({
 }) {
   const [sectionIndex, setSectionIndex] = useState(initialSectionIndex || 0);
   const [choices, setChoices] = useState(() => buildInitialChoices(gift));
-  const [customizerData, setCustomizerData] = useState({});
   const [heartRain, setHeartRain] = useState(false);
 
   // ── Persistent music state ──
@@ -135,16 +133,6 @@ export default function GiftRenderer({
 
   const renderSection = () => {
     switch (type) {
-      case SECTION_TYPES.SPARK_CUSTOMIZER:
-        return (
-          <Component
-            value={customizerData}
-            onChange={setCustomizerData}
-            onContinue={goNext}
-            template={template}
-          />
-        );
-
       case SECTION_TYPES.WELCOME:
         return (
           <Component

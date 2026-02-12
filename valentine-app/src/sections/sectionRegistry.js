@@ -15,7 +15,6 @@ import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
 import StepQuestions2 from "../components/StepQuestions2";
 import FinalSummary2 from "../components/FinalSummary2";
-import SparkCustomizer from "../components/SparkCustomizer";
 import { SECTION_TYPES } from "../models/gift";
 import { MdCelebration, MdMail, MdFavorite, MdPhotoCamera, MdChecklist, MdAutoAwesome, MdLightbulb } from "react-icons/md";
 
@@ -92,15 +91,6 @@ export const SECTION_REGISTRY = {
     icon: "🎊",
     iconBg: "#fef2f2",
     iconColor: "#f87171",
-  },
-  [SECTION_TYPES.SPARK_CUSTOMIZER]: {
-    component: SparkCustomizer,
-    label: "Spark Customizer",
-    labelMn: "Хүслийн хэсэг",
-    descMn: "Valentine-д зориулсан маш гоё болзооны урилга бүтээгээрэй",
-    icon: "✨",
-    iconBg: "#eef2ff",
-    iconColor: "#6366f1",
   },
 };
 

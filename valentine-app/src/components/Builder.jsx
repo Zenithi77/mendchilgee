@@ -30,6 +30,7 @@ import {
 } from "./SectionEditors";
 
 import "./Builder.css";
+import "./ShareModal.css";
 
 const DEFAULT_BUILDER_THEME = {
   className: "theme-classic",
@@ -527,6 +528,39 @@ export default function Builder({ onBack, initialGift }) {
             <div className="builder-sidebar-info">
               <span className="builder-sidebar-info-count">{gift.sections.length}</span>
               <span>section нэмэгдсэн</span>
+            </div>
+
+            {/* Password setup */}
+            <div className="pw-setup">
+              <div className="pw-setup-title">Нууц үг тохируулах</div>
+              <div className="pw-setup-row">
+                <label className="pw-setup-label">4 оронтой нууц үг</label>
+                <input
+                  className="pw-setup-input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="••••"
+                  value={gift.password || ""}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+                    setGift((prev) => ({ ...prev, password: val }));
+                  }}
+                />
+                <span className="pw-setup-tip">Жишээ: төрсөн өдрийн 4 орон (0315)</span>
+              </div>
+              <div className="pw-setup-row">
+                <label className="pw-setup-label">Нууц үгний санамж (hint)</label>
+                <input
+                  className="pw-setup-hint-input"
+                  type="text"
+                  placeholder="Жишээ: Миний төрсөн өдөр 🎂"
+                  value={gift.passwordHint || ""}
+                  onChange={(e) => {
+                    setGift((prev) => ({ ...prev, passwordHint: e.target.value }));
+                  }}
+                />
+              </div>
             </div>
           </div>
         </aside>

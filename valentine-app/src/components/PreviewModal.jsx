@@ -76,15 +76,6 @@ function SingleSectionPreview({ section, template, category, startDate }) {
   const noop = () => {};
 
   switch (section.type) {
-    case SECTION_TYPES.SPARK_CUSTOMIZER:
-      return (
-        <Component
-          value={{}}
-          onChange={noop}
-          onContinue={noop}
-          template={template}
-        />
-      );
     case SECTION_TYPES.WELCOME:
       return (
         <Component
