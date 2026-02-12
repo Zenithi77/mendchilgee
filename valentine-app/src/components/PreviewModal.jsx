@@ -98,6 +98,15 @@ function SingleSectionPreview({ section, template, category, startDate }) {
       return <Component letter={template.loveLetter} onClose={noop} />;
     case SECTION_TYPES.QUESTION:
       return <Component onYes={noop} template={template} />;
+    case SECTION_TYPES.MOVIE_SELECTION:
+      return (
+        <Component
+          onContinue={noop}
+          template={template}
+          selectedMovie={null}
+          onSelectMovie={noop}
+        />
+      );
     case SECTION_TYPES.MEMORY_GALLERY:
       return (
         <Component

@@ -7,11 +7,17 @@ import StickerAnimation from "./StickerAnimation";
 export default function FinalSummary2({ choices, template}) {
   const final = template?.finalSummary || {};
   const effects = template?.effects || {};
-  const summaryFields = final.summaryFields || [];
+  const baseSummaryFields = final.summaryFields || [];
+  const hasMovieField = baseSummaryFields.some((f) => f?.key === "movie");
+  const summaryFields =
+    !hasMovieField && choices?.movie
+      ? [...baseSummaryFields, { key: "movie", emoji: "🎬", label: "Кино" }]
+      : baseSummaryFields;
   const loveQuotes = final.quotes || [
     "Чамтай хамт байх мөч бүр онцгой 💕",
     "Чи бол миний бүх зүйл 💝",
   ];
+  const summaryFieldCount = summaryFields.length;
 
   const [meterW, setMeterW] = useState(0);
   const [quoteIdx, setQuoteIdx] = useState(0);
@@ -20,7 +26,7 @@ export default function FinalSummary2({ choices, template}) {
   useEffect(() => {
     const t1 = setTimeout(() => setMeterW(100), 600);
 
-    const timers = summaryFields.map((_, i) =>
+    const timers = Array.from({ length: summaryFieldCount }, (_, i) =>
       setTimeout(() => setRevealedRows(i + 1), 400 + i * 300),
     );
 
@@ -33,7 +39,7 @@ export default function FinalSummary2({ choices, template}) {
       timers.forEach(clearTimeout);
       clearInterval(iv);
     };
-  }, [summaryFields.length, loveQuotes.length]);
+  }, [summaryFieldCount, loveQuotes.length]);
 
   // Format choice value (supports arrays for multi-select)
   const formatValue = (val) => {

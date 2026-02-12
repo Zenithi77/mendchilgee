@@ -111,6 +111,16 @@ export default function GiftRenderer({ gift, startDate, category, initialSection
       case SECTION_TYPES.QUESTION:
         return <Component onYes={goNext} template={template} />;
 
+      case SECTION_TYPES.MOVIE_SELECTION:
+        return (
+          <Component
+            onContinue={goNext}
+            template={template}
+            selectedMovie={choices.movie}
+            onSelectMovie={(title) => updateChoice("movie", title)}
+          />
+        );
+
       case SECTION_TYPES.MEMORY_GALLERY:
         return (
           <Component

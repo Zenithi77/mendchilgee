@@ -43,9 +43,16 @@
 }
 
 .builder-project-name {
+  
   font-weight: 700;
   font-size: 1.05rem;
   color: #334155;
+  /*i want center */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+
 }
 
 /* ── Buttons ── */

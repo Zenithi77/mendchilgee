@@ -10,6 +10,7 @@
 import Welcome2 from "../components/Welcome2";
 import LoveLetter from "../components/LoveLetter";
 import Question2 from "../components/Question2";
+import MovieSelection from "../components/MovieSelection";
 import MemoryGallery2 from "../components/MemoryGallery2";
 import StepQuestions2 from "../components/StepQuestions2";
 import FinalSummary2 from "../components/FinalSummary2";
@@ -45,6 +46,15 @@ export const SECTION_REGISTRY = {
     icon: "💝",
     iconBg: "#f3e8ff",
     iconColor: "#9d81ba",
+  },
+  [SECTION_TYPES.MOVIE_SELECTION]: {
+    component: MovieSelection,
+    label: "Movie Selection",
+    labelMn: "Кино сонголт",
+    descMn: "Киноны постеруудаас сонгоод ticketing нээгээрэй",
+    icon: "🎬",
+    iconBg: "#e0f2fe",
+    iconColor: "#0284c7",
   },
   [SECTION_TYPES.MEMORY_GALLERY]: {
     component: MemoryGallery2,
