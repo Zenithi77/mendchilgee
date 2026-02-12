@@ -1,12 +1,23 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+
 import { createEmptyGift, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import { createDefaultSection } from "../models/sectionDefaults";
 import { saveOrUpdateGift } from "../services/giftService";
 import { useAuth } from "../contexts/AuthContext";
+
 import AddSectionModal from "./AddSectionModal";
-import PreviewModal from "./PreviewModal";
+import GiftPreview, { VIEWPORT_PRESETS } from "./GiftPreview";
+import { TEMPLATES } from "../templateConfigs";
+import { IoMdMenu } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
+import { IoColorPalette } from "react-icons/io5";
+import { IoIosSettings } from "react-icons/io";
+import { MdEdit } from "react-icons/md";
+import { IoMdPhonePortrait, IoIosTabletLandscape, IoMdDesktop } from "react-icons/io";
+
 import {
   WelcomeLetterEditor,
   QuestionEditor,
@@ -15,9 +26,8 @@ import {
   FinalSummaryEditor,
   GenericEditor,
 } from "./SectionEditors";
-import "./Builder.css";
 
-// ── Default theme applied to the preview frame ──
+import "./Builder.css";
 
 const DEFAULT_BUILDER_THEME = {
   className: "theme-classic",
@@ -45,10 +55,6 @@ const DEFAULT_EFFECTS = {
   stickers: ["💕", "💖", "💗", "💓", "💞", "💘"],
 };
 
-// ═══════════════════════════════════════════════════════════════
-// Builder Component
-// ═══════════════════════════════════════════════════════════════
-
 export default function Builder({ onBack, initialGift }) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -61,62 +67,78 @@ export default function Builder({ onBack, initialGift }) {
     if (!g.effects?.floatingHearts) g.effects = { ...DEFAULT_EFFECTS };
     return g;
   });
+
   const [selectedSectionId, setSelectedSectionId] = useState(() => {
     if (initialGift?.sections?.length > 0) return initialGift.sections[0].id;
     return null;
   });
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState(null); // "saved" | "error" | null
 
-  // Preview modal state (section-only preview)
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewSection, setPreviewSection] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showStylePanel, setShowStylePanel] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [previewReloadKey, setPreviewReloadKey] = useState(0);
+
+  // ✅ Responsive view state (header-д)
+  const [viewport, setViewport] = useState("desktop"); // desktop|tablet|mobile
+
+  // Auto switch preview viewport based on screen size
+  useEffect(() => {
+    const updateViewport = () => {
+      const width = window.innerWidth;
+      if (width < 640) setViewport("mobile");
+      else if (width < 1024) setViewport("tablet");
+      else setViewport("desktop");
+    };
+
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
+
+  // ✅ Editor drawer open/close
+  const [editorOpen, setEditorOpen] = useState(false);
+
+  // ✅ Sidebar drawer open/close (mobile/tablet)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const selectedSection = gift.sections.find((s) => s.id === selectedSectionId);
 
-  // Compute startDate from welcome section data
   const startDate = useMemo(() => {
-    const welcomeSec = gift.sections.find(
-      (s) => s.type === SECTION_TYPES.WELCOME,
-    );
+    const welcomeSec = gift.sections.find((s) => s.type === SECTION_TYPES.WELCOME);
     const dateStr = welcomeSec?.data?.startDate;
     return dateStr ? new Date(dateStr) : new Date();
   }, [gift.sections]);
 
-  // ── Section operations ──
-
   const addSection = useCallback((type) => {
     const section = createDefaultSection(type);
-    setGift((prev) => ({
-      ...prev,
-      sections: [...prev.sections, section],
-    }));
+    setGift((prev) => ({ ...prev, sections: [...prev.sections, section] }));
     setSelectedSectionId(section.id);
     setShowAddModal(false);
+    setEditorOpen(true);
+    setSidebarOpen(false); // ✅ mobile дээр хаах
   }, []);
 
-  const removeSection = useCallback((sectionId) => {
-    setGift((prev) => ({
-      ...prev,
-      sections: prev.sections.filter((s) => s.id !== sectionId),
-    }));
-    setSelectedSectionId((prev) => (prev === sectionId ? null : prev));
+  const reorder = useCallback((list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
   }, []);
 
-  const moveSection = useCallback((sectionId, direction) => {
-    setGift((prev) => {
-      const sections = [...prev.sections];
-      const idx = sections.findIndex((s) => s.id === sectionId);
-      if (idx < 0) return prev;
-      const newIdx = idx + direction;
-      if (newIdx < 0 || newIdx >= sections.length) return prev;
-      [sections[idx], sections[newIdx]] = [sections[newIdx], sections[idx]];
-      return { ...prev, sections };
-    });
-  }, []);
+  const onDragEnd = useCallback(
+    (result) => {
+      const { source, destination } = result;
+      if (!destination) return;
+      if (destination.index === source.index) return;
 
-  // ── Update section data (used by editors) ──
+      setGift((prev) => ({
+        ...prev,
+        sections: reorder(prev.sections, source.index, destination.index),
+      }));
+    },
+    [reorder],
+  );
 
   const updateSectionData = useCallback((sectionId, newData) => {
     setGift((prev) => ({
@@ -127,7 +149,15 @@ export default function Builder({ onBack, initialGift }) {
     }));
   }, []);
 
-  // ── Save to Firestore ──
+  const applyTemplate = useCallback((tmpl) => {
+    if (!tmpl) return;
+    setGift((prev) => ({
+      ...prev,
+      theme: tmpl.theme || prev.theme,
+      effects: tmpl.effects || prev.effects,
+    }));
+    setPreviewReloadKey((k) => k + 1);
+  }, []);
 
   const handleSave = useCallback(async () => {
     if (!user) return;
@@ -135,8 +165,8 @@ export default function Builder({ onBack, initialGift }) {
       setSaving(true);
       setSaveStatus(null);
       const docId = await saveOrUpdateGift(gift, user.uid);
-      // Store the Firestore ID back into local state
       setGift((prev) => ({ ...prev, id: docId }));
+      setPreviewReloadKey((k) => k + 1);
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus(null), 2500);
       return docId;
@@ -150,23 +180,25 @@ export default function Builder({ onBack, initialGift }) {
     }
   }, [gift, user]);
 
-  // ── Full preview: save first, then navigate ──
+  const autoSaveOnceRef = useRef(false);
+  useEffect(() => {
+    if (autoSaveOnceRef.current) return;
+    if (!gift?.id && user) {
+      autoSaveOnceRef.current = true;
+      (async () => {
+        try {
+          await handleSave();
+        } catch (err) {
+          console.error("Auto-save error:", err);
+        }
+      })();
+    }
+  }, [gift?.id, user, handleSave]);
 
   const openFullPreview = useCallback(async () => {
     const docId = gift.id || (await handleSave());
-    if (docId) {
-      navigate(`/preview/${docId}`);
-    }
+    if (docId) navigate(`/preview/${docId}`);
   }, [gift.id, handleSave, navigate]);
-
-  // ── Section preview (still modal) ──
-
-  const openSectionPreview = (section) => {
-    setPreviewSection(section);
-    setPreviewOpen(true);
-  };
-
-  // ── Derived data ──
 
   const getSectionLabel = (section) => {
     const reg = SECTION_REGISTRY[section.type];
@@ -178,21 +210,14 @@ export default function Builder({ onBack, initialGift }) {
     return reg ? reg.icon : "📄";
   };
 
-  // ── Determine which editor to show ──
-
   const renderEditor = () => {
     if (!selectedSection) return null;
 
     const { type } = selectedSection;
 
-    // Welcome + LoveLetter are combined
     if (type === SECTION_TYPES.WELCOME || type === SECTION_TYPES.LOVE_LETTER) {
-      const welcomeSec = gift.sections.find(
-        (s) => s.type === SECTION_TYPES.WELCOME,
-      );
-      const letterSec = gift.sections.find(
-        (s) => s.type === SECTION_TYPES.LOVE_LETTER,
-      );
+      const welcomeSec = gift.sections.find((s) => s.type === SECTION_TYPES.WELCOME);
+      const letterSec = gift.sections.find((s) => s.type === SECTION_TYPES.LOVE_LETTER);
       return (
         <WelcomeLetterEditor
           welcomeSection={welcomeSec}
@@ -202,121 +227,223 @@ export default function Builder({ onBack, initialGift }) {
       );
     }
 
-    if (type === SECTION_TYPES.QUESTION) {
-      return (
-        <QuestionEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-    }
+    if (type === SECTION_TYPES.QUESTION)
+      return <QuestionEditor section={selectedSection} onUpdate={updateSectionData} />;
 
-    if (type === SECTION_TYPES.MEMORY_GALLERY) {
-      return (
-        <MemoryGalleryEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-    }
+    if (type === SECTION_TYPES.MEMORY_GALLERY)
+      return <MemoryGalleryEditor section={selectedSection} onUpdate={updateSectionData} />;
 
-    if (type === SECTION_TYPES.STEP_QUESTIONS) {
-      return (
-        <StepQuestionsEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-    }
+    if (type === SECTION_TYPES.STEP_QUESTIONS)
+      return <StepQuestionsEditor section={selectedSection} onUpdate={updateSectionData} />;
 
-    if (type === SECTION_TYPES.FINAL_SUMMARY) {
-      return (
-        <FinalSummaryEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-    }
+    if (type === SECTION_TYPES.FINAL_SUMMARY)
+      return <FinalSummaryEditor section={selectedSection} onUpdate={updateSectionData} />;
 
     return <GenericEditor section={selectedSection} />;
   };
 
-  // ── Render ──
-
   return (
     <div className="builder">
-      {/* Section Add Modal */}
       <AddSectionModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSelect={addSection}
       />
 
-      {/* Section Preview Modal (single section only) */}
-      <PreviewModal
-        open={previewOpen}
-        onClose={() => setPreviewOpen(false)}
-        gift={gift}
-        section={previewSection}
-        mode="section"
-        startDate={startDate}
-        category={gift.category}
-      />
-
-      {/* ─── HEADER ─── */}
       <header className="builder-header">
         <div className="builder-header-left">
           <button className="builder-btn builder-btn-outline" onClick={onBack}>
             <span className="builder-btn-icon">←</span>
-            <span>Буцах</span>
+            <span className="builder-btn-exit-txt">Буцах</span>
           </button>
+
           <div className="builder-divider" />
+
           <span className="builder-project-name">💝 Gift Builder</span>
+
+          {/* ✅ Mobile/Tablet menu button */}
+          <button
+            type="button"
+            className="builder-menu-btn"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+            title="Menu"
+          >
+            <IoMdMenu />
+          </button>
+
+          {/* ✅ Responsive buttons header-д */}
+          <div className="builder-divider" />
+
+          <div className="builder-header-viewport">
+            {["desktop", "tablet", "mobile"].map((k) => {
+              const icons = {
+                desktop: <IoMdDesktop />,
+                tablet: <IoIosTabletLandscape />,
+                mobile: <IoMdPhonePortrait />,
+              };
+
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  className={`builder-viewport-btn ${viewport === k ? "active" : ""}`}
+                  onClick={() => setViewport(k)}
+                  title={VIEWPORT_PRESETS[k].label}
+                >
+                  <span className="builder-viewport-icon">{icons[k]}</span>
+                  <span className="builder-viewport-label">{VIEWPORT_PRESETS[k].label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
         <div className="builder-header-right">
           <button
-            className="builder-btn builder-btn-preview"
+            className="builder-btn builder-btn-outline"
             onClick={openFullPreview}
             disabled={gift.sections.length === 0 || saving}
           >
-            <span className="builder-btn-icon">▶</span>
-            <span>Бүрэн Preview</span>
+            <span className="builder-btn-icon">↗</span>
+            <span>View full screen</span>
           </button>
+
           <div className="builder-divider" />
+
           {saveStatus === "saved" && (
-            <span className="builder-save-badge builder-save-ok">
-              ✓ Хадгалсан
-            </span>
+            <span className="builder-save-badge builder-save-ok">✓ Хадгалсан</span>
           )}
           {saveStatus === "error" && (
             <span className="builder-save-badge builder-save-err">✕ Алдаа</span>
           )}
+
           <button
             className="builder-btn builder-btn-save"
             onClick={handleSave}
             disabled={saving || gift.sections.length === 0}
           >
-            <span className="builder-btn-icon">{saving ? "⏳" : "💾"}</span>
             <span>{saving ? "Хадгалж байна..." : "Хадгалах"}</span>
           </button>
         </div>
       </header>
 
-      {/* ─── BODY ─── */}
       <div className="builder-body">
-        {/* ─── SIDEBAR ─── */}
-        <aside className="builder-sidebar">
-          <div className="builder-sidebar-inner">
-            {/* Add section button */}
-            <button
-              className="builder-add-btn"
-              onClick={() => setShowAddModal(true)}
-            >
-              <span className="builder-add-icon">＋</span>
-              Хуудас нэмэх
-            </button>
+        {/* ✅ Sidebar overlay (mobile/tablet) */}
+        {sidebarOpen && (
+          <div
+            className="builder-sidebar-overlay"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-            {/* Section list */}
+        <aside className={`builder-sidebar ${sidebarOpen ? "open" : ""}`}>
+          <div className="builder-sidebar-inner">
+            {/* ✅ Sidebar topbar close (mobile/tablet) */}
+            <div className="builder-sidebar-topbar">
+              <button
+                type="button"
+                className="builder-sidebar-close"
+                onClick={() => setSidebarOpen(false)}
+                aria-label="Close menu"
+                title="Close"
+              >
+                <IoClose />
+              </button>
+            </div>
+
+            <div className="button-group-container">
+              <button
+                className={`builder-tab-btn btn-style ${!showStylePanel ? "active" : ""}`}
+                type="button"
+                onClick={() => {
+                  setShowStylePanel(false);
+                }}
+              >
+                <IoIosSettings />
+                <span>Settings</span>
+              </button>
+
+              <button
+                className={`builder-tab-btn btn-style ${showStylePanel ? "active" : ""}`}
+                type="button"
+                onClick={() => {
+                  setShowStylePanel(true);
+                }}
+              >
+                <IoColorPalette />
+                <span>Style</span>
+              </button>
+            </div>
+
+            {/* Style / Template selector */}
+            {showStylePanel && (
+              <div className="builder-settings-panel">
+                <div style={{ marginBottom: 8, fontSize: 12, color: "#64748b", fontWeight: 700 }}>
+                  Choose a template
+                </div>
+
+                <div className="template-grid">
+                  {TEMPLATES.map((tmpl, i) => {
+                    const cols = tmpl.theme?.colors || {};
+                    const primary = cols["--t-primary"] || cols["--t-secondary"] || "#ff6b9d";
+                    const accent = cols["--t-accent"] || primary;
+                    const isSelected = gift.theme?.className === tmpl.theme?.className;
+                    const bg = `linear-gradient(135deg, ${accent}, ${primary})`;
+
+                    return (
+                      <button
+                        key={tmpl.id || i}
+                        type="button"
+                        className={`template-tile template-${i + 1} ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          applyTemplate(tmpl);
+                          setSidebarOpen(false); // ✅ сонгосны дараа хаах
+                        }}
+                        title={tmpl.card?.name || tmpl.id}
+                        style={{ background: bg }}
+                      >
+                        <div className="template-tile-label">{tmpl.card?.name || tmpl.id}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <button
+                    type="button"
+                    className="builder-btn builder-btn-save"
+                    onClick={handleSave}
+                    disabled={saving}
+                    title="Хадгалах"
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <span>{saving ? "Сонгож байна..." : "Сонгох"}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {!showStylePanel && (
+              <button
+                className="builder-add-btn"
+                onClick={() => {
+                  setShowAddModal(true);
+                  setSidebarOpen(false); // ✅ mobile дээр хаах
+                }}
+                type="button"
+              >
+                <span className="builder-add-icon">＋</span>
+                Хуудас нэмэх
+              </button>
+            )}
+
             <div className="builder-section-list">
               {gift.sections.length === 0 && (
                 <div className="builder-section-empty">
@@ -328,118 +455,165 @@ export default function Builder({ onBack, initialGift }) {
                 </div>
               )}
 
-              {gift.sections.map((section, idx) => (
-                <div
-                  key={section.id}
-                  className={`builder-section-item ${selectedSectionId === section.id ? "selected" : ""}`}
-                  onClick={() => setSelectedSectionId(section.id)}
-                >
-                  <div className="builder-section-item-left">
-                    <span className="builder-drag-handle">⠿</span>
-                    <span className="builder-section-item-icon">
-                      {getSectionIcon(section)}
-                    </span>
-                    <span className="builder-section-item-name">
-                      {getSectionLabel(section)}
-                    </span>
-                  </div>
-                  <div className="builder-section-item-actions">
-                    <button
-                      title="Preview"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openSectionPreview(section);
-                      }}
-                      className="builder-action-btn builder-action-preview"
-                    >
-                      👁
-                    </button>
-                    <button
-                      title="Дээш"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        moveSection(section.id, -1);
-                      }}
-                      disabled={idx === 0}
-                      className="builder-action-btn"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      title="Доош"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        moveSection(section.id, 1);
-                      }}
-                      disabled={idx === gift.sections.length - 1}
-                      className="builder-action-btn"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      title="Устгах"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeSection(section.id);
-                      }}
-                      className="builder-action-btn builder-action-delete"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {gift.sections.length > 0 && (
+                <DragDropContext onDragEnd={onDragEnd}>
+                  <Droppable droppableId="sections">
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {gift.sections.map((section, idx) => (
+                          <Draggable
+                            key={section.id}
+                            draggableId={String(section.id)}
+                            index={idx}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`builder-section-item ${
+                                  selectedSectionId === section.id ? "selected" : ""
+                                } ${snapshot.isDragging ? "dragging" : ""}`}
+                                onClick={() => {
+                                  setSelectedSectionId(section.id);
+                                  setSidebarOpen(false); // ✅ сонгомогц хаах
+                                }}
+                              >
+                                <div className="builder-section-item-left">
+                                  <span
+                                    className="builder-drag-handle"
+                                    {...provided.dragHandleProps}
+                                    onClick={(e) => e.stopPropagation()}
+                                    title="Чирж эрэмбэлэх"
+                                  >
+                                    ⠿
+                                  </span>
+                                  <span className="builder-section-item-icon">
+                                    {getSectionIcon(section)}
+                                  </span>
+                                  <span className="builder-section-item-name">
+                                    {getSectionLabel(section)}
+                                  </span>
+                                </div>
+
+                                {/* ✅ Edit opens drawer */}
+                                <button
+                                  type="button"
+                                  className="builder-section-edit-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedSectionId(section.id);
+                                    setEditorOpen(true);
+                                    setSidebarOpen(false); // ✅ mobile дээр хаах
+                                  }}
+                                  title="Edit"
+                                >
+                                  <MdEdit />
+                                </button>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              )}
             </div>
           </div>
 
-          {/* Sidebar footer */}
           <div className="builder-sidebar-footer">
             <div className="builder-sidebar-info">
-              <span className="builder-sidebar-info-count">
-                {gift.sections.length}
-              </span>
+              <span className="builder-sidebar-info-count">{gift.sections.length}</span>
               <span>section нэмэгдсэн</span>
             </div>
           </div>
         </aside>
 
-        {/* ─── MAIN EDITOR AREA ─── */}
-        <main className="builder-main">
-          {selectedSection ? (
-            <div className="builder-editor-panel">
-              {/* Editor header */}
-              <div className="builder-editor-header">
-                <div className="builder-editor-header-left">
-                  <span className="builder-editor-icon">
-                    {getSectionIcon(selectedSection)}
-                  </span>
-                  <h2 className="builder-editor-title">
-                    {getSectionLabel(selectedSection)}
-                  </h2>
-                </div>
-                <button
-                  className="builder-btn builder-btn-preview-sm"
-                  onClick={() => openSectionPreview(selectedSection)}
+        {/* ✅ Main = preview only */}
+        <main className="builder-main builder-main-previewOnly">
+          {gift.id ? (
+            <div className="builder-preview-outer">
+              <div className="builder-preview-center">
+                <div
+                  className="builder-preview-frame"
+                  style={{
+                    width: VIEWPORT_PRESETS[viewport].width,
+                    height: VIEWPORT_PRESETS[viewport].height,
+                    transform: `scale(1)`,
+                  }}
                 >
-                  <span>👁</span>
-                  <span>Preview</span>
-                </button>
+                  <iframe
+                    src={`/preview/${gift.id}?r=${previewReloadKey}${
+                      selectedSectionId ? `#section-${selectedSectionId}` : ""
+                    }`}
+                    className="builder-preview-iframe"
+                    title="Full preview"
+                    sandbox="allow-scripts allow-same-origin allow-forms"
+                  />
+                </div>
               </div>
-
-              {/* Editor body */}
-              <div className="builder-editor-body">{renderEditor()}</div>
             </div>
           ) : (
-            <div className="builder-empty-state">
-              <div className="builder-empty-icon">✨</div>
-              <h3 className="builder-empty-title">Section сонгоно уу</h3>
-              <p className="builder-empty-text">
-                Зүүн талын жагсаалтаас section сонгож засварлана уу, эсвэл шинэ
-                section нэмнэ үү
-              </p>
+            <div className="builder-preview-placeholder ">
+
+              <h2>Түр хүлээнэ үү...</h2>
             </div>
           )}
         </main>
+
+        {/* ✅ Right drawer editor */}
+        {editorOpen && (
+          <>
+            <div className="builder-drawer-overlay" onClick={() => setEditorOpen(false)} />
+            <div className="builder-drawer">
+              <div className="builder-drawer-header">
+                <div className="builder-drawer-title">
+                  <span>
+                    {selectedSection ? getSectionLabel(selectedSection) : "Section сонгоно уу"}
+                  </span>
+                </div>
+
+                <div className="builder-drawer-actions">
+                  <button
+                    type="button"
+                    className="builder-btn builder-btn-save"
+                    onClick={async () => {
+                      await handleSave();
+                    }}
+                    disabled={saving}
+                    title="Хадгалах"
+                  >
+                    <span>{saving ? "Хадгалж байна..." : "Хадгалах"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="builder-btn builder-btn-outline"
+                    onClick={() => setEditorOpen(false)}
+                    title="Хаах"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+
+              <div className="builder-drawer-body">
+                {selectedSection ? (
+                  renderEditor()
+                ) : (
+                  <div className="builder-empty-state">
+                    <div className="builder-empty-icon">✨</div>
+                    <h3 className="builder-empty-title">Section сонгоно уу</h3>
+                    <p className="builder-empty-text">
+                      Зүүн талын жагсаалтаас section сонгоод Edit дарна уу.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

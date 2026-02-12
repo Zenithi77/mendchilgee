@@ -159,6 +159,19 @@ const STICKERS_RETRO = [
   "📸",
 ];
 
+const STICKERS_DISTANCE = [
+  "🌍",
+  "✈️",
+  "💌",
+  "🌙",
+  "📱",
+  "💕",
+  "🕐",
+  "🛫",
+  "💫",
+  "🌅",
+];
+
 // ─── Welcome character presets ───
 const WELCOME_BEAR = {
   type: "bear",
@@ -210,6 +223,16 @@ const WELCOME_RETRO = {
   accents: ["💿", "🦋", "📼", "💾"],
 };
 
+const WELCOME_PLANE = {
+  type: "emoji",
+  wrapClass: "welcome-char plane-char",
+  bodyEmoji: "✈️",
+  bodyClass: "plane-body",
+  accentContainerClass: "plane-trails",
+  accentItemClass: "plane-trail",
+  accents: ["💌", "🌍", "💕", "✨"],
+};
+
 // ─── Question character presets ───
 const QUESTION_BEAR = {
   type: "bear",
@@ -235,6 +258,17 @@ const QUESTION_CAT = {
   accentItemClass: "cq-item",
   accents: ["🍬", "💕", "🧁"],
   pulseRingClass: "pulse-ring pulse-ring-pink",
+};
+
+const QUESTION_PLANE = {
+  type: "emoji",
+  wrapClass: "question-char plane-question",
+  bodyEmoji: "✈️",
+  bodyClass: "plane-q-body",
+  accentContainerClass: "plane-q-items",
+  accentItemClass: "pq-item",
+  accents: ["🌍", "💌", "✨"],
+  pulseRingClass: "pulse-ring pulse-ring-purple",
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -283,6 +317,17 @@ export const CATEGORIES = [
     vibe: "Retro, ностальги, дээр үеийн уур амьсгал",
     gradient: "linear-gradient(135deg, #00d2ff, #ff00e5)",
     bgEmojis: ["📟", "💿", "🦋", "⭐"],
+    selectedText: "✓ Сонгогдсон",
+    selectText: "Сонгох →",
+  },
+  {
+    id: "long-distance",
+    emoji: "🌍",
+    name: "Холын хайр",
+    desc: "Хол байсан ч зүрх ойрхон хосууд",
+    vibe: "Санаа зовнил, итгэл, хүлээлт, хязгааргүй хайр",
+    gradient: "linear-gradient(135deg, #667eea, #764ba2)",
+    bgEmojis: ["🌍", "✈️", "💌", "🌙"],
     selectedText: "✓ Сонгогдсон",
     selectText: "Сонгох →",
   },
@@ -1993,11 +2038,531 @@ const Y2K_TEMPLATES = [
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════
+// ХОЛЫН ХАЙР / LONG-DISTANCE TEMPLATES
+// ═══════════════════════════════════════════════════════════════
+
+const LONG_DISTANCE_TEMPLATES = [
+  // ─── Theme 1: Sunset Galaxy ───
+  {
+    id: "ld-sunset-galaxy",
+    category: "long-distance",
+    customizer: null,
+    card: {
+      name: "Нарны жаргалт 🌅",
+      desc: "Хол байсан ч нэг нарыг хардаг",
+      preview: "🌅✈️",
+      tags: ["📸 Зургийн цомог", "🎉 Хөдөлгөөнт"],
+    },
+    theme: {
+      className: "theme-ld-sunset",
+      colors: {
+        "--t-primary": "#ff6b6b",
+        "--t-secondary": "#ee5a24",
+        "--t-accent": "#f9ca24",
+        "--t-accent2": "#ff9ff3",
+        "--t-soft": "#ffcccc",
+        "--t-light": "#fff3e0",
+        "--t-bg": "#1a0a0a",
+        "--t-bg2": "#2d1010",
+        "--t-glass": "rgba(255, 107, 107, 0.05)",
+        "--t-glass-border": "rgba(255, 107, 107, 0.15)",
+      },
+    },
+    welcome: {
+      character: { ...WELCOME_PLANE },
+      title: "Гэгээн Валентины мэнд! 💕",
+      subtitle: "2.14 — Хол байсан ч зүрх ойрхон\nЭнэ урилга чамд 💌",
+      timer: { ...DEFAULT_TIMER },
+      buttonText: "Үргэлжлүүлэх 💌",
+    },
+    loveLetter: {
+      enabled: true,
+      ...DEFAULT_LOVE_LETTER_UI,
+      envelope: { emoji: "💌", text: "Захиа ирлээ...", sparkleEmoji: "✨" },
+      title: "Сэтгэлийн үгс 💌",
+      content:
+        "Удаан бодох байгаад олддоггүй. Шулуухан хэлье — чи надад үнэхээр таалагддаг. Өдөр бүр чиний тухай бодож байгаа. Энэ Valentine's Day-р хамтдаа гоё цагийг өнгөрөөхгүй биз? 🔥❤️\n\nБидний ярих хэзээ ч дусддаггүй — чарлан уг дуулахийхнь оронд бч хамтдаа аз жаргалтай ёнгөрөөхгүй биз? 🌅💕\n\nЗүрхнээсээ хэлэх нь 🔥",
+      music: {
+        url: "https://youtu.be/Ri3WsPDi4MY?si=izm75BPjlQSKNCBk",
+        title: "🎵 Romantic Music",
+        duration: 240,
+      },
+    },
+    question: {
+      character: { ...QUESTION_PLANE },
+      text: "Би чиний юунд илүү дуртай вэ?",
+      yesButton: { ...DEFAULT_YES_BUTTON },
+      noButton: { ...DEFAULT_NO_BUTTON },
+      multiChoice: true,
+      choices: [
+        { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
+        { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
+        { emoji: "👀", name: "Нүд", value: "Нүд" },
+        { emoji: "🗣️", name: "Хоолой", value: "Хоолой" },
+      ],
+      correctAnswer: "Зөв! Би чиний бүх зүйлд хайртай",
+    },
+    memoryGallery: {
+      ...DEFAULT_GALLERY_UI,
+      headerTitle: "Бидний дурсамжууд",
+      memories: [
+        {
+          type: "image",
+          src: "",
+          placeholder: "🌅",
+          date: "Нарны жаргалт",
+          caption: "Нэг нарыг харж байсан тэр мөч... 🌅",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "✈️",
+          date: "Нисэх өдөр",
+          caption: "Чам руу нисэх тэр өдөр 💕",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "📱",
+          date: "Видео дуудлага",
+          caption: "Дэлгэцээр ч гэсэн чиний нүүрийг харах аз жаргал 🥰",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "💌",
+          date: "Захидал",
+          caption: "Бичсэн захидал бүрт хайр дүүрэн 💌",
+        },
+      ],
+    },
+    stepQuestions: {
+      ...DEFAULT_STEP_UI,
+      steps: [
+        {
+          emoji: "📍",
+          title: "Хаана уулзах вэ?",
+          key: "place",
+          type: "grid",
+          multiSelect: false,
+          options: [
+            { emoji: "✈️", name: "Нисэх буудал", desc: "Тосч авъя!", value: "Нисэх буудал" },
+            { emoji: "🏠", name: "Чиний хотод", desc: "Очиж ирнэ", value: "Чиний хотод" },
+            { emoji: "🌴", name: "Аялал", desc: "Шинэ газар", value: "Хамтдаа аялъя" },
+            { emoji: "📱", name: "Онлайн", desc: "Видео дуудлага", value: "Онлайн date" },
+            { emoji: "🏨", name: "Зочид буудал", desc: "Тусгай газар", value: "Зочид буудал" },
+            { emoji: "☕", name: "Дуртай кафе", desc: "Бидний газар", value: "Дуртай кафе" },
+          ],
+        },
+        {
+          emoji: "💬",
+          title: "Юу хийх вэ?",
+          key: "activity",
+          type: "grid",
+          multiSelect: true,
+          options: [
+            { emoji: "🎥", name: "Кино үзэх", value: "Хамтдаа кино үзнэ" },
+            { emoji: "🍕", name: "Хоол хийх", value: "Хамтдаа хоол хийнэ" },
+            { emoji: "📸", name: "Зураг авах", value: "Зураг авна" },
+            { emoji: "🚶", name: "Алхах", value: "Хамтдаа алхана" },
+            { emoji: "🛍️", name: "Shopping", value: "Shopping" },
+            { emoji: "💃", name: "Бүжиглэх", value: "Бүжиглэнэ" },
+          ],
+        },
+        {
+          emoji: "⏰",
+          title: "Хэдэн цагт?",
+          key: "time",
+          type: "time",
+          multiSelect: false,
+          options: [
+            { label: "☀️ 14:00", value: "14:00" },
+            { label: "🌅 17:00", value: "17:00" },
+            { label: "🌙 19:00", value: "19:00" },
+            { label: "✨ 20:00", value: "20:00" },
+            { label: "🌃 21:00", value: "21:00" },
+          ],
+        },
+      ],
+    },
+    finalSummary: {
+      ...DEFAULT_FINAL_UI,
+      headerEmoji: "🌅",
+      title: "Баярлалаа 🎉",
+      subtitle: "Бидний үүссэн хувь тавилангд талархаж байна. Ирээдүйд хамтдаа олон сайхан мөчийг бүтээх болно.\nЧинийгээ тэвэр дэрлэн тослох ирлийг\nидлэг идэхийг хүсье.\nХайртай шүү.",
+      summaryFields: [
+        { key: "place", emoji: "📍", label: "Уулзах газар" },
+        { key: "activity", emoji: "🎯", label: "Хийх зүйл" },
+        { key: "time", emoji: "⏰", label: "Цаг" },
+      ],
+      quotes: [
+        "Хол байсан ч зүрх ойрхон 💕",
+        "Нэг нарыг хардаг хоёр зүрх 🌅",
+        "Зай хамаагүй, хайр хамгийн чухал ✈️💌",
+        "Чамтай уулзах тэр мөчийг тоолж байна 🕐💕",
+      ],
+      footer: "Хайрын урилга © 2026",
+    },
+    effects: {
+      ...DEFAULT_EFFECTS,
+      floatingHearts: ["🌅", "✈️", "💌", "💕", "🌍", "💖", "💗", "✨", "🛫", "💫"],
+      heartRain: ["💌", "✈️", "🌅", "💕", "💖", "🌙", "🤍", "💜", "✨"],
+      confettiColors: ["#ff6b6b", "#ee5a24", "#f9ca24", "#ff9ff3", "#ffcccc", "#fff3e0", "#fff", "#ffd1dc"],
+      clickSparkles: ["✈️", "💌", "💕", "✨"],
+      stickers: STICKERS_DISTANCE,
+    },
+  },
+
+  // ─── Theme 2: Moonlight Distance ───
+  {
+    id: "ld-moonlight",
+    category: "long-distance",
+    customizer: null,
+    card: {
+      name: "Сарны гэрэл 🌙",
+      desc: "Нэг сарыг хардаг хоёр зүрх",
+      preview: "🌙💫",
+      tags: ["📸 Зургийн цомог", "🎉 Хөдөлгөөнт"],
+    },
+    theme: {
+      className: "theme-ld-moonlight",
+      colors: {
+        "--t-primary": "#667eea",
+        "--t-secondary": "#764ba2",
+        "--t-accent": "#a29bfe",
+        "--t-accent2": "#dfe6e9",
+        "--t-soft": "#b8c5f2",
+        "--t-light": "#e8eaf6",
+        "--t-bg": "#0a0a2e",
+        "--t-bg2": "#12124a",
+        "--t-glass": "rgba(102, 126, 234, 0.06)",
+        "--t-glass-border": "rgba(102, 126, 234, 0.18)",
+      },
+    },
+    welcome: {
+      character: { ...WELCOME_MOON },
+      title: "Гэгээн Валентины мэнд! 🌙",
+      subtitle: "2.14 — Нэг сарны доор хоёулаа\nХол ч байсан зүрх нэг 💫",
+      timer: { ...DEFAULT_TIMER },
+      buttonText: "Үргэлжлүүлэх 💌",
+    },
+    loveLetter: {
+      enabled: true,
+      ...DEFAULT_LOVE_LETTER_UI,
+      envelope: { emoji: "💌", text: "Захиа ирлээ...", sparkleEmoji: "🌙" },
+      title: "Сэтгэлийн үгс 🌙",
+      content:
+        "Шөнө болох бүрд сарыг харж чамайг санадаг. Чи бас тэр сарыг харж байгаа байх гэж бодоход зүрх минь дулаараадаг. Хол байсан ч бидний хайр ямар ч зайнаас хүчтэй. Энэ Valentine's Day чамд зориулсан хайрын захидал 🌙💕\n\nОдод бүр бидний хайрыг гэрчилж байна. Удахгүй уулзах тэр өдрийг хүлээж байна 💫✨",
+      music: {
+        url: "https://youtu.be/Ri3WsPDi4MY?si=izm75BPjlQSKNCBk",
+        title: "🎵 Romantic Music",
+        duration: 240,
+      },
+    },
+    question: {
+      character: { ...QUESTION_MOON },
+      text: "Би чиний юунд илүү дуртай вэ?",
+      yesButton: { ...DEFAULT_YES_BUTTON },
+      noButton: { ...DEFAULT_NO_BUTTON },
+      multiChoice: true,
+      choices: [
+        { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
+        { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
+        { emoji: "👀", name: "Нүд", value: "Нүд" },
+        { emoji: "🗣️", name: "Хоолой", value: "Хоолой" },
+      ],
+      correctAnswer: "Зөв! Би чиний бүх зүйлд хайртай",
+    },
+    memoryGallery: {
+      ...DEFAULT_GALLERY_UI,
+      headerTitle: "Бидний дурсамжууд",
+      memories: [
+        {
+          type: "image",
+          src: "",
+          placeholder: "🌙",
+          date: "Сарны гэрэл",
+          caption: "Нэг сарыг хардаг бид хоёр 🌙",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "💫",
+          date: "Хамтын мөч",
+          caption: "Хамтдаа байсан тэр шөнө ✨",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "📱",
+          date: "Видео дуудлага",
+          caption: "Шөнийн дуудлага, чиний дуу хоолой 💜",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "💌",
+          date: "Хайрын захидал",
+          caption: "Зүрхнээсээ бичсэн мессеж бүр 💌",
+        },
+      ],
+    },
+    stepQuestions: {
+      ...DEFAULT_STEP_UI,
+      steps: [
+        {
+          emoji: "📍",
+          title: "Хаана уулзах вэ?",
+          key: "place",
+          type: "grid",
+          multiSelect: false,
+          options: [
+            { emoji: "✈️", name: "Нисэх буудал", desc: "Тосч авъя!", value: "Нисэх буудал" },
+            { emoji: "🏠", name: "Чиний хотод", desc: "Очиж ирнэ", value: "Чиний хотод" },
+            { emoji: "🌴", name: "Аялал", desc: "Хамтдаа аялъя", value: "Хамтдаа аялъя" },
+            { emoji: "📱", name: "Онлайн", desc: "Видео date", value: "Онлайн date" },
+            { emoji: "🌃", name: "Шөнийн хот", desc: "Нэг хотод", value: "Шөнийн хот" },
+            { emoji: "🏔️", name: "Байгаль", desc: "Тайван газар", value: "Байгаль" },
+          ],
+        },
+        {
+          emoji: "💬",
+          title: "Юу хийх вэ?",
+          key: "activity",
+          type: "grid",
+          multiSelect: true,
+          options: [
+            { emoji: "🌙", name: "Од харах", value: "Хамтдаа од харна" },
+            { emoji: "🎥", name: "Кино үзэх", value: "Кино үзнэ" },
+            { emoji: "🍽️", name: "Хамтдаа хоол", value: "Хоол хийнэ" },
+            { emoji: "📸", name: "Зураг авах", value: "Зураг авна" },
+            { emoji: "🚶", name: "Алхах", value: "Алхана" },
+            { emoji: "🕯️", name: "Лааны гэрэл", value: "Лааны гэрэлд" },
+          ],
+        },
+        {
+          emoji: "⏰",
+          title: "Хэдэн цагт?",
+          key: "time",
+          type: "time",
+          multiSelect: false,
+          options: [
+            { label: "🌅 18:00", value: "18:00" },
+            { label: "🌙 20:00", value: "20:00" },
+            { label: "✨ 21:00", value: "21:00" },
+            { label: "🌃 22:00", value: "22:00" },
+            { label: "🌌 23:00", value: "23:00" },
+          ],
+        },
+      ],
+    },
+    finalSummary: {
+      ...DEFAULT_FINAL_UI,
+      headerEmoji: "🌙",
+      title: "Баярлалаа 🎉",
+      subtitle: "Бидний үүссэн хувь тавилангд талархаж байна. Ирээдүйд хамтдаа олон сайхан мөчийг бүтээх болно.\nЧинийгээ тэвэр дэрлэн тослох ирлийг\nидлэг идэхийг хүсье.\nХайртай шүү.",
+      summaryFields: [
+        { key: "place", emoji: "📍", label: "Уулзах газар" },
+        { key: "activity", emoji: "🎯", label: "Хийх зүйл" },
+        { key: "time", emoji: "⏰", label: "Цаг" },
+      ],
+      quotes: [
+        "Нэг сарны доор хоёулаа, зүрх нэгдсэн хайр 🌙",
+        "Тэнгэрт мянган од байвч чамаас өөр гэрэл байхгүй 💫",
+        "Хол байсан ч зүрх үргэлж чам руу хандаж байна 💜",
+        "Удахгүй уулзана, тэр мөч миний хамгийн аз жаргалтай мөч 🌙💕",
+      ],
+      footer: "Хайрын урилга © 2026",
+    },
+    effects: {
+      ...DEFAULT_EFFECTS,
+      floatingHearts: ["🌙", "⭐", "💫", "✨", "💜", "💕", "🌟", "💖", "💗", "💞"],
+      heartRain: ["🌙", "⭐", "💫", "✨", "💜", "💕", "🌟", "🤍", "💜"],
+      confettiColors: ["#667eea", "#764ba2", "#a29bfe", "#dfe6e9", "#b8c5f2", "#e8eaf6", "#fff", "#c4b5fd"],
+      clickSparkles: ["🌙", "💫", "✨", "⭐"],
+      stickers: STICKERS_DISTANCE,
+    },
+  },
+
+  // ─── Theme 3: Ocean Breeze ───
+  {
+    id: "ld-ocean",
+    category: "long-distance",
+    customizer: null,
+    card: {
+      name: "Далайн салхи 🌊",
+      desc: "Далайн нөгөө талд байсан ч хайр нэг",
+      preview: "🌊💙",
+      tags: ["📸 Зургийн цомог", "🎉 Хөдөлгөөнт"],
+    },
+    theme: {
+      className: "theme-ld-ocean",
+      colors: {
+        "--t-primary": "#0abde3",
+        "--t-secondary": "#48dbfb",
+        "--t-accent": "#00cec9",
+        "--t-accent2": "#81ecec",
+        "--t-soft": "#b2eaf5",
+        "--t-light": "#dff9fb",
+        "--t-bg": "#051a2e",
+        "--t-bg2": "#0a2a45",
+        "--t-glass": "rgba(10, 189, 227, 0.06)",
+        "--t-glass-border": "rgba(10, 189, 227, 0.18)",
+      },
+    },
+    welcome: {
+      character: { ...WELCOME_PLANE },
+      title: "Гэгээн Валентины мэнд! 🌊",
+      subtitle: "2.14 — Далайн нөгөө талаас\nхайраа илэрхийлье 💙",
+      timer: { ...DEFAULT_TIMER },
+      buttonText: "Үргэлжлүүлэх 💌",
+    },
+    loveLetter: {
+      enabled: true,
+      ...DEFAULT_LOVE_LETTER_UI,
+      envelope: { emoji: "💌", text: "Захиа ирлээ...", sparkleEmoji: "🌊" },
+      title: "Сэтгэлийн үгс 🌊",
+      content:
+        "Далайн долгио чамайг санахад зүрхэнд минь ирдэг. Хол байсан ч усны урсгал шиг бидний хайр тасрахгүй. Чамтай хамт нэг далайн эрэг дээр зогсох тэр өдрийг хүлээн тэсэн ядаж байна. Энэ Valentine чамд зориулав 🌊💙\n\nДалайн салхи чиний сэтгэлийн дулааныг авчирдаг шиг санагддаг 💕✨",
+      music: {
+        url: "https://youtu.be/Ri3WsPDi4MY?si=izm75BPjlQSKNCBk",
+        title: "🎵 Romantic Music",
+        duration: 240,
+      },
+    },
+    question: {
+      character: { ...QUESTION_PLANE },
+      text: "Би чиний юунд илүү дуртай вэ?",
+      yesButton: { ...DEFAULT_YES_BUTTON },
+      noButton: { ...DEFAULT_NO_BUTTON },
+      multiChoice: true,
+      choices: [
+        { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
+        { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
+        { emoji: "👀", name: "Нүд", value: "Нүд" },
+        { emoji: "🗣️", name: "Хоолой", value: "Хоолой" },
+      ],
+      correctAnswer: "Зөв! Би чиний бүх зүйлд хайртай",
+    },
+    memoryGallery: {
+      ...DEFAULT_GALLERY_UI,
+      headerTitle: "Бидний дурсамжууд",
+      memories: [
+        {
+          type: "image",
+          src: "",
+          placeholder: "🌊",
+          date: "Далайн эрэг",
+          caption: "Хамтдаа далайн эргээр алхсан 🌊",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "✈️",
+          date: "Нислэг",
+          caption: "Чам руу ниссэн тэр өдөр ✈️",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "📱",
+          date: "Цахим уулзалт",
+          caption: "Дэлгэцний цаанаас ирдэг инээмсэглэл 💙",
+        },
+        {
+          type: "image",
+          src: "",
+          placeholder: "🐚",
+          date: "Далайн бэлэг",
+          caption: "Далайн хясааг чамд зориулав 🐚",
+        },
+      ],
+    },
+    stepQuestions: {
+      ...DEFAULT_STEP_UI,
+      steps: [
+        {
+          emoji: "📍",
+          title: "Хаана уулзах вэ?",
+          key: "place",
+          type: "grid",
+          multiSelect: false,
+          options: [
+            { emoji: "🏖️", name: "Далайн эрэг", desc: "Далайд очъё!", value: "Далайн эрэг" },
+            { emoji: "✈️", name: "Нисэх буудал", desc: "Тосч авъя!", value: "Нисэх буудал" },
+            { emoji: "🌴", name: "Арал", desc: "Арал дээр", value: "Арал дээр" },
+            { emoji: "📱", name: "Онлайн", desc: "Видео date", value: "Онлайн date" },
+            { emoji: "🏠", name: "Чиний хотод", desc: "Очиж ирнэ", value: "Чиний хотод" },
+            { emoji: "🛳️", name: "Усан онгоц", desc: "Далайн аялал", value: "Далайн аялал" },
+          ],
+        },
+        {
+          emoji: "💬",
+          title: "Юу хийх вэ?",
+          key: "activity",
+          type: "grid",
+          multiSelect: true,
+          options: [
+            { emoji: "🏊", name: "Усанд сэлэх", value: "Усанд сэлнэ" },
+            { emoji: "🐚", name: "Хясаа түүх", value: "Хясаа түүнэ" },
+            { emoji: "🌅", name: "Нар жаргалт", value: "Нар жаргалт харна" },
+            { emoji: "📸", name: "Зураг авах", value: "Зураг авна" },
+            { emoji: "🍽️", name: "Далайн хоол", value: "Далайн хоол иднэ" },
+            { emoji: "🚶", name: "Эрэг алхах", value: "Эргээр алхана" },
+          ],
+        },
+        {
+          emoji: "⏰",
+          title: "Хэдэн цагт?",
+          key: "time",
+          type: "time",
+          multiSelect: false,
+          options: [
+            { label: "🌅 06:00", value: "06:00" },
+            { label: "☀️ 10:00", value: "10:00" },
+            { label: "🌊 14:00", value: "14:00" },
+            { label: "🌅 17:00", value: "17:00" },
+            { label: "🌙 20:00", value: "20:00" },
+          ],
+        },
+      ],
+    },
+    finalSummary: {
+      ...DEFAULT_FINAL_UI,
+      headerEmoji: "🌊",
+      title: "Баярлалаа 🎉",
+      subtitle: "Бидний үүссэн хувь тавилангд талархаж байна. Ирээдүйд хамтдаа олон сайхан мөчийг бүтээх болно.\nЧинийгээ тэвэр дэрлэн тослох ирлийг\nидлэг идэхийг хүсье.\nХайртай шүү.",
+      summaryFields: [
+        { key: "place", emoji: "📍", label: "Уулзах газар" },
+        { key: "activity", emoji: "🎯", label: "Хийх зүйл" },
+        { key: "time", emoji: "⏰", label: "Цаг" },
+      ],
+      quotes: [
+        "Далайн нөгөө талд байсан ч зүрх нэг цохилдог 🌊",
+        "Усны урсгал шиг бидний хайр тасрахгүй 💙",
+        "Далайн долгио чиний хайрыг авчирдаг 🌊💕",
+        "Нэг далайн доор нэг зүрхтэйгээр 💙✨",
+      ],
+      footer: "Хайрын урилга © 2026",
+    },
+    effects: {
+      ...DEFAULT_EFFECTS,
+      floatingHearts: ["🌊", "🐚", "💙", "✨", "🦋", "💕", "🌅", "💖", "💗", "💞"],
+      heartRain: ["🌊", "💙", "🐚", "✨", "💕", "🌅", "🤍", "💜", "💫"],
+      confettiColors: ["#0abde3", "#48dbfb", "#00cec9", "#81ecec", "#b2eaf5", "#dff9fb", "#fff", "#76d7ea"],
+      clickSparkles: ["🌊", "🐚", "💙", "✨"],
+      stickers: STICKERS_DISTANCE,
+    },
+  },
+];
+
 export const CATEGORIES_CONFIG = {
   crush: CRUSH_TEMPLATES,
   "new-couple": NEW_COUPLE_TEMPLATES,
   "long-term": LONG_TERM_TEMPLATES,
   y2k: Y2K_TEMPLATES,
+  "long-distance": LONG_DISTANCE_TEMPLATES,
 };
 
 export function getTemplatesByCategory(categoryId) {

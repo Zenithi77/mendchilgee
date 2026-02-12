@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 
+
 function createParticle(x, y) {
   const angle = Math.random() * Math.PI * 2
   const speed = 60 + Math.random() * 120

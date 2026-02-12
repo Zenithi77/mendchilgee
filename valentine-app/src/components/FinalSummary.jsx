@@ -22,10 +22,12 @@ export default function FinalSummary({ choices }) {
   const [revealedRows, setRevealedRows] = useState(0)
 
   useEffect(() => {
-    // Animate meter
+    // Animate meter aa
     const t1 = setTimeout(() => setMeterW(100), 600)
 
-    // Reveal summary rows one by one
+    // Reveal summary rows one by one 1
+
+
     const timers = SUMMARY_FIELDS.map((_, i) =>
       setTimeout(() => setRevealedRows(i + 1), 400 + i * 300)
     )

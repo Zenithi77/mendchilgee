@@ -95,21 +95,27 @@ export default function GiftPreviewPage() {
     ? new Date(welcomeSec.data.startDate)
     : new Date();
 
+  // Determine initial section index from URL hash (e.g. #section-<id>)
+  let initialIndex = 0;
+  try {
+    const hash = window.location.hash || "";
+    if (hash.startsWith("#section-")) {
+      const id = hash.replace("#section-", "");
+      const idx = gift.sections?.findIndex((s) => String(s.id) === String(id));
+      if (typeof idx === "number" && idx >= 0) initialIndex = idx;
+    }
+  } catch (e) {
+    initialIndex = 0;
+  }
+
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
-      {/* Back button overlay */}
-      <button
-        className="gift-preview-back-floating"
-        onClick={() => navigate(-1)}
-        title="Буцах"
-      >
-        ← Буцах
-      </button>
 
       <GiftRenderer
         gift={gift}
         startDate={startDate}
         category={gift.category}
+        initialSectionIndex={initialIndex}
       />
     </div>
   );

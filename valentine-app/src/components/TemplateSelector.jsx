@@ -6,6 +6,7 @@ const CATEGORY_NAMES = {
   "new-couple": "Шинэ хос 💑",
   "long-term": "Удаан хос 💍",
   y2k: "2000s Хосууд 📟",
+  "long-distance": "Холын хайр 🌍",
 };
 
 export default function TemplateSelector({ onSelect, category }) {
