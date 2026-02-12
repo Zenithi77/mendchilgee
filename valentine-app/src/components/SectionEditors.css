@@ -47,6 +47,22 @@
   letter-spacing: 0.04em;
 }
 
+.se-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.se-toggle-inline {
+  cursor: pointer;
+}
+
+.se-label .se-toggle-label {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .se-field-input {
   display: flex;
   flex-direction: column;

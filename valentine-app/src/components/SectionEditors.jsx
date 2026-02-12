@@ -15,7 +15,7 @@ function insertEmojiAtCursor(value, emoji) {
 function FieldRow({ label, children }) {
   return (
     <div className="se-field">
-      <label className="se-label">{label}</label>
+      <div className="se-label">{label}</div>
       <div className="se-field-input">{children}</div>
     </div>
   );
@@ -155,6 +155,7 @@ export function QuestionEditor({ section, onUpdate }) {
   const data = section?.data || {};
   const noBtn = data.noButton || {};
   const messages = noBtn.messages || [];
+  const variantsEnabled = noBtn.variantsEnabled ?? true;
   const [newMsg, setNewMsg] = useState("");
 
   const update = (key, value) => {
@@ -200,52 +201,79 @@ export function QuestionEditor({ section, onUpdate }) {
             placeholder="Чи намайг хайрладаг юу? 🥺💕"
           />
         </FieldRow>
+    
+        <FieldRow
+          label={
+            <div className="se-label-row">
+              <span>'Үгүй' товч - текст хувилбарууд</span>
+              <label className="se-toggle se-toggle-inline">
+                <input
+                  type="checkbox"
+                  checked={variantsEnabled}
+                  onChange={(e) =>
+                    updateNoButton("variantsEnabled", e.target.checked)
+                  }
+                />
+                <span className="se-toggle-slider" />
+                <span className="se-toggle-label">
+                  {variantsEnabled ? "ON" : "OFF"}
+                </span>
+              </label>
+            </div>
+          }
+        >
+          {variantsEnabled ? (
+            <div className="se-list">
+              {messages.map((msg, idx) => (
+                <div key={idx} className="se-list-item">
+                  <div className="se-input-with-emoji" style={{ flex: 1 }}>
+                    <input
+                      className="se-input"
+                      type="text"
+                      value={msg}
+                      onChange={(e) => editMessage(idx, e.target.value)}
+                    />
+                    <EmojiPicker
+                      onSelect={(emoji) => editMessage(idx, msg + emoji)}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="se-remove-btn"
+                    onClick={() => removeMessage(idx)}
+                    title="Устгах"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
 
-        <FieldRow label="'Үгүй' товч - текст хувилбарууд">
-          <div className="se-list">
-            {messages.map((msg, idx) => (
-              <div key={idx} className="se-list-item">
+              <div className="se-list-add">
                 <div className="se-input-with-emoji" style={{ flex: 1 }}>
                   <input
                     className="se-input"
                     type="text"
-                    value={msg}
-                    onChange={(e) => editMessage(idx, e.target.value)}
+                    value={newMsg}
+                    onChange={(e) => setNewMsg(e.target.value)}
+                    placeholder="Шинэ текст нэмэх..."
+                    onKeyDown={(e) => e.key === "Enter" && addMessage()}
                   />
                   <EmojiPicker
-                    onSelect={(emoji) => editMessage(idx, msg + emoji)}
+                    onSelect={(emoji) => setNewMsg((p) => p + emoji)}
                   />
                 </div>
                 <button
                   type="button"
-                  className="se-remove-btn"
-                  onClick={() => removeMessage(idx)}
-                  title="Устгах"
+                  className="se-add-btn"
+                  onClick={addMessage}
                 >
-                  ✕
+                  ＋
                 </button>
               </div>
-            ))}
-
-            <div className="se-list-add">
-              <div className="se-input-with-emoji" style={{ flex: 1 }}>
-                <input
-                  className="se-input"
-                  type="text"
-                  value={newMsg}
-                  onChange={(e) => setNewMsg(e.target.value)}
-                  placeholder="Шинэ текст нэмэх..."
-                  onKeyDown={(e) => e.key === "Enter" && addMessage()}
-                />
-                <EmojiPicker
-                  onSelect={(emoji) => setNewMsg((p) => p + emoji)}
-                />
-              </div>
-              <button type="button" className="se-add-btn" onClick={addMessage}>
-                ＋
-              </button>
             </div>
-          </div>
+          ) : (
+            <p className="se-hint">Toggle OFF үед “Үгүй” товч энгийн (хувилбар текстгүй) байна.</p>
+          )}
         </FieldRow>
       </div>
     </div>

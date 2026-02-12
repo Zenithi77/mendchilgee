@@ -15,6 +15,7 @@ const DEFAULT_TIMER = {
 };
 
 const DEFAULT_NO_BUTTON = {
+  variantsEnabled: true,
   defaultText: "Үгүй 💔",
   messages: [
     "Үгүй гэж болохгүй 🥺",

@@ -176,7 +176,7 @@ function MainApp() {
       {/* User info & logout button */}
       <div className="user-menu">
         <span className="user-email">
-          {user.isAnonymous ? "👤 Guest" : `💌 ${user.email}`}
+          {user.isAnonymous ? "👤 Guest" : `${user.email}`}
         </span>
         <button className="logout-btn" onClick={logout}>
           Logout
@@ -195,12 +195,12 @@ function MainApp() {
       {/* Back buttons */}
       {page === "category" && (
         <button className="back-to-selector" onClick={resetToList}>
-          ← My Gifts
+          Буцах
         </button>
       )}
       {page === "template" && (
         <button className="back-to-selector" onClick={resetToCategory}>
-          ← Категори солих
+          Буцах
         </button>
       )}
 
