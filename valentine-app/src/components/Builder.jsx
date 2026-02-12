@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
@@ -81,6 +81,20 @@ export default function Builder({ onBack, initialGift }) {
 
   // ✅ Responsive view state (header-д)
   const [viewport, setViewport] = useState("desktop"); // desktop|tablet|mobile
+
+  // Auto switch preview viewport based on screen size
+  useEffect(() => {
+    const updateViewport = () => {
+      const width = window.innerWidth;
+      if (width < 640) setViewport("mobile");
+      else if (width < 1024) setViewport("tablet");
+      else setViewport("desktop");
+    };
+
+    updateViewport();
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
+  }, []);
 
   // ✅ Editor drawer open/close
   const [editorOpen, setEditorOpen] = useState(false);
@@ -165,6 +179,21 @@ export default function Builder({ onBack, initialGift }) {
       setSaving(false);
     }
   }, [gift, user]);
+
+  const autoSaveOnceRef = useRef(false);
+  useEffect(() => {
+    if (autoSaveOnceRef.current) return;
+    if (!gift?.id && user) {
+      autoSaveOnceRef.current = true;
+      (async () => {
+        try {
+          await handleSave();
+        } catch (err) {
+          console.error("Auto-save error:", err);
+        }
+      })();
+    }
+  }, [gift?.id, user, handleSave]);
 
   const openFullPreview = useCallback(async () => {
     const docId = gift.id || (await handleSave());
@@ -526,12 +555,10 @@ export default function Builder({ onBack, initialGift }) {
               </div>
             </div>
           ) : (
-            <GiftPreview
-              key={previewReloadKey}
-              gift={gift}
-              viewport={viewport}
-              focusSectionId={selectedSectionId}
-            />
+            <div className="builder-preview-placeholder ">
+
+              <h2>Түр хүлээнэ үү...</h2>
+            </div>
           )}
         </main>
 
