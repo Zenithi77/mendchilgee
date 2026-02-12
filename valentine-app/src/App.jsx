@@ -123,23 +123,6 @@ function MainApp() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  // Click heart effect — growing heart that fades
-  useEffect(() => {
-    let heartCount = 0;
-    const handle = (e) => {
-      heartCount++;
-      const el = document.createElement("span");
-      el.className = "click-heart-grow";
-      el.textContent = "❤️";
-      el.style.left = `${e.clientX}px`;
-      el.style.top = `${e.clientY}px`;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 1200);
-    };
-    document.addEventListener("click", handle);
-    return () => document.removeEventListener("click", handle);
-  }, [template]);
-
   const themeClass = template ? template.theme.className : "";
 
   // Show loading spinner while checking auth state

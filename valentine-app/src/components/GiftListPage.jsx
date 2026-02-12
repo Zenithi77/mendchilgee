@@ -128,7 +128,9 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
-          <div className="gift-list-header-emoji"><Logo /></div>
+          <div className="gift-list-header-emoji">
+            <Logo />
+          </div>
           <h1 className="gift-list-title font-script">My Gifts</h1>
           <p className="gift-list-subtitle">
             {gifts.length === 0
@@ -234,7 +236,8 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         {gifts.length === 0 && (
           <div className="gift-list-empty">
             <p className="gift-list-empty-text">
-              Анхны Валентины бэлгээ урлаад, зүрхэндээ дотно хүндээ хуваалцаарай.
+              Анхны Валентины бэлгээ урлаад, зүрхэндээ дотно хүндээ
+              хуваалцаарай.
             </p>
           </div>
         )}

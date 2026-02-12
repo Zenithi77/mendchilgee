@@ -2,7 +2,11 @@ import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { giftToTemplate, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import HeartRain from "./HeartRain";
+<<<<<<< HEAD
 import { saveGiftResponse } from "../services/giftResponseService";
+=======
+import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
+>>>>>>> d670de2a9d46d668afc182db0861e6a2e67264ae
 
 /** Build initial choices state from the stepQuestions section data. */
 function buildInitialChoices(gift) {
@@ -42,6 +46,7 @@ export default function GiftRenderer({
   const [customizerData, setCustomizerData] = useState({});
   const [heartRain, setHeartRain] = useState(false);
 
+<<<<<<< HEAD
   const latestChoicesRef = useRef(choices);
   const savingRef = useRef(false);
   const dirtyRef = useRef(false);
@@ -105,9 +110,52 @@ export default function GiftRenderer({
       }
     };
   }, [choices, persistResponses, giftId, hasAnyChoice, flushSave]);
+=======
+  // ── Persistent music state ──
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const [musicStarted, setMusicStarted] = useState(false);
+  const [musicElapsed, setMusicElapsed] = useState(0);
+  const musicTimerRef = useRef(null);
+>>>>>>> d670de2a9d46d668afc182db0861e6a2e67264ae
 
   // Reconstruct template-like object so existing components work unchanged
   const template = useMemo(() => giftToTemplate(gift), [gift]);
+
+  // Extract music config from love letter
+  const musicConfig = useMemo(() => template.loveLetter?.music || null, [template]);
+
+  // Music elapsed timer
+  useEffect(() => {
+    if (musicPlaying) {
+      musicTimerRef.current = setInterval(() => {
+        setMusicElapsed((prev) => prev + 1);
+      }, 1000);
+    } else {
+      if (musicTimerRef.current) clearInterval(musicTimerRef.current);
+    }
+    return () => {
+      if (musicTimerRef.current) clearInterval(musicTimerRef.current);
+    };
+  }, [musicPlaying]);
+
+  // Called by LoveLetter when letter is opened
+  const startMusic = useCallback(() => {
+    if (musicConfig?.url && !musicPlaying) {
+      setMusicStarted(true);
+      setMusicPlaying(true);
+    }
+  }, [musicConfig, musicPlaying]);
+
+  const toggleMusic = useCallback(() => {
+    if (musicConfig?.url) setMusicStarted(true);
+    setMusicPlaying((p) => !p);
+  }, [musicConfig?.url]);
+
+  const formatTime = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
 
   const goToSection = useCallback(
     (index) => {
@@ -178,7 +226,7 @@ export default function GiftRenderer({
         );
 
       case SECTION_TYPES.LOVE_LETTER:
-        return <Component letter={template.loveLetter} onClose={goNext} />;
+        return <Component letter={template.loveLetter} onClose={goNext} onMusicStart={startMusic} />;
 
       case SECTION_TYPES.QUESTION:
         return <Component onYes={goNext} template={template} />;
@@ -223,6 +271,9 @@ export default function GiftRenderer({
           />
         );
 
+      case SECTION_TYPES.MEMORY_VIDEO:
+        return <Component data={currentSection.data} onContinue={goNext} />;
+
       default:
         return null;
     }
@@ -234,6 +285,44 @@ export default function GiftRenderer({
         <HeartRain active={heartRain} emojis={template?.effects?.heartRain} />
       )}
       {renderSection()}
+
+      {/* Hidden YouTube audio iframe */}
+      {musicConfig?.url && (
+        <YouTubeAudioPlayer url={musicConfig.url} playing={musicPlaying} />
+      )}
+
+      {/* Persistent bottom music bar */}
+      {musicConfig?.url && musicStarted && (
+        <div
+          className={`persistent-music-bar ${musicPlaying ? "playing" : "paused"}`}
+          onClick={toggleMusic}
+        >
+          <div className="pmb-eq">
+            <span className="pmb-eq-bar" />
+            <span className="pmb-eq-bar" />
+            <span className="pmb-eq-bar" />
+            <span className="pmb-eq-bar" />
+          </div>
+          <div className="pmb-info">
+            <div className="pmb-title">{musicConfig.title || "🎵 Music"}</div>
+            <div className="pmb-timeline">
+              <div className="pmb-progress-bar">
+                <div
+                  className="pmb-progress-fill"
+                  style={{ width: `${Math.min((musicElapsed / (musicConfig.duration || 240)) * 100, 100)}%` }}
+                />
+              </div>
+              <span className="pmb-time">{formatTime(musicElapsed)}</span>
+            </div>
+          </div>
+          <button
+            className="pmb-toggle"
+            onClick={(e) => { e.stopPropagation(); toggleMusic(); }}
+          >
+            {musicPlaying ? "⏸" : "▶️"}
+          </button>
+        </div>
+      )}
     </>
   );
 }

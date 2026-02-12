@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { SECTION_TYPES } from "../models/gift";
 import EmojiPicker from "./EmojiPicker";
+import { uploadMemoryPhoto, uploadMemoryVideo } from "../services/storageService";
+import { useAuth } from "../contexts/AuthContext";
 import "./SectionEditors.css";
 
 // ═══════════════════════════════════════════════════════════════
@@ -51,6 +53,121 @@ function TextInputWithEmoji({
         />
       )}
       <EmojiPicker onSelect={handleEmoji} />
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Image Uploader — uploads to Firebase Storage
+// ═══════════════════════════════════════════════════════════════
+
+function ImageUploader({ src, onUploaded }) {
+  const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      setUploading(true);
+      setProgress(0);
+      const url = await uploadMemoryPhoto(file, user.uid);
+      onUploaded(url);
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setUploading(false);
+      setProgress(0);
+    }
+  };
+
+  return (
+    <div className="se-image-uploader">
+      {src ? (
+        <div className="se-image-preview">
+          <img src={src} alt="" className="se-image-thumb" />
+          <button
+            type="button"
+            className="se-image-remove"
+            onClick={() => onUploaded("")}
+            title="Устгах"
+          >
+            ✕
+          </button>
+        </div>
+      ) : (
+        <label className="se-image-upload-label">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFile}
+            style={{ display: "none" }}
+            disabled={uploading}
+          />
+          {uploading ? (
+            <span className="se-upload-progress">📤 Хуулж байна...</span>
+          ) : (
+            <span className="se-upload-text">📷 Зураг сонгох</span>
+          )}
+        </label>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Video Uploader — uploads video to Firebase Storage
+// ═══════════════════════════════════════════════════════════════
+
+function VideoUploader({ src, onUploaded }) {
+  const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      setUploading(true);
+      const url = await uploadMemoryVideo(file, user.uid);
+      onUploaded(url);
+    } catch (err) {
+      console.error("Video upload error:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="se-image-uploader">
+      {src ? (
+        <div className="se-image-preview">
+          <video src={src} className="se-image-thumb" style={{ objectFit: "cover" }} />
+          <button
+            type="button"
+            className="se-image-remove"
+            onClick={() => onUploaded("")}
+            title="Устгах"
+          >
+            ✕
+          </button>
+        </div>
+      ) : (
+        <label className="se-image-upload-label">
+          <input
+            type="file"
+            accept="video/*"
+            onChange={handleFile}
+            style={{ display: "none" }}
+            disabled={uploading}
+          />
+          {uploading ? (
+            <span className="se-upload-progress">📤 Хуулж байна...</span>
+          ) : (
+            <span className="se-upload-text">🎬 Бичлэг сонгох</span>
+          )}
+        </label>
+      )}
     </div>
   );
 }
@@ -139,6 +256,38 @@ export function WelcomeLetterEditor({
               onChange={(v) => updateLetter("content", v)}
               placeholder="Энд хайрын захидлаа бичнэ үү..."
               multiline
+            />
+          </FieldRow>
+
+          <FieldRow label="🎵 Дуу (YouTube URL)">
+            <input
+              className="se-input"
+              type="text"
+              value={ld.music?.url || ""}
+              onChange={(e) =>
+                updateLetter("music", {
+                  ...(ld.music || {}),
+                  url: e.target.value,
+                  title: ld.music?.title || "🎵 Romantic Music",
+                  duration: ld.music?.duration || 240,
+                })
+              }
+              placeholder="https://youtu.be/... эсвэл YouTube линк"
+            />
+          </FieldRow>
+
+          <FieldRow label="🎵 Дууны нэр">
+            <input
+              className="se-input"
+              type="text"
+              value={ld.music?.title || ""}
+              onChange={(e) =>
+                updateLetter("music", {
+                  ...(ld.music || {}),
+                  title: e.target.value,
+                })
+              }
+              placeholder="🎵 Romantic Music"
             />
           </FieldRow>
         </div>
@@ -320,6 +469,14 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
       <div className="se-group">
         <h3 className="se-group-title">📸 Зургийн цомог</h3>
 
+        <FieldRow label="Гарчиг">
+          <TextInputWithEmoji
+            value={data.headerTitle || ""}
+            onChange={(v) => onUpdate(section.id, { ...data, headerTitle: v })}
+            placeholder="Бидний дурсамжууд"
+          />
+        </FieldRow>
+
         <div className="se-cards">
           {memories.map((mem, idx) => (
             <div key={idx} className="se-card">
@@ -335,13 +492,10 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
                 </button>
               </div>
 
-              <FieldRow label="Зургийн URL">
-                <input
-                  className="se-input"
-                  type="text"
-                  value={mem.src || ""}
-                  onChange={(e) => editMemory(idx, "src", e.target.value)}
-                  placeholder="https://... эсвэл хоосон орхих"
+              <FieldRow label="Зураг оруулах">
+                <ImageUploader
+                  src={mem.src}
+                  onUploaded={(url) => editMemory(idx, "src", url)}
                 />
               </FieldRow>
 
@@ -874,6 +1028,97 @@ export function GenericEditor({ section }) {
         <p className="se-hint">
           Энэ хэсгийн тохиргоо одоогоор боломжгүй байна.
         </p>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MEMORY VIDEO EDITOR
+// ═══════════════════════════════════════════════════════════════
+
+export function MemoryVideoEditor({ section, onUpdate }) {
+  const data = section?.data || {};
+  const videos = data.videos || [];
+
+  const updateVideos = (updated) => {
+    onUpdate(section.id, { ...data, videos: updated });
+  };
+
+  const addVideo = () => {
+    updateVideos([
+      ...videos,
+      { src: "", caption: "", date: "" },
+    ]);
+  };
+
+  const removeVideo = (idx) => {
+    updateVideos(videos.filter((_, i) => i !== idx));
+  };
+
+  const editVideo = (idx, key, value) => {
+    const updated = [...videos];
+    updated[idx] = { ...updated[idx], [key]: value };
+    updateVideos(updated);
+  };
+
+  return (
+    <div className="se-editor">
+      <div className="se-group">
+        <h3 className="se-group-title">🎬 Видео хэсэг</h3>
+
+        <FieldRow label="Гарчиг">
+          <TextInputWithEmoji
+            value={data.title}
+            onChange={(v) => onUpdate(section.id, { ...data, title: v })}
+            placeholder="Дурсамж бичлэг 🎬"
+          />
+        </FieldRow>
+
+        <div className="se-cards">
+          {videos.map((vid, idx) => (
+            <div key={idx} className="se-card">
+              <div className="se-card-header">
+                <span className="se-card-number">#{idx + 1}</span>
+                <button
+                  type="button"
+                  className="se-remove-btn"
+                  onClick={() => removeVideo(idx)}
+                  title="Устгах"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <FieldRow label="Бичлэг оруулах">
+                <VideoUploader
+                  src={vid.src}
+                  onUploaded={(url) => editVideo(idx, "src", url)}
+                />
+              </FieldRow>
+
+              <FieldRow label="Огноо">
+                <TextInputWithEmoji
+                  value={vid.date || ""}
+                  onChange={(v) => editVideo(idx, "date", v)}
+                  placeholder="2024.03.15"
+                />
+              </FieldRow>
+
+              <FieldRow label="Бичлэгний гарчиг">
+                <TextInputWithEmoji
+                  value={vid.caption || ""}
+                  onChange={(v) => editVideo(idx, "caption", v)}
+                  placeholder="Хамтдаа ✨"
+                />
+              </FieldRow>
+            </div>
+          ))}
+        </div>
+
+        <button type="button" className="se-add-card-btn" onClick={addVideo}>
+          <span>＋</span> Бичлэг нэмэх
+        </button>
       </div>
     </div>
   );

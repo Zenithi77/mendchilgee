@@ -211,6 +211,18 @@ const SECTION_DEFAULTS = {
     quotes: ["Чамтай хамт байх мөч бүр онцгой 💕", "Чи бол миний бүх зүйл 💝"],
   },
 
+  [SECTION_TYPES.MEMORY_VIDEO]: {
+    title: "Видео хэсэг 🎬",
+    continueButton: "Үргэлжлүүлэх 💕",
+    videos: [
+      {
+        src: "",
+        caption: "Анхны бичлэг 🎬",
+        date: "Дурсамж 1",
+      },
+    ],
+  },
+
   [SECTION_TYPES.SPARK_CUSTOMIZER]: {
     stickers: ["💘", "🌹", "🎀", "🍫", "💌", "✨"],
     badge: "2.14",

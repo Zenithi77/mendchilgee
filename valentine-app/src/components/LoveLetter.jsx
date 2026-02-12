@@ -1,12 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
+import { useState, useEffect } from "react";
 
-export default function LoveLetter({ letter, onClose }) {
+export default function LoveLetter({ letter, onClose, onMusicStart }) {
   const [phase, setPhase] = useState("envelope"); // envelope -> opening -> letter
   const [letterVisible, setLetterVisible] = useState(false);
-  const [audioPlaying, setAudioPlaying] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const timerRef = useRef(null);
 
   useEffect(() => {
     if (phase === "opening") {
@@ -18,24 +14,15 @@ export default function LoveLetter({ letter, onClose }) {
     }
   }, [phase]);
 
-  // Start audio when letter phase begins
+  // Start music when letter phase begins (lifted to GiftRenderer)
   useEffect(() => {
     if (phase === "letter" && letter?.music?.url) {
-      setAudioPlaying(true);
-      // Start elapsed timer
-      timerRef.current = setInterval(() => {
-        setElapsed((prev) => prev + 1);
-      }, 1000);
+      onMusicStart?.();
     }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [phase, letter?.music?.url]);
+  }, [phase, letter?.music?.url, onMusicStart]);
 
-  // Stop audio on close
   const handleClose = () => {
-    setAudioPlaying(false);
-    if (timerRef.current) clearInterval(timerRef.current);
+    // Music continues playing — managed by GiftRenderer
     onClose?.();
   };
 
@@ -44,24 +31,12 @@ export default function LoveLetter({ letter, onClose }) {
   const envelope = letter.envelope || {};
   const decorations = letter.decorations || {};
   const heartTrail = letter.heartTrail || ["❤️", "💕", "💖", "💗", "💓"];
-  const music = letter.music || null;
-
-  const formatTime = (secs) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
 
   return (
     <div
       className="love-letter-overlay"
       onClick={() => phase === "letter" && handleClose()}
     >
-      {/* Hidden YouTube audio iframe */}
-      {music?.url && (
-        <YouTubeAudioPlayer url={music.url} playing={audioPlaying} />
-      )}
-
       <div
         className="love-letter-container"
         onClick={(e) => e.stopPropagation()}
@@ -131,41 +106,6 @@ export default function LoveLetter({ letter, onClose }) {
               <div className="ll-letter-decoration ll-deco-bottom">
                 {decorations.bottom || "🌹"}
               </div>
-
-              {/* Music player bar - visible when audio is playing */}
-              {music?.url && audioPlaying && (
-                <div className="ll-music-bar">
-                  <div className="ll-music-icon">
-                    <span className="ll-music-eq">
-                      <span className="ll-eq-bar" />
-                      <span className="ll-eq-bar" />
-                      <span className="ll-eq-bar" />
-                      <span className="ll-eq-bar" />
-                    </span>
-                  </div>
-                  <div className="ll-music-info">
-                    <div className="ll-music-title">{music.title || "🎵 Romantic Music"}</div>
-                    <div className="ll-music-progress">
-                      <div className="ll-music-progress-bar">
-                        <div
-                          className="ll-music-progress-fill"
-                          style={{ width: `${Math.min((elapsed / (music.duration || 240)) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span className="ll-music-time">{formatTime(elapsed)}</span>
-                    </div>
-                  </div>
-                  <button
-                    className="ll-music-toggle"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setAudioPlaying((p) => !p);
-                    }}
-                  >
-                    {audioPlaying ? "⏸" : "▶️"}
-                  </button>
-                </div>
-              )}
             </div>
             <button className="ll-close-btn" onClick={handleClose}>
               {letter.closeButtonText || "Уншлаа 💕"}

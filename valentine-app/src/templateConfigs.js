@@ -281,7 +281,7 @@ export const CATEGORIES = [
     emoji: "😍",
     name: "Crush / Дурлал",
     desc: "Хараахан үерхээгүй, дурлаж байгаа хүндээ",
-    vibe: "Ичимхий, зоригтой, сэтгэл dogdog",
+    vibe: "Ичимхий, зүрх догдлом, сэтгэл хөдлөм",
     gradient: "linear-gradient(135deg, #ff6b9d, #ff4081)",
     bgEmojis: ["💘", "😍", "🦋", "💌"],
     selectedText: "✓ Сонгогдсон",
@@ -343,7 +343,7 @@ const CRUSH_TEMPLATES = [
     category: "crush",
     customizer: null,
     card: {
-      name: "Ичимхий зөрөлт 🦋",
+      name: "Удаан сэтгэл дотроо тээж явсан 🦋",
       desc: "Зоригтой алхам хийх цаг боллоо",
       preview: "😍🦋",
       tags: ["📸 Зургийн цомог", "🎉 Хөдөлгөөнт"],
@@ -365,8 +365,8 @@ const CRUSH_TEMPLATES = [
     },
     welcome: {
       character: { ...WELCOME_BUTTERFLY },
-      title: "Чамд нэг юм хэлмээр байна... 💕",
-      subtitle: "Зүрхнийхээ үгийг сонсоорой\nЭнэ урилга чамд 💌",
+      title: "Happy Valentine's Day 💕",
+      subtitle: "Энэ онцгой зүйлийг чамдаа 💌",
       timer: { ...DEFAULT_TIMER },
       buttonText: "Урилга нээх 💌",
     },
@@ -375,11 +375,11 @@ const CRUSH_TEMPLATES = [
       ...DEFAULT_LOVE_LETTER_UI,
       title: "Миний зүрхний захидал 💌",
       content:
-        "Чамайг анх харсан тэр мөчөөс хойш миний зүрхний цохилт өөрчлөгдсөн... Чамтай ярих болгондоо эрвээхэй нисдэг. Энэ Valentine's Day-д зориг гаргаад хэлмээр байна — чи миний хамгийн онцгой хүн 💕",
+        "Чамайг анх харсан тэр мөчөөс хойш миний зрхэнд хайрын сум зоогдох шиг л болсон... Чамтай харц тулгарах болгонд зүрх минь догдолдог. Энэ Valentine-ний өдөр зориг гаргаад хэлмээр байна — Чи надад маш онцгой нэгэн 💕",
     },
     question: {
       character: null,
-      text: "Энэ Valentine's Day-д миний хамт гарах уу? Чамтай хамт байхыг маш их хүсч байна... 🥺💕",
+      text: "Энэ Valentine's Day-д хамт гарах уу? Чамтай хамт байхыг маш их хүсч байна... 🥺💕",
       yesButton: { ...DEFAULT_YES_BUTTON },
       noButton: { ...DEFAULT_NO_BUTTON },
     },
