@@ -57,40 +57,16 @@ const PRICE_MAP = {
   subscription: 5000,
 };
 
-// ── CORS helper ──────────────────────────────────────────────────────────
-
-const ALLOWED_ORIGINS = [
-  "http://localhost:5173",
-  "http://localhost:4173",
-  "https://valentine-app.vercel.app", // add your production domain(s)
-];
-
-/**
- * Sets CORS headers and handles preflight requests.
- * @param {Object} req Express request.
- * @param {Object} res Express response.
- * @return {boolean} True if the response was sent for preflight.
- */
-function setCors(req, res) {
-  const origin = req.headers.origin;
-  if (ALLOWED_ORIGINS.includes(origin)) {
-    res.set("Access-Control-Allow-Origin", origin);
-  }
-  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.set("Access-Control-Max-Age", "3600");
-  if (req.method === "OPTIONS") {
-    res.status(204).send("");
-    return true; // signal: already responded
-  }
-  return false;
-}
-
 // ── createBylCheckout ────────────────────────────────────────────────────
 
-exports.createBylCheckout = onRequest({cors: true}, async (req, res) => {
-  if (setCors(req, res)) return; // handle preflight
+exports.createBylCheckout = onRequest(async (req, res) => {
   const cfg = getConfig();
+
+  // CORS
+  res.set("Access-Control-Allow-Origin", cfg.baseUrl || "*");
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).send("");
 
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
@@ -281,8 +257,13 @@ exports.bylWebhook = onRequest(async (req, res) => {
 
 // ── checkPaymentStatus ───────────────────────────────────────────────────
 
-exports.checkPaymentStatus = onRequest({cors: true}, async (req, res) => {
-  if (setCors(req, res)) return; // handle preflight
+exports.checkPaymentStatus = onRequest(async (req, res) => {
+  const cfg = getConfig();
+
+  res.set("Access-Control-Allow-Origin", cfg.baseUrl || "*");
+  res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).send("");
 
   if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
 
