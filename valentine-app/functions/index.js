@@ -7,15 +7,15 @@
  *   GET  /checkPaymentStatus?ref=<client_reference_id> — poll payment status
  */
 
-const { setGlobalOptions } = require("firebase-functions");
-const { onRequest } = require("firebase-functions/v2/https");
+const {setGlobalOptions} = require("firebase-functions");
+const {onRequest} = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
 
 admin.initializeApp();
 const db = admin.firestore();
 
-setGlobalOptions({ maxInstances: 10 });
+setGlobalOptions({maxInstances: 10});
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -65,6 +65,12 @@ const ALLOWED_ORIGINS = [
   "https://valentine-app.vercel.app", // add your production domain(s)
 ];
 
+/**
+ * Sets CORS headers and handles preflight requests.
+ * @param {Object} req Express request.
+ * @param {Object} res Express response.
+ * @return {boolean} True if the response was sent for preflight.
+ */
 function setCors(req, res) {
   const origin = req.headers.origin;
   if (ALLOWED_ORIGINS.includes(origin)) {
@@ -82,7 +88,7 @@ function setCors(req, res) {
 
 // ── createBylCheckout ────────────────────────────────────────────────────
 
-exports.createBylCheckout = onRequest({ cors: true }, async (req, res) => {
+exports.createBylCheckout = onRequest({cors: true}, async (req, res) => {
   if (setCors(req, res)) return; // handle preflight
   const cfg = getConfig();
 
@@ -93,7 +99,7 @@ exports.createBylCheckout = onRequest({ cors: true }, async (req, res) => {
   const customerEmail = body.customerEmail || null;
 
   if (!PRICE_MAP[plan]) {
-    return res.status(400).json({ error: "Invalid plan" });
+    return res.status(400).json({error: "Invalid plan"});
   }
 
   const amount = PRICE_MAP[plan];
@@ -110,7 +116,7 @@ exports.createBylCheckout = onRequest({ cors: true }, async (req, res) => {
       {
         price_data: {
           unit_amount: amount,
-          product_data: { name: `Valentine demo - ${plan}` },
+          product_data: {name: `Valentine demo - ${plan}`},
         },
         quantity: 1,
       },
@@ -119,24 +125,24 @@ exports.createBylCheckout = onRequest({ cors: true }, async (req, res) => {
 
   try {
     const response = await fetch(
-      `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${cfg.token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
+        `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${cfg.token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      },
     );
 
     if (!response.ok) {
       const text = await response.text();
       console.error("BYL create checkout failed:", response.status, text);
       return res
-        .status(500)
-        .json({ error: "BYL create failed", details: text });
+          .status(500)
+          .json({error: "BYL create failed", details: text});
     }
 
     const data = await response.json();
@@ -144,17 +150,17 @@ exports.createBylCheckout = onRequest({ cors: true }, async (req, res) => {
 
     // Save pending payment to Firestore
     await db
-      .collection("demo_payments")
-      .doc(clientRef)
-      .set({
-        client_reference_id: clientRef,
-        plan,
-        amount,
-        status: "pending",
-        checkout_id: checkoutData.id || null,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        checkoutRaw: checkoutData,
-      });
+        .collection("demo_payments")
+        .doc(clientRef)
+        .set({
+          client_reference_id: clientRef,
+          plan,
+          amount,
+          status: "pending",
+          checkout_id: checkoutData.id || null,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          checkoutRaw: checkoutData,
+        });
 
     return res.json({
       checkoutUrl: checkoutData.url,
@@ -162,7 +168,7 @@ exports.createBylCheckout = onRequest({ cors: true }, async (req, res) => {
     });
   } catch (err) {
     console.error("createBylCheckout error:", err);
-    return res.status(500).json({ error: "internal_error" });
+    return res.status(500).json({error: "internal_error"});
   }
 });
 
@@ -181,12 +187,12 @@ exports.bylWebhook = onRequest(async (req, res) => {
   const cfg = getConfig();
 
   const computed = crypto
-    .createHmac("sha256", cfg.webhookSecret)
-    .update(rawBody)
-    .digest("hex");
+      .createHmac("sha256", cfg.webhookSecret)
+      .update(rawBody)
+      .digest("hex");
 
   if (!safeEqualHex(computed, signature)) {
-    console.error("Webhook invalid signature", { computed, signature });
+    console.error("Webhook invalid signature", {computed, signature});
     return res.status(401).send("Invalid signature");
   }
 
@@ -203,8 +209,8 @@ exports.bylWebhook = onRequest(async (req, res) => {
     const eventId = event.id?.toString();
     if (eventId) {
       const processedRef = db
-        .collection("processed_webhook_events")
-        .doc(eventId);
+          .collection("processed_webhook_events")
+          .doc(eventId);
       const snap = await processedRef.get();
       if (snap.exists) {
         console.log("Webhook already processed:", eventId);
@@ -225,18 +231,18 @@ exports.bylWebhook = onRequest(async (req, res) => {
             const doc = await tx.get(paymentDocRef);
             if (!doc.exists) {
               tx.set(
-                paymentDocRef,
-                {
-                  client_reference_id: clientRef,
-                  plan: "unknown",
-                  amount: checkout.amount_total || null,
-                  status: "paid",
-                  checkout_id: checkout.id || null,
-                  createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                  paidAt: admin.firestore.FieldValue.serverTimestamp(),
-                  checkoutRaw: checkout,
-                },
-                { merge: true },
+                  paymentDocRef,
+                  {
+                    client_reference_id: clientRef,
+                    plan: "unknown",
+                    amount: checkout.amount_total || null,
+                    status: "paid",
+                    checkout_id: checkout.id || null,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    paidAt: admin.firestore.FieldValue.serverTimestamp(),
+                    checkoutRaw: checkout,
+                  },
+                  {merge: true},
               );
               return;
             }
@@ -258,12 +264,12 @@ exports.bylWebhook = onRequest(async (req, res) => {
     // Mark event processed (idempotency)
     if (event.id) {
       await db
-        .collection("processed_webhook_events")
-        .doc(event.id.toString())
-        .set({
-          processedAt: admin.firestore.FieldValue.serverTimestamp(),
-          eventType: event.type || null,
-        });
+          .collection("processed_webhook_events")
+          .doc(event.id.toString())
+          .set({
+            processedAt: admin.firestore.FieldValue.serverTimestamp(),
+            eventType: event.type || null,
+          });
     }
 
     return res.status(200).send("OK");
@@ -275,17 +281,16 @@ exports.bylWebhook = onRequest(async (req, res) => {
 
 // ── checkPaymentStatus ───────────────────────────────────────────────────
 
-exports.checkPaymentStatus = onRequest({ cors: true }, async (req, res) => {
+exports.checkPaymentStatus = onRequest({cors: true}, async (req, res) => {
   if (setCors(req, res)) return; // handle preflight
-  const cfg = getConfig();
 
   if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
 
   const ref = req.query.ref;
-  if (!ref) return res.status(400).json({ error: "missing ref" });
+  if (!ref) return res.status(400).json({error: "missing ref"});
 
   const doc = await db.collection("demo_payments").doc(ref).get();
-  if (!doc.exists) return res.status(404).json({ status: "not_found" });
+  if (!doc.exists) return res.status(404).json({status: "not_found"});
 
   const data = doc.data();
   return res.json({
