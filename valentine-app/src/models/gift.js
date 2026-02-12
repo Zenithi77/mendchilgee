@@ -30,6 +30,7 @@ export const SECTION_TYPES = {
   WELCOME: "welcome",
   LOVE_LETTER: "loveLetter",
   QUESTION: "question",
+  MOVIE_SELECTION: "movieSelection",
   MEMORY_GALLERY: "memoryGallery",
   MEMORY_VIDEO: "memoryVideo",
   STEP_QUESTIONS: "stepQuestions",
@@ -84,6 +85,15 @@ export function templateToGift(template) {
       id: generateSectionId(),
       type: SECTION_TYPES.QUESTION,
       data: { ...template.question },
+    });
+  }
+
+  // Movie selection
+  if (template.movieSelection) {
+    sections.push({
+      id: generateSectionId(),
+      type: SECTION_TYPES.MOVIE_SELECTION,
+      data: { ...template.movieSelection },
     });
   }
 

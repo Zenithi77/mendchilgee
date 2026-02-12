@@ -1,0 +1,91 @@
+.movie-subtitle {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.movie-hint {
+  margin: 0 0 22px 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.movie-gallery-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 0 10px 0;
+}
+
+.movie-box {
+  position: relative;
+  width: clamp(80px, 22vw, 110px);
+  height: clamp(120px, 31vw, 160px);
+  transform-style: preserve-3d;
+  animation: movieSpin var(--spin, 20s) linear infinite;
+  --angle: calc(360deg / var(--count));
+  --radius: clamp(120px, 24vw, 215px);
+}
+
+.movie-box:hover {
+  animation-play-state: paused;
+}
+
+@keyframes movieSpin {
+  0% {
+    transform: perspective(1000px) rotateY(0deg);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(360deg);
+  }
+}
+
+.movie-box span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+  transform-style: preserve-3d;
+  transform: rotateY(calc(var(--i) * var(--angle))) translateZ(var(--radius));
+  -webkit-box-reflect: below 2px
+    linear-gradient(transparent, transparent, rgba(4, 4, 4, 0.22));
+}
+
+.movie-box span a,
+.movie-box span .movie-poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.movie-poster-btn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.movie-box span img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  transition: transform 0.25s ease;
+}
+
+.movie-poster-btn.selected img {
+  border-color: var(--t-primary, var(--pink));
+}
+
+.movie-box span img:hover {
+  transform: translateY(-2px);
+}

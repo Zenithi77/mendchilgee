@@ -527,6 +527,148 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// MOVIE SELECTION EDITOR
+// ═══════════════════════════════════════════════════════════════
+
+export function MovieSelectionEditor({ section, onUpdate }) {
+  const data = section?.data || {};
+  const movies = Array.isArray(data.movies) ? data.movies : [];
+
+  const update = (key, value) => {
+    onUpdate(section.id, { ...data, [key]: value });
+  };
+
+  const updateMovies = (updated) => {
+    update("movies", updated);
+  };
+
+  const addMovie = () => {
+    updateMovies([
+      ...movies,
+      { title: "", posterUrl: "", linkUrl: "" },
+    ]);
+  };
+
+  const removeMovie = (idx) => {
+    updateMovies(movies.filter((_, i) => i !== idx));
+  };
+
+  const editMovie = (idx, key, value) => {
+    const updated = [...movies];
+    updated[idx] = { ...updated[idx], [key]: value };
+    updateMovies(updated);
+  };
+
+  return (
+    <div className="se-editor">
+      <div className="se-group">
+        <h3 className="se-group-title">🎬 Кино сонголт</h3>
+
+        <FieldRow label="Гарчиг">
+          <TextInputWithEmoji
+            value={data.title}
+            onChange={(v) => update("title", v)}
+            placeholder="Кино сонголт 🎬"
+          />
+        </FieldRow>
+
+        <FieldRow label="Тайлбар">
+          <TextInputWithEmoji
+            value={data.subtitle}
+            onChange={(v) => update("subtitle", v)}
+            placeholder="Дуртай киногоо сонгоорой 💞"
+            multiline
+          />
+        </FieldRow>
+
+        <FieldRow label="Hint">
+          <TextInputWithEmoji
+            value={data.hint}
+            onChange={(v) => update("hint", v)}
+            placeholder="Poster дээр дарахад шинэ tab нээгдэнэ"
+          />
+        </FieldRow>
+
+        <FieldRow label="Эргэх хугацаа (секунд)">
+          <input
+            className="se-input"
+            type="number"
+            min={8}
+            max={60}
+            value={data.spinSeconds ?? 20}
+            onChange={(e) => update("spinSeconds", Number(e.target.value))}
+          />
+        </FieldRow>
+
+        <FieldRow label="Continue товч">
+          <TextInputWithEmoji
+            value={data.continueButton}
+            onChange={(v) => update("continueButton", v)}
+            placeholder="Үргэлжлүүлэх 💕"
+          />
+        </FieldRow>
+
+        <FieldRow label="Кино жагсаалт">
+          <div className="se-cards">
+            {movies.map((m, idx) => (
+              <div key={idx} className="se-card">
+                <div className="se-card-header">
+                  <span className="se-card-number">#{idx + 1}</span>
+                  <button
+                    type="button"
+                    className="se-remove-btn"
+                    onClick={() => removeMovie(idx)}
+                    title="Устгах"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <FieldRow label="Нэр">
+                  <input
+                    className="se-input"
+                    type="text"
+                    value={m.title || ""}
+                    onChange={(e) => editMovie(idx, "title", e.target.value)}
+                    placeholder="Avatar"
+                  />
+                </FieldRow>
+
+                <FieldRow label="Poster URL">
+                  <input
+                    className="se-input"
+                    type="text"
+                    value={m.posterUrl || ""}
+                    onChange={(e) =>
+                      editMovie(idx, "posterUrl", e.target.value)
+                    }
+                    placeholder="https://..."
+                  />
+                </FieldRow>
+
+                <FieldRow label="Ticketing URL (optional)">
+                  <input
+                    className="se-input"
+                    type="text"
+                    value={m.linkUrl || ""}
+                    onChange={(e) => editMovie(idx, "linkUrl", e.target.value)}
+                    placeholder="https://ticketing..."
+                  />
+                </FieldRow>
+              </div>
+            ))}
+          </div>
+
+          <button type="button" className="se-add-card-btn" onClick={addMovie}>
+            <span>＋</span> Кино нэмэх
+          </button>
+        </FieldRow>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
 // STEP QUESTIONS EDITOR
 // ═══════════════════════════════════════════════════════════════
 

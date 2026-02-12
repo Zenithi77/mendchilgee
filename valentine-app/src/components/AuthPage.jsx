@@ -20,6 +20,15 @@ const AuthPage = ({ onAuthSuccess }) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
 
+  // Pick up any Google OAuth error from sessionStorage (set by callback handler)
+  useState(() => {
+    const storedError = sessionStorage.getItem("google_auth_error");
+    if (storedError) {
+      setError(storedError);
+      sessionStorage.removeItem("google_auth_error");
+    }
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -82,17 +91,8 @@ const AuthPage = ({ onAuthSuccess }) => {
   const handleGoogleSignIn = async () => {
     setError("");
     setLoading(true);
-    try {
-      await loginWithGoogle();
-      onAuthSuccess?.();
-    } catch (err) {
-      console.error("Google sign-in error:", err);
-      if (err.code !== "auth/popup-closed-by-user") {
-        setError("Google sign-in failed. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
+    // Redirect-based OAuth — navigates away from the page
+    loginWithGoogle();
   };
 
   const handleAnonymousSignIn = async () => {
