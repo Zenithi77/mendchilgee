@@ -31,6 +31,7 @@ export const SECTION_TYPES = {
   LOVE_LETTER: "loveLetter",
   QUESTION: "question",
   MEMORY_GALLERY: "memoryGallery",
+  MEMORY_VIDEO: "memoryVideo",
   STEP_QUESTIONS: "stepQuestions",
   FINAL_SUMMARY: "finalSummary",
 };
@@ -92,6 +93,30 @@ export function templateToGift(template) {
       id: generateSectionId(),
       type: SECTION_TYPES.MEMORY_GALLERY,
       data: { ...template.memoryGallery },
+    });
+
+    // If the template has a gallery but doesn't define a video section,
+    // include a default Video section right after the gallery so it shows
+    // up in the Builder sidebar by default.
+    if (!template.memoryVideo) {
+      sections.push({
+        id: generateSectionId(),
+        type: SECTION_TYPES.MEMORY_VIDEO,
+        data: {
+          title: "Видео хэсэг 🎬",
+          continueButton: "Үргэлжлүүлэх 💕",
+          videos: [{ src: "", caption: "", date: "" }],
+        },
+      });
+    }
+  }
+
+  // Memory video
+  if (template.memoryVideo) {
+    sections.push({
+      id: generateSectionId(),
+      type: SECTION_TYPES.MEMORY_VIDEO,
+      data: { ...template.memoryVideo },
     });
   }
 

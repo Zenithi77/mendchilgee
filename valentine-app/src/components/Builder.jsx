@@ -24,6 +24,7 @@ import {
   MemoryGalleryEditor,
   StepQuestionsEditor,
   FinalSummaryEditor,
+  MemoryVideoEditor,
   GenericEditor,
 } from "./SectionEditors";
 
@@ -112,7 +113,21 @@ export default function Builder({ onBack, initialGift }) {
 
   const addSection = useCallback((type) => {
     const section = createDefaultSection(type);
-    setGift((prev) => ({ ...prev, sections: [...prev.sections, section] }));
+    setGift((prev) => {
+      // Place video section right after photo gallery by default
+      if (type === SECTION_TYPES.MEMORY_VIDEO) {
+        const galleryIndex = prev.sections.findIndex(
+          (s) => s.type === SECTION_TYPES.MEMORY_GALLERY,
+        );
+        if (galleryIndex !== -1) {
+          const nextSections = [...prev.sections];
+          nextSections.splice(galleryIndex + 1, 0, section);
+          return { ...prev, sections: nextSections };
+        }
+      }
+
+      return { ...prev, sections: [...prev.sections, section] };
+    });
     setSelectedSectionId(section.id);
     setShowAddModal(false);
     setEditorOpen(true);
@@ -238,6 +253,9 @@ export default function Builder({ onBack, initialGift }) {
 
     if (type === SECTION_TYPES.FINAL_SUMMARY)
       return <FinalSummaryEditor section={selectedSection} onUpdate={updateSectionData} />;
+
+    if (type === SECTION_TYPES.MEMORY_VIDEO)
+      return <MemoryVideoEditor section={selectedSection} onUpdate={updateSectionData} />;
 
     return <GenericEditor section={selectedSection} />;
   };

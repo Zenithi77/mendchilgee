@@ -11,6 +11,7 @@ import Welcome2 from "../components/Welcome2";
 import LoveLetter from "../components/LoveLetter";
 import Question2 from "../components/Question2";
 import MemoryGallery2 from "../components/MemoryGallery2";
+import MemoryVideo from "../components/MemoryVideo";
 import StepQuestions2 from "../components/StepQuestions2";
 import FinalSummary2 from "../components/FinalSummary2";
 import SparkCustomizer from "../components/SparkCustomizer";
@@ -54,6 +55,15 @@ export const SECTION_REGISTRY = {
     icon: "📸",
     iconBg: "#fff7ed",
     iconColor: "#f97316",
+  },
+  [SECTION_TYPES.MEMORY_VIDEO]: {
+    component: MemoryVideo,
+    label: "Video",
+    labelMn: "Видео хэсэг",
+    descMn: "Өөрийн бичлэгүүдээ оруулаад үзүүлээрэй",
+    icon: "🎬",
+    iconBg: "#fef3c7",
+    iconColor: "#d97706",
   },
   [SECTION_TYPES.STEP_QUESTIONS]: {
     component: StepQuestions2,
