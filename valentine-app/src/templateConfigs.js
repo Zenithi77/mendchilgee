@@ -62,8 +62,8 @@ const DEFAULT_GALLERY_UI = {
   headerTitle: "Бидний дурсамжууд",
   headerIconAnimation: "bearLove 1.5s ease infinite",
   placeholderHint: "Зургаа энд нэмнэ үү",
-  footerText: "Бүх дурсамж гайхалтай... 💕",
-  continueButton: "Болзоо төлөвлөх 💑",
+  footerText: "Бүх дурсамж үнэ цэнэтэй... 💕",
+  continueButton: "Болзоо төлөвлөх 👩‍❤️‍👨",
 };
 
 const DEFAULT_FINAL_UI = {
@@ -2091,21 +2091,86 @@ const LONG_DISTANCE_TEMPLATES = [
     },
     question: {
       character: { ...QUESTION_PLANE },
+      quizMode: true,
+      quizQuestions: [
+        {
+          text: "Би чамайг өдөрт хэдэн удаа боддог вэ?",
+          options: [
+            { emoji: "1️⃣", name: "Нэг удаа", value: "Нэг удаа" },
+            { emoji: "🔢", name: "10 удаа", value: "10 удаа" },
+            { emoji: "💯", name: "100 удаа", value: "100 удаа" },
+            { emoji: "♾️", name: "Тоолж баршгүй", value: "Тоолж баршгүй" },
+          ],
+          correctIndex: 0,
+          correctText: "Зөв! Нэг ч удаа зогсдоггүй — чамайг ҮРГЭЛЖ боддог 💕",
+        },
+        {
+          text: "Чиний юунд таалагддаг гэж бодож байна?",
+          options: [
+            { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
+            { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
+            { emoji: "👀", name: "Нүд", value: "Нүд" },
+            { emoji: "💖", name: "Бүх зүйл", value: "Бүх зүйл" },
+          ],
+          correctIndex: 3,
+          correctText: "Зөв! Би чиний бүх зүйлд хайртай 💖",
+        },
+        {
+          text: "Би чамд хайртай болоод хэдэн жил болсон бэ?",
+          options: [
+            { emoji: "1️⃣", name: "1 жил", value: "1 жил" },
+            { emoji: "2️⃣", name: "2 жил", value: "2 жил" },
+            { emoji: "3️⃣", name: "3 жил", value: "3 жил" },
+            { emoji: "♾️", name: "Мөнхөд", value: "Мөнхөд" },
+          ],
+          correctIndex: 1,
+          correctText: "Зөв! 2 жилийн хайр, мөнхөд үргэлжлэх болно 💕",
+        },
+        {
+          text: "Бид хоёрын хамгийн гоё дурсамж юу вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "✈️", name: "Анх уулзсан", value: "Анх уулзсан" },
+            { emoji: "📱", name: "Шөнийн ярианууд", value: "Шөнийн ярианууд" },
+            { emoji: "🎁", name: "Бэлэг өгсөн", value: "Бэлэг өгсөн" },
+            { emoji: "🌅", name: "Хамтдаа аялсан", value: "Хамтдаа аялсан" },
+            { emoji: "😂", name: "Хамт инээсэн", value: "Хамт инээсэн" },
+          ],
+        },
+        {
+          text: "Бид хоёрын хайр ямар юмтай адил вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "🌊", name: "Далай шиг гүн", value: "Далай шиг гүн" },
+            { emoji: "⭐", name: "Од шиг гэрэлтэй", value: "Од шиг гэрэлтэй" },
+            { emoji: "🔥", name: "Гал шиг халуун", value: "Гал шиг халуун" },
+            { emoji: "🌸", name: "Цэцэг шиг гоё", value: "Цэцэг шиг гоё" },
+            { emoji: "💎", name: "Алмаз шиг мөнхийн", value: "Алмаз шиг мөнхийн" },
+          ],
+        },
+        {
+          text: "Дараа уулзахдаа юу хийх вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "🤗", name: "Тэврэх", value: "Тэврэх" },
+            { emoji: "😘", name: "Үнсэх", value: "Үнсэх" },
+            { emoji: "🍽️", name: "Хамтдаа хоол идэх", value: "Хамтдаа хоол идэх" },
+            { emoji: "🎬", name: "Кино үзэх", value: "Кино үзэх" },
+            { emoji: "📸", name: "Зураг авах", value: "Зураг авах" },
+          ],
+        },
+      ],
       text: "Би чиний юунд илүү дуртай вэ?",
       yesButton: { ...DEFAULT_YES_BUTTON },
       noButton: { ...DEFAULT_NO_BUTTON },
-      multiChoice: true,
-      choices: [
-        { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
-        { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
-        { emoji: "👀", name: "Нүд", value: "Нүд" },
-        { emoji: "🗣️", name: "Хоолой", value: "Хоолой" },
-      ],
-      correctAnswer: "Зөв! Би чиний бүх зүйлд хайртай",
     },
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerTitle: "Бидний дурсамжууд",
+      continueButton: "Асуултууд 💕",
       memories: [
         {
           type: "image",
@@ -2262,21 +2327,86 @@ const LONG_DISTANCE_TEMPLATES = [
     },
     question: {
       character: { ...QUESTION_MOON },
+      quizMode: true,
+      quizQuestions: [
+        {
+          text: "Би чамайг өдөрт хэдэн удаа боддог вэ?",
+          options: [
+            { emoji: "1️⃣", name: "Нэг удаа", value: "Нэг удаа" },
+            { emoji: "🔢", name: "10 удаа", value: "10 удаа" },
+            { emoji: "💯", name: "100 удаа", value: "100 удаа" },
+            { emoji: "♾️", name: "Тоолж баршгүй", value: "Тоолж баршгүй" },
+          ],
+          correctIndex: 0,
+          correctText: "Зөв! Нэг ч удаа зогсдоггүй — чамайг ҮРГЭЛЖ боддог 💕",
+        },
+        {
+          text: "Чиний юунд таалагддаг гэж бодож байна?",
+          options: [
+            { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
+            { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
+            { emoji: "👀", name: "Нүд", value: "Нүд" },
+            { emoji: "💖", name: "Бүх зүйл", value: "Бүх зүйл" },
+          ],
+          correctIndex: 3,
+          correctText: "Зөв! Би чиний бүх зүйлд хайртай 💖",
+        },
+        {
+          text: "Би чамд хайртай болоод хэдэн жил болсон бэ?",
+          options: [
+            { emoji: "1️⃣", name: "1 жил", value: "1 жил" },
+            { emoji: "2️⃣", name: "2 жил", value: "2 жил" },
+            { emoji: "3️⃣", name: "3 жил", value: "3 жил" },
+            { emoji: "♾️", name: "Мөнхөд", value: "Мөнхөд" },
+          ],
+          correctIndex: 1,
+          correctText: "Зөв! 2 жилийн хайр, мөнхөд үргэлжлэх болно 💕",
+        },
+        {
+          text: "Бид хоёрын хамгийн гоё дурсамж юу вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "✈️", name: "Анх уулзсан", value: "Анх уулзсан" },
+            { emoji: "📱", name: "Шөнийн ярианууд", value: "Шөнийн ярианууд" },
+            { emoji: "🎁", name: "Бэлэг өгсөн", value: "Бэлэг өгсөн" },
+            { emoji: "🌅", name: "Хамтдаа аялсан", value: "Хамтдаа аялсан" },
+            { emoji: "😂", name: "Хамт инээсэн", value: "Хамт инээсэн" },
+          ],
+        },
+        {
+          text: "Бид хоёрын хайр ямар юмтай адил вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "🌊", name: "Далай шиг гүн", value: "Далай шиг гүн" },
+            { emoji: "⭐", name: "Од шиг гэрэлтэй", value: "Од шиг гэрэлтэй" },
+            { emoji: "🔥", name: "Гал шиг халуун", value: "Гал шиг халуун" },
+            { emoji: "🌸", name: "Цэцэг шиг гоё", value: "Цэцэг шиг гоё" },
+            { emoji: "💎", name: "Алмаз шиг мөнхийн", value: "Алмаз шиг мөнхийн" },
+          ],
+        },
+        {
+          text: "Дараа уулзахдаа юу хийх вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "🤗", name: "Тэврэх", value: "Тэврэх" },
+            { emoji: "😘", name: "Үнсэх", value: "Үнсэх" },
+            { emoji: "🍽️", name: "Хамтдаа хоол идэх", value: "Хамтдаа хоол идэх" },
+            { emoji: "🎬", name: "Кино үзэх", value: "Кино үзэх" },
+            { emoji: "📸", name: "Зураг авах", value: "Зураг авах" },
+          ],
+        },
+      ],
       text: "Би чиний юунд илүү дуртай вэ?",
       yesButton: { ...DEFAULT_YES_BUTTON },
       noButton: { ...DEFAULT_NO_BUTTON },
-      multiChoice: true,
-      choices: [
-        { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
-        { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
-        { emoji: "👀", name: "Нүд", value: "Нүд" },
-        { emoji: "🗣️", name: "Хоолой", value: "Хоолой" },
-      ],
-      correctAnswer: "Зөв! Би чиний бүх зүйлд хайртай",
     },
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerTitle: "Бидний дурсамжууд",
+      continueButton: "Асуултууд 💕",
       memories: [
         {
           type: "image",
@@ -2433,21 +2563,86 @@ const LONG_DISTANCE_TEMPLATES = [
     },
     question: {
       character: { ...QUESTION_PLANE },
+      quizMode: true,
+      quizQuestions: [
+        {
+          text: "Би чамайг өдөрт хэдэн удаа боддог вэ?",
+          options: [
+            { emoji: "1️⃣", name: "Нэг удаа", value: "Нэг удаа" },
+            { emoji: "🔢", name: "10 удаа", value: "10 удаа" },
+            { emoji: "💯", name: "100 удаа", value: "100 удаа" },
+            { emoji: "♾️", name: "Тоолж баршгүй", value: "Тоолж баршгүй" },
+          ],
+          correctIndex: 0,
+          correctText: "Зөв! Нэг ч удаа зогсдоггүй — чамайг ҮРГЭЛЖ боддог 💕",
+        },
+        {
+          text: "Чиний юунд таалагддаг гэж бодож байна?",
+          options: [
+            { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
+            { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
+            { emoji: "👀", name: "Нүд", value: "Нүд" },
+            { emoji: "💖", name: "Бүх зүйл", value: "Бүх зүйл" },
+          ],
+          correctIndex: 3,
+          correctText: "Зөв! Би чиний бүх зүйлд хайртай 💖",
+        },
+        {
+          text: "Би чамд хайртай болоод хэдэн жил болсон бэ?",
+          options: [
+            { emoji: "1️⃣", name: "1 жил", value: "1 жил" },
+            { emoji: "2️⃣", name: "2 жил", value: "2 жил" },
+            { emoji: "3️⃣", name: "3 жил", value: "3 жил" },
+            { emoji: "♾️", name: "Мөнхөд", value: "Мөнхөд" },
+          ],
+          correctIndex: 1,
+          correctText: "Зөв! 2 жилийн хайр, мөнхөд үргэлжлэх болно 💕",
+        },
+        {
+          text: "Бид хоёрын хамгийн гоё дурсамж юу вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "✈️", name: "Анх уулзсан", value: "Анх уулзсан" },
+            { emoji: "📱", name: "Шөнийн ярианууд", value: "Шөнийн ярианууд" },
+            { emoji: "🎁", name: "Бэлэг өгсөн", value: "Бэлэг өгсөн" },
+            { emoji: "🌅", name: "Хамтдаа аялсан", value: "Хамтдаа аялсан" },
+            { emoji: "😂", name: "Хамт инээсэн", value: "Хамт инээсэн" },
+          ],
+        },
+        {
+          text: "Бид хоёрын хайр ямар юмтай адил вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "🌊", name: "Далай шиг гүн", value: "Далай шиг гүн" },
+            { emoji: "⭐", name: "Од шиг гэрэлтэй", value: "Од шиг гэрэлтэй" },
+            { emoji: "🔥", name: "Гал шиг халуун", value: "Гал шиг халуун" },
+            { emoji: "🌸", name: "Цэцэг шиг гоё", value: "Цэцэг шиг гоё" },
+            { emoji: "💎", name: "Алмаз шиг мөнхийн", value: "Алмаз шиг мөнхийн" },
+          ],
+        },
+        {
+          text: "Дараа уулзахдаа юу хийх вэ?",
+          multiSelect: true,
+          allowOther: true,
+          options: [
+            { emoji: "🤗", name: "Тэврэх", value: "Тэврэх" },
+            { emoji: "😘", name: "Үнсэх", value: "Үнсэх" },
+            { emoji: "🍽️", name: "Хамтдаа хоол идэх", value: "Хамтдаа хоол идэх" },
+            { emoji: "🎬", name: "Кино үзэх", value: "Кино үзэх" },
+            { emoji: "📸", name: "Зураг авах", value: "Зураг авах" },
+          ],
+        },
+      ],
       text: "Би чиний юунд илүү дуртай вэ?",
       yesButton: { ...DEFAULT_YES_BUTTON },
       noButton: { ...DEFAULT_NO_BUTTON },
-      multiChoice: true,
-      choices: [
-        { emoji: "😊", name: "Инээмсэглэл", value: "Инээмсэглэл" },
-        { emoji: "💎", name: "Зан чанар", value: "Зан чанар" },
-        { emoji: "👀", name: "Нүд", value: "Нүд" },
-        { emoji: "🗣️", name: "Хоолой", value: "Хоолой" },
-      ],
-      correctAnswer: "Зөв! Би чиний бүх зүйлд хайртай",
     },
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerTitle: "Бидний дурсамжууд",
+      continueButton: "Асуултууд 💕",
       memories: [
         {
           type: "image",

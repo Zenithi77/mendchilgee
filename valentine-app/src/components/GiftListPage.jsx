@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import "./GiftListPage.css";
+import Logo from "assets/Logo";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
   const { user } = useAuth();
@@ -118,12 +119,12 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
-          <div className="gift-list-header-emoji">💝</div>
+          <div className="gift-list-header-emoji"><Logo /></div>
           <h1 className="gift-list-title font-script">My Gifts</h1>
           <p className="gift-list-subtitle">
             {gifts.length === 0
-              ? "You haven't created any gifts yet. Let's make one! 💫"
-              : `You have ${gifts.length} gift${gifts.length !== 1 ? "s" : ""} 💌`}
+              ? "Одоохондоо бэлэг алга байна. Нэгийг нь хамтдаа бүтээх үү? 💝"
+              : `Танд нийт ${gifts.length} бэлэг байна 💌`}
           </p>
         </div>
 
@@ -216,15 +217,9 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         {/* Empty State */}
         {gifts.length === 0 && (
           <div className="gift-list-empty">
-            <div className="gift-list-empty-icon">🎁</div>
             <p className="gift-list-empty-text">
-              Create your first Valentine's gift and share it with your special
-              someone!
+              Анхны Валентины бэлгээ урлаад, зүрхэндээ дотно хүндээ хуваалцаарай.
             </p>
-            <button className="btn btn-create-gift" onClick={onCreateNew}>
-              <span className="btn-create-icon">💕</span>
-              Get Started
-            </button>
           </div>
         )}
       </div>

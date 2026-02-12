@@ -15,6 +15,7 @@ const DEFAULT_TIMER = {
 };
 
 const DEFAULT_NO_BUTTON = {
+  variantsEnabled: true,
   defaultText: "Үгүй 💔",
   messages: [
     "Үгүй гэж болохгүй 🥺",
@@ -60,7 +61,7 @@ const SECTION_DEFAULTS = {
     headerTitle: "Бидний дурсамжууд",
     headerIconAnimation: "bearLove 1.5s ease infinite",
     placeholderHint: "Зургаа энд нэмнэ үү",
-    footerText: "Бүх дурсамж гайхалтай... 💕",
+    footerText: "Бүх дурсамж үнэ цэнэтэй... 💕",
     continueButton: "Үргэлжлүүлэх 💑",
     memories: [
       {
