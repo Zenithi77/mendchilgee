@@ -112,7 +112,11 @@ export default function StepQuestions({ choices, updateChoice, onDone }) {
 
         {/* Grid options */}
         {current.type === 'grid' && (
-          <div className="step-options">
+          <div 
+            className="step-options"
+            // Хэрэв 1 сонголттой бол '1fr', үгүй бол '1fr 1fr' болгох код:
+            style={{ gridTemplateColumns: current.options.length === 1 ? '1fr' : '1fr 1fr' }}
+          >
             {current.options.map(opt => (
               <div
                 key={opt.value}

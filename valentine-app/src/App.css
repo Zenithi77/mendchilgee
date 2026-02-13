@@ -2049,6 +2049,11 @@
   gap: 12px;
   margin-bottom: 24px;
 }
+.step-options.single {
+  grid-template-columns: 1fr; /* Бүтэн өргөнөөр сунгана */
+  /* Хэрэв товчлуурыг сунгахгүйгээр голлуулахыг хүсвэл доорхыг нэмнэ үү: */
+  /* justify-items: center; */
+}
 
 .step-option {
   background: rgba(255, 255, 255, 0.04);
@@ -2265,6 +2270,11 @@
   }
   .step-options {
     gap: 8px;
+  }
+  .step-options.single {
+  grid-template-columns: 1fr; /* Бүтэн өргөнөөр сунгана */
+  /* Хэрэв товчлуурыг сунгахгүйгээр голлуулахыг хүсвэл доорхыг нэмнэ үү: */
+  /* justify-items: center; */
   }
   .step-title {
     font-size: 1.4rem;

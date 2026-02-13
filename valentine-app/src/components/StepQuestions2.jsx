@@ -92,9 +92,9 @@ export default function StepQuestions({
         )}
 
         {/* Grid options */}
-        {current.type === "grid" && (
-          <div className="step-options">
-            {current.options.map((opt) => (
+        {current.type === 'grid' && (
+          <div className={`step-options ${current.options.length === 1 ? 'single' : ''}`}>
+            {current.options.map(opt => (
               <div
                 key={opt.value}
                 className={`step-option${isOptionSelected(opt.value) ? " selected" : ""}`}
@@ -115,7 +115,6 @@ export default function StepQuestions({
             ))}
           </div>
         )}
-
         {/* Time options */}
         {current.type === "time" && (
           <div className="time-options">
