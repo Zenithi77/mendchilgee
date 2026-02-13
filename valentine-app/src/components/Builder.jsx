@@ -332,17 +332,21 @@ export default function Builder() {
 
     const { type } = selectedSection;
 
-    if (type === SECTION_TYPES.WELCOME || type === SECTION_TYPES.LOVE_LETTER) {
-      const welcomeSec = gift.sections.find(
-        (s) => s.type === SECTION_TYPES.WELCOME,
-      );
-      const letterSec = gift.sections.find(
-        (s) => s.type === SECTION_TYPES.LOVE_LETTER,
-      );
+    if (type === SECTION_TYPES.WELCOME) {
       return (
         <WelcomeLetterEditor
-          welcomeSection={welcomeSec}
-          letterSection={letterSec}
+          welcomeSection={selectedSection}
+          letterSection={null}
+          onUpdate={updateSectionData}
+        />
+      );
+    }
+
+    if (type === SECTION_TYPES.LOVE_LETTER) {
+      return (
+        <WelcomeLetterEditor
+          welcomeSection={null}
+          letterSection={selectedSection}
           onUpdate={updateSectionData}
         />
       );
@@ -395,6 +399,9 @@ export default function Builder() {
           onUpdate={updateSectionData}
         />
       );
+
+    if (type === SECTION_TYPES.SPECIAL_QUESTIONS)
+      return <GenericEditor section={selectedSection} />;
 
     return <GenericEditor section={selectedSection} />;
   };
@@ -834,7 +841,7 @@ export default function Builder() {
                     }`}
                     className="builder-preview-iframe"
                     title="Full preview"
-                    sandbox="allow-scripts allow-same-origin allow-forms"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"
                   />
                 </div>
               </div>

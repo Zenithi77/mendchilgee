@@ -26,7 +26,10 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
     onClose?.();
   };
 
-  if (!letter || !letter.enabled) return null;
+  if (!letter) return null;
+
+  // If letter has 'enabled' field explicitly set to false, skip
+  if (letter.enabled === false) return null;
 
   const envelope = letter.envelope || {};
   const decorations = letter.decorations || {};

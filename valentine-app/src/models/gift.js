@@ -34,6 +34,7 @@ export const SECTION_TYPES = {
   MEMORY_VIDEO: "memoryVideo",
   STEP_QUESTIONS: "stepQuestions",
   FINAL_SUMMARY: "finalSummary",
+  SPECIAL_QUESTIONS: "specialQuestions",
 };
 
 // ── ID generation ──
@@ -57,6 +58,15 @@ export function templateToGift(template) {
       id: generateSectionId(),
       type: SECTION_TYPES.WELCOME,
       data: { ...template.welcome },
+    });
+  }
+
+  // Special questions (after welcome, before love letter)
+  if (template.specialQuestions) {
+    sections.push({
+      id: generateSectionId(),
+      type: SECTION_TYPES.SPECIAL_QUESTIONS,
+      data: { ...template.specialQuestions },
     });
   }
 

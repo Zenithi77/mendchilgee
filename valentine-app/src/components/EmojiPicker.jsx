@@ -188,6 +188,8 @@ export default function EmojiPicker({ onSelect, triggerLabel = "😊" }) {
     Object.keys(EMOJI_CATEGORIES)[0],
   );
   const pickerRef = useRef(null);
+  const triggerRef = useRef(null);
+  const [dropdownStyle, setDropdownStyle] = useState({});
 
   useEffect(() => {
     const handler = (e) => {
@@ -199,19 +201,40 @@ export default function EmojiPicker({ onSelect, triggerLabel = "😊" }) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
+  // Calculate fixed position when opening
+  const handleOpen = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (next && triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const dropdownHeight = 280; // approximate
+        const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+        setDropdownStyle({
+          position: "fixed",
+          left: Math.min(rect.left, window.innerWidth - 290),
+          top: openUp ? rect.top - dropdownHeight : rect.bottom + 4,
+          zIndex: 9999,
+        });
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="emoji-picker-wrapper" ref={pickerRef}>
       <button
         type="button"
         className="emoji-picker-trigger"
-        onClick={() => setOpen((p) => !p)}
+        ref={triggerRef}
+        onClick={handleOpen}
         title="Emoji нэмэх"
       >
         {triggerLabel}
       </button>
 
       {open && (
-        <div className="emoji-picker-dropdown">
+        <div className="emoji-picker-dropdown" style={dropdownStyle}>
           {/* Category tabs */}
           <div className="emoji-picker-tabs">
             {Object.keys(EMOJI_CATEGORIES).map((cat) => (

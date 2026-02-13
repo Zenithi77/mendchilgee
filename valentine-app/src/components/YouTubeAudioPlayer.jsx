@@ -1,5 +1,5 @@
-import { useEffect, useRef, useCallback } from 'react'
-import { buildYouTubeEmbedSrc } from '../utils/youtube'
+import { useEffect, useRef, useCallback } from "react";
+import { buildYouTubeEmbedSrc } from "../utils/youtube";
 
 /**
  * YouTubeAudioPlayer — plays / pauses YouTube audio without
@@ -29,8 +29,8 @@ function ensureYTApi() {
       if (prev) prev();
       resolve();
     };
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
   });
   return ytApiPromise;
@@ -43,9 +43,9 @@ function extractVideoId(input) {
   if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
   try {
     const url = new URL(s);
-    if (url.hostname.includes('youtu.be'))
-      return url.pathname.replace('/', '').slice(0, 11);
-    const v = url.searchParams.get('v');
+    if (url.hostname.includes("youtu.be"))
+      return url.pathname.replace("/", "").slice(0, 11);
+    const v = url.searchParams.get("v");
     if (v) return v;
     const m = url.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
     if (m) return m[1];
@@ -70,46 +70,68 @@ export default function YouTubeAudioPlayer({ url, playing }) {
 
     let destroyed = false;
 
-    ensureYTApi().then(() => {
-      if (destroyed) return;
+    ensureYTApi()
+      .then(() => {
+        if (destroyed) return;
 
-      // If player exists for the same video, just toggle play state
-      if (playerRef.current && videoIdRef.current === videoId) {
+        // If player exists for the same video, just toggle play state
+        if (playerRef.current && videoIdRef.current === videoId) {
+          try {
+            if (wantPlayRef.current) playerRef.current.playVideo();
+            else playerRef.current.pauseVideo();
+          } catch {}
+          return;
+        }
+
+        // Destroy old player if video changed
+        if (playerRef.current) {
+          try {
+            playerRef.current.destroy();
+          } catch {}
+          playerRef.current = null;
+        }
+
+        videoIdRef.current = videoId;
+
         try {
-          if (wantPlayRef.current) playerRef.current.playVideo();
-          else playerRef.current.pauseVideo();
-        } catch {}
-        return;
-      }
+          // Create a fresh div for the player (YT.Player replaces the target element)
+          const el = document.createElement("div");
+          containerRef.current?.appendChild(el);
 
-      // Destroy old player if video changed
-      if (playerRef.current) {
-        try { playerRef.current.destroy(); } catch {}
-        playerRef.current = null;
-      }
-
-      videoIdRef.current = videoId;
-
-      playerRef.current = new window.YT.Player(containerRef.current, {
-        videoId,
-        height: '0',
-        width: '0',
-        playerVars: {
-          autoplay: wantPlayRef.current ? 1 : 0,
-          controls: 0,
-          rel: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          loop: 1,
-          playlist: videoId,
-        },
-        events: {
-          onReady: (e) => {
-            if (wantPlayRef.current) e.target.playVideo();
-          },
-        },
+          playerRef.current = new window.YT.Player(el, {
+            videoId,
+            height: "0",
+            width: "0",
+            playerVars: {
+              autoplay: wantPlayRef.current ? 1 : 0,
+              controls: 0,
+              rel: 0,
+              modestbranding: 1,
+              playsinline: 1,
+              loop: 1,
+              playlist: videoId,
+            },
+            events: {
+              onReady: (e) => {
+                if (wantPlayRef.current) {
+                  try {
+                    e.target.playVideo();
+                  } catch {}
+                }
+              },
+              onError: () => {
+                // Silently handle YouTube errors without breaking the app
+                console.warn("YouTube player error for video:", videoId);
+              },
+            },
+          });
+        } catch (err) {
+          console.warn("Failed to create YouTube player:", err);
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to load YouTube API:", err);
       });
-    });
 
     return () => {
       destroyed = true;
@@ -135,7 +157,9 @@ export default function YouTubeAudioPlayer({ url, playing }) {
   useEffect(() => {
     return () => {
       if (playerRef.current) {
-        try { playerRef.current.destroy(); } catch {}
+        try {
+          playerRef.current.destroy();
+        } catch {}
         playerRef.current = null;
       }
     };

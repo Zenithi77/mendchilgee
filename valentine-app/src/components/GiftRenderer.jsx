@@ -81,16 +81,14 @@ export default function GiftRenderer({
 
   // Called by LoveLetter when letter is opened
   const startMusic = useCallback(() => {
-    if (musicConfig?.url && !musicPlaying) {
-      setMusicStarted(true);
-      setMusicPlaying(true);
-    }
-  }, [musicConfig, musicPlaying]);
+    setMusicStarted(true);
+    setMusicPlaying(true);
+  }, []);
 
   const toggleMusic = useCallback(() => {
-    if (musicConfig?.url) setMusicStarted(true);
+    setMusicStarted(true);
     setMusicPlaying((p) => !p);
-  }, [musicConfig?.url]);
+  }, []);
 
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60);
@@ -218,6 +216,9 @@ export default function GiftRenderer({
         );
 
       case SECTION_TYPES.MEMORY_VIDEO:
+        return <Component data={currentSection.data} onContinue={goNext} />;
+
+      case SECTION_TYPES.SPECIAL_QUESTIONS:
         return <Component data={currentSection.data} onContinue={goNext} />;
 
       default:

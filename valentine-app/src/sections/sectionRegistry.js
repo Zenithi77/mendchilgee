@@ -15,9 +15,17 @@ import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
 import StepQuestions2 from "../components/StepQuestions2";
 import FinalSummary2 from "../components/FinalSummary2";
+import SpecialQuestions from "../components/SpecialQuestions";
 import { SECTION_TYPES } from "../models/gift";
-import { MdCelebration, MdMail, MdFavorite, MdPhotoCamera, MdChecklist, MdAutoAwesome, MdLightbulb } from "react-icons/md";
-
+import {
+  MdCelebration,
+  MdMail,
+  MdFavorite,
+  MdPhotoCamera,
+  MdChecklist,
+  MdAutoAwesome,
+  MdLightbulb,
+} from "react-icons/md";
 
 export const SECTION_REGISTRY = {
   [SECTION_TYPES.WELCOME]: {
@@ -91,6 +99,15 @@ export const SECTION_REGISTRY = {
     icon: "🎊",
     iconBg: "#fef2f2",
     iconColor: "#f87171",
+  },
+  [SECTION_TYPES.SPECIAL_QUESTIONS]: {
+    component: SpecialQuestions,
+    label: "Special Questions",
+    labelMn: "Тусгай асуулт",
+    descMn: "4 тусгай quiz асуулт — нууц хайрцагтай",
+    icon: "💝",
+    iconBg: "#fdf2f8",
+    iconColor: "#db2777",
   },
 };
 

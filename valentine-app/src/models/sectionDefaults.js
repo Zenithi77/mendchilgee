@@ -223,6 +223,55 @@ const SECTION_DEFAULTS = {
     ],
   },
 
+  [SECTION_TYPES.SPECIAL_QUESTIONS]: {
+    questions: [
+      {
+        text: "Би чамд хайртай болоод хэдэн жил болсон бэ?",
+        options: [
+          { emoji: "1️⃣", name: "1 жил" },
+          { emoji: "2️⃣", name: "2 жил" },
+          { emoji: "3️⃣", name: "3 жил" },
+          { emoji: "4️⃣", name: "4 жил" },
+        ],
+        correctIndex: 1,
+        explanation: "Тэр өдрийг үнэхээр тод санаж байна 💕",
+      },
+      {
+        text: "Би чамайг өдөрт хэдэн удаа боддог гэж бодож байна?",
+        options: [
+          { emoji: "1️⃣", name: "1 удаа" },
+          { emoji: "🔟", name: "10 удаа" },
+          { emoji: "💯", name: "100 удаа" },
+          { emoji: "🔢", name: "1000 удаа" },
+        ],
+        correctIndex: 0,
+        explanation:
+          "Өглөө сэрэхдээ нэг бодоод, унтах хүртлээ бодсоор л байдаг 💭❤️",
+      },
+      {
+        text: "Яг одоо би чамд юу гэж хэлмээр байгаа гэж бодож байна?",
+        options: [
+          { emoji: "❤️", name: "Хайртай шүү" },
+          { emoji: "😍", name: "Чи үнэхээр үзэсгэлэнтэй" },
+          { emoji: "🤗", name: "Хурдан уулзмаар байна" },
+          { emoji: "💖", name: "Бүгд" },
+        ],
+        correctIndex: 3,
+        explanation: "Ойлгомжтой биздээ 😊💕",
+      },
+      {
+        text: "Чиний юу хамгийн их таалагддаг гэж бодож байна?",
+        allWrong: true,
+        options: [
+          { emoji: "😊", name: "Инээмсэглэл" },
+          { emoji: "💎", name: "Зан чанар" },
+          { emoji: "👀", name: "Нүд" },
+          { emoji: "💄", name: "Чиний гоо үзэсгэлэн" },
+        ],
+        revealText: "Бүх зүйлд чинь дуртай 💖",
+      },
+    ],
+  },
 };
 
 /**

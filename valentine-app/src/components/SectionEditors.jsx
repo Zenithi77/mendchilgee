@@ -768,7 +768,10 @@ export function StepQuestionsEditor({ section, onUpdate }) {
   // -- Options within a step --
   const addOption = (stepIdx) => {
     const step = steps[stepIdx];
-    const newOpt = { emoji: "⭐", name: "", desc: "", value: "" };
+    const newOpt =
+      step.type === "time"
+        ? { label: "🕐 12:00", value: "12:00" }
+        : { emoji: "⭐", name: "", desc: "", value: "" };
     editStep(stepIdx, "options", [...(step.options || []), newOpt]);
   };
 
@@ -881,21 +884,34 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                     />
                   </FieldRow>
 
-                  <FieldRow label="Олон сонголт">
-                    <label className="se-toggle">
-                      <input
-                        type="checkbox"
-                        checked={step.multiSelect || false}
-                        onChange={(e) =>
-                          editStep(idx, "multiSelect", e.target.checked)
-                        }
-                      />
-                      <span className="se-toggle-slider" />
-                      <span className="se-toggle-label">
-                        {step.multiSelect ? "Тийм" : "Үгүй"}
-                      </span>
-                    </label>
+                  <FieldRow label="Төрөл">
+                    <select
+                      className="se-input"
+                      value={step.type || "grid"}
+                      onChange={(e) => editStep(idx, "type", e.target.value)}
+                    >
+                      <option value="grid">Сонголтын сүлжээ (grid)</option>
+                      <option value="time">Цаг сонголт (time)</option>
+                    </select>
                   </FieldRow>
+
+                  {step.type !== "time" && (
+                    <FieldRow label="Олон сонголт">
+                      <label className="se-toggle">
+                        <input
+                          type="checkbox"
+                          checked={step.multiSelect || false}
+                          onChange={(e) =>
+                            editStep(idx, "multiSelect", e.target.checked)
+                          }
+                        />
+                        <span className="se-toggle-slider" />
+                        <span className="se-toggle-label">
+                          {step.multiSelect ? "Тийм" : "Үгүй"}
+                        </span>
+                      </label>
+                    </FieldRow>
+                  )}
 
                   {/* Options */}
                   <div className="se-options-section">
@@ -912,55 +928,129 @@ export function StepQuestionsEditor({ section, onUpdate }) {
 
                     {(step.options || []).map((opt, oi) => (
                       <div key={oi} className="se-option-card">
-                        <div className="se-option-row">
-                          <div
-                            className="se-input-with-emoji"
-                            style={{ width: "60px" }}
-                          >
-                            <input
-                              className="se-input se-input-short"
-                              type="text"
-                              value={opt.emoji || ""}
-                              onChange={(e) =>
-                                editOption(idx, oi, "emoji", e.target.value)
-                              }
-                              style={{ width: "36px", textAlign: "center" }}
-                            />
-                            <EmojiPicker
-                              onSelect={(emoji) =>
-                                editOption(idx, oi, "emoji", emoji)
-                              }
-                            />
+                        {step.type === "time" ? (
+                          /* ── Time option: emoji picker + label (e.g. "🌅 17:00") ── */
+                          <div className="se-option-row">
+                            <div
+                              className="se-input-with-emoji"
+                              style={{ width: "60px" }}
+                            >
+                              <EmojiPicker
+                                onSelect={(emoji) => {
+                                  // Replace emoji prefix in label
+                                  const timePart = (opt.label || "").replace(
+                                    /^\S+\s*/,
+                                    "",
+                                  );
+                                  editOption(
+                                    idx,
+                                    oi,
+                                    "label",
+                                    `${emoji} ${timePart}`,
+                                  );
+                                }}
+                              />
+                            </div>
+                            <select
+                              className="se-input"
+                              value={opt.value || ""}
+                              onChange={(e) => {
+                                const time = e.target.value;
+                                const emojiPart =
+                                  (opt.label || "").match(/^(\S+)\s/)?.[1] ||
+                                  "🕐";
+                                editOption(idx, oi, "value", time);
+                                editOption(
+                                  idx,
+                                  oi,
+                                  "label",
+                                  `${emojiPart} ${time}`,
+                                );
+                              }}
+                              style={{ flex: 1 }}
+                            >
+                              <option value="">Цаг сонгох...</option>
+                              {Array.from({ length: 24 }, (_, h) => {
+                                const t = `${String(h).padStart(2, "0")}:00`;
+                                return (
+                                  <option key={t} value={t}>
+                                    {t}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                            <span
+                              className="se-time-preview"
+                              style={{
+                                minWidth: 80,
+                                textAlign: "center",
+                                fontSize: "0.85rem",
+                                color: "#64748b",
+                              }}
+                            >
+                              {opt.label || "—"}
+                            </span>
+                            <button
+                              type="button"
+                              className="se-remove-btn"
+                              onClick={() => removeOption(idx, oi)}
+                              title="Устгах"
+                            >
+                              ✕
+                            </button>
                           </div>
-                          <input
-                            className="se-input"
-                            type="text"
-                            value={opt.name || ""}
-                            onChange={(e) =>
-                              editOption(idx, oi, "name", e.target.value)
-                            }
-                            placeholder="Нэр"
-                            style={{ flex: 1 }}
-                          />
-                          <input
-                            className="se-input"
-                            type="text"
-                            value={opt.desc || ""}
-                            onChange={(e) =>
-                              editOption(idx, oi, "desc", e.target.value)
-                            }
-                            placeholder="Тайлбар"
-                            style={{ flex: 1 }}
-                          />
-                          <button
-                            type="button"
-                            className="se-remove-btn"
-                            onClick={() => removeOption(idx, oi)}
-                            title="Устгах"
-                          >
-                            ✕
-                          </button>
-                        </div>
+                        ) : (
+                          /* ── Grid option: emoji + name + desc ── */
+                          <div className="se-option-row">
+                            <div
+                              className="se-input-with-emoji"
+                              style={{ width: "60px" }}
+                            >
+                              <input
+                                className="se-input se-input-short"
+                                type="text"
+                                value={opt.emoji || ""}
+                                onChange={(e) =>
+                                  editOption(idx, oi, "emoji", e.target.value)
+                                }
+                                style={{ width: "36px", textAlign: "center" }}
+                              />
+                              <EmojiPicker
+                                onSelect={(emoji) =>
+                                  editOption(idx, oi, "emoji", emoji)
+                                }
+                              />
+                            </div>
+                            <input
+                              className="se-input"
+                              type="text"
+                              value={opt.name || ""}
+                              onChange={(e) =>
+                                editOption(idx, oi, "name", e.target.value)
+                              }
+                              placeholder="Нэр"
+                              style={{ flex: 1 }}
+                            />
+                            <input
+                              className="se-input"
+                              type="text"
+                              value={opt.desc || ""}
+                              onChange={(e) =>
+                                editOption(idx, oi, "desc", e.target.value)
+                              }
+                              placeholder="Тайлбар"
+                              style={{ flex: 1 }}
+                            />
+                            <button
+                              type="button"
+                              className="se-remove-btn"
+                              onClick={() => removeOption(idx, oi)}
+                              title="Устгах"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
