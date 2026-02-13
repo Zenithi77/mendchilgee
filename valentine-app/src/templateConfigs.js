@@ -13,7 +13,6 @@
   ─ stepQuestions:    Step questions (UI labels, steps array)
   ─ finalSummary:    Final summary (fields, meter, quotes, signature)
   ─ effects:         Visual effects (emojis, colors, stickers, flowers)
-  ─ sparkCustomizer: (optional) Spark customizer specific data
 */
 
 // ═══════════════════════════════════════════════════════════════
@@ -375,7 +374,7 @@ const CRUSH_TEMPLATES = [
       ...DEFAULT_LOVE_LETTER_UI,
       title: "Миний зүрхний захидал 💌",
       content:
-        "Чамайг анх харсан тэр мөчөөс хойш миний зрхэнд хайрын сум зоогдох шиг л болсон... Чамтай харц тулгарах болгонд зүрх минь догдолдог. Энэ Valentine-ний өдөр зориг гаргаад хэлмээр байна — Чи надад маш онцгой нэгэн 💕",
+        "Шөнийн тэнгэр оддоор дүүрэн байсан ч би тэр оддыг чиний нүдний тусгалд харахыг хүснэ.\nЧиний инээмсэглэл тэдгээр оддоос ч илүү орчлонг гэрэлтүүлнэ.",
     },
     question: {
       character: null,
@@ -388,29 +387,25 @@ const CRUSH_TEMPLATES = [
       memories: [
         {
           type: "image",
-          src: "",
-          placeholder: "🦋",
+          src: "https://tse1.mm.bing.net/th/id/OIP.goJ5HYbfi4Fl0HhLyOhQOQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Анхны мөч",
           caption: "Чамайг анх харсан тэр мөч... ✨",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "💕",
+          src: "https://tse1.explicit.bing.net/th/id/OIP.OAsb9uFFwWp7mEdof6LmEwHaEJ?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Зүрхний цохилт",
           caption: "Зүрх минь түргэсдэг... 💓",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "😊",
+          src: "https://tse1.mm.bing.net/th/id/OIF.QtqxY71EbLTmuCCwVzXxTQ?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Инээмсэглэл",
           caption: "Чиний инээмсэглэл намайг аз жаргалтай болгодог 🌸",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "📱",
+          src: "https://th.bing.com/th/id/R.f0a3d3d69e048785a077546b4d0c5011?rik=5AxYfR8dCZA3Ng&pid=ImgRaw&r=0",
           date: "Мессеж",
           caption: "Чатлах бүрдээ инээмсэглэдэг 😊",
         },
@@ -717,7 +712,7 @@ const NEW_COUPLE_TEMPLATES = [
   {
     id: "spark",
     category: "new-couple",
-    customizer: "spark",
+    customizer: null,
     card: {
       name: "The Spark ✨",
       desc: "Invitation for new beginnings",
@@ -895,39 +890,6 @@ const NEW_COUPLE_TEMPLATES = [
       ],
     },
     effects: { ...DEFAULT_EFFECTS, stickers: STICKERS_CUTE },
-    sparkCustomizer: {
-      stickers: ["💘", "🌹", "🎀", "🍫", "💌", "✨"],
-      badge: "2.14",
-      title: "Happy Valentine's Day",
-      subtitle: "Valentine-д зориулсан маш гоё болзооны урилга 💖",
-      quizTitle: "How well do you know me?",
-      defaultQuestions: [
-        { q: "How well do you know me?", a1: "Movies 🎬", a2: "Partying 💃" },
-        { q: "Coffee or Tea?", a1: "Coffee ☕", a2: "Tea 🍵" },
-      ],
-      phoneStickers: ["💞", "🌸", "✨", "💗"],
-      phonePlaceholder: {
-        heart: "💖",
-        text: "Happy Valentine's Day",
-        sub: "Will you go on a date with me? 💌",
-      },
-      phoneCTA: {
-        title: "Be My Valentine? 💘",
-        sub: "2.14 — болзоонд хамт гарах уу? 🌹",
-      },
-      musicBar: { icon: "🎵", title: "Your Song", sub: "YouTube" },
-      continueButton: "Continue 💌",
-      note: "YouTube audio нь browser policy-оос шалтгаалаад зөвхөн Play дарсны дараа асна.",
-      revealFace: "🙂",
-      revealPill: "HOVER TO REVEAL",
-      labels: {
-        youtubeLink: "YouTube link / embed",
-        youtubeHintOk: "OK — audio can play after you press Play",
-        youtubeHintTip: "Tip: paste a YouTube link (watch / youtu.be / embed)",
-        coverLabel: "Cover image / video (shown вместо iframe)",
-        coverHint: "Iframe харагдахгүй, зөвхөн audio явна.",
-      },
-    },
   },
 
   {
@@ -2174,28 +2136,28 @@ const LONG_DISTANCE_TEMPLATES = [
       memories: [
         {
           type: "image",
-          src: "",
+          src: "https://th.bing.com/th/id/R.f0a3d3d69e048785a077546b4d0c5011?rik=5AxYfR8dCZA3Ng&pid=ImgRaw&r=0",
           placeholder: "🌅",
           date: "Нарны жаргалт",
           caption: "Нэг нарыг харж байсан тэр мөч... 🌅",
         },
         {
           type: "image",
-          src: "",
+          src: "https://tse3.mm.bing.net/th/id/OIP.MhKkZeMzDtbeaBB06My3TgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
           placeholder: "✈️",
           date: "Нисэх өдөр",
           caption: "Чам руу нисэх тэр өдөр 💕",
         },
         {
           type: "image",
-          src: "",
+          src: "https://tse2.mm.bing.net/th/id/OIP.UJbdth0GNOIGJ5ap1ag_1gHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
           placeholder: "📱",
           date: "Видео дуудлага",
           caption: "Дэлгэцээр ч гэсэн чиний нүүрийг харах аз жаргал 🥰",
         },
         {
           type: "image",
-          src: "",
+          src: "https://preview.redd.it/ph3v5i9qet971.jpg?auto=webp&s=bcf546c8eaa37e674745a32936bef2aeced31add",
           placeholder: "💌",
           date: "Захидал",
           caption: "Бичсэн захидал бүрт хайр дүүрэн 💌",
@@ -2410,29 +2372,25 @@ const LONG_DISTANCE_TEMPLATES = [
       memories: [
         {
           type: "image",
-          src: "",
-          placeholder: "🌙",
+          src: "https://img.freepik.com/premium-photo/illustration-anime-couple-valentine-s-day-generative-ai_850810-352.jpg",
           date: "Сарны гэрэл",
           caption: "Нэг сарыг хардаг бид хоёр 🌙",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "💫",
+          src: "https://tse3.mm.bing.net/th/id/OIP.fsVWsHenwOrWRKElkrjmFAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Хамтын мөч",
           caption: "Хамтдаа байсан тэр шөнө ✨",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "📱",
-          date: "Видео дуудлага",
-          caption: "Шөнийн дуудлага, чиний дуу хоолой 💜",
+          src: "https://img.freepik.com/premium-photo/anime-romantic-seen-generative-ai_837759-1735.jpg?w=2000",
+          date: "Шөнийн дуудлага",
+          caption: "Шөнийн дуудлага, чамтай хамт 💜",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "💌",
+          src: "https://tse1.explicit.bing.net/th/id/OIP.KcT7OrSrjA2tPl3iO8txLAAAAA?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Хайрын захидал",
           caption: "Зүрхнээсээ бичсэн мессеж бүр 💌",
         },
@@ -2646,29 +2604,25 @@ const LONG_DISTANCE_TEMPLATES = [
       memories: [
         {
           type: "image",
-          src: "",
-          placeholder: "🌊",
+          src: "https://tse1.mm.bing.net/th/id/OIP.AwzQ5bWsD05rqX8Tbd4AIAHaKo?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Далайн эрэг",
           caption: "Хамтдаа далайн эргээр алхсан 🌊",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "✈️",
+          src: "https://tse3.mm.bing.net/th/id/OIP.C5nAXDzLI8xe-89u8lvYgwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Нислэг",
           caption: "Чам руу ниссэн тэр өдөр ✈️",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "📱",
+          src: "https://i.pinimg.com/736x/b5/00/1e/b5001efba899981a2ddc6422130ed274.jpg",
           date: "Цахим уулзалт",
           caption: "Дэлгэцний цаанаас ирдэг инээмсэглэл 💙",
         },
         {
           type: "image",
-          src: "",
-          placeholder: "🐚",
+          src: "https://th.bing.com/th/id/OIP.kXSp2TFOESSwFC6m5aSF6gHaG2?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
           date: "Далайн бэлэг",
           caption: "Далайн хясааг чамд зориулав 🐚",
         },

@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import "./GiftPreviewPage.css";
+import "./ShareModal.css";
 
 /**
  * GiftPreviewPage — standalone page that loads a gift from Firestore
@@ -16,6 +17,23 @@ export default function GiftPreviewPage() {
   const [gift, setGift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  /* ── password gate state ── */
+  const [unlocked, setUnlocked] = useState(false);
+  const [pwDigits, setPwDigits] = useState(["", "", "", ""]);
+  const [pwError, setPwError] = useState(false);
+  const digitRefs = [useRef(), useRef(), useRef(), useRef()];
+
+  /* Restore unlock from sessionStorage if previously entered */
+  useEffect(() => {
+    if (gift?.password && !unlocked) {
+      try {
+        if (sessionStorage.getItem(`pw-${giftId}`) === "1") {
+          setUnlocked(true);
+        }
+      } catch {}
+    }
+  }, [gift, giftId, unlocked]);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,6 +107,93 @@ export default function GiftPreviewPage() {
     );
   }
 
+  /* ── password gate handlers ── */
+  const handlePwDigitChange = (idx, val) => {
+    if (!/^\d?$/.test(val)) return;
+    const next = [...pwDigits];
+    next[idx] = val;
+    setPwDigits(next);
+    setPwError(false);
+    if (val && idx < 3) digitRefs[idx + 1].current?.focus();
+  };
+
+  const handlePwKeyDown = (idx, e) => {
+    if (e.key === "Backspace" && !pwDigits[idx] && idx > 0) {
+      digitRefs[idx - 1].current?.focus();
+    }
+  };
+
+  const checkPassword = () => {
+    const entered = pwDigits.join("");
+    if (entered === gift.password) {
+      setUnlocked(true);
+      // remember for this session so refresh doesn't re-ask
+      try { sessionStorage.setItem(`pw-${giftId}`, "1"); } catch {}
+    } else {
+      setPwError(true);
+    }
+  };
+
+  /* ── password gate screen ── */
+  const needsPassword = gift && gift.password && !unlocked;
+
+  // Check if already unlocked this session
+  if (gift && gift.password && !unlocked) {
+    try {
+      if (sessionStorage.getItem(`pw-${giftId}`) === "1") {
+        // side-effect in render — schedule state update
+        if (!unlocked) setTimeout(() => setUnlocked(true), 0);
+      }
+    } catch {}
+  }
+
+  if (needsPassword && !sessionStorage.getItem?.(`pw-${giftId}`)) {
+    return (
+      <div className="gift-preview-page pw-gate">
+        <div className="pw-gate-icon">🔒</div>
+        <h2 className="pw-gate-title">Нууц код шаардлагатай</h2>
+        <p className="pw-gate-subtitle">
+          Энэ бэлгийг үзэхэд 4 оронтой нууц код оруулна уу
+        </p>
+
+        {gift.passwordHint && (
+          <p className="pw-gate-hint">
+            💡 <span>{gift.passwordHint}</span>
+          </p>
+        )}
+
+        <div className="pw-gate-input-row">
+          {pwDigits.map((d, i) => (
+            <input
+              key={i}
+              ref={digitRefs[i]}
+              className={`pw-gate-digit${pwError ? " error" : ""}`}
+              type="tel"
+              inputMode="numeric"
+              maxLength={1}
+              value={d}
+              onChange={(e) => handlePwDigitChange(i, e.target.value)}
+              onKeyDown={(e) => handlePwKeyDown(i, e)}
+              autoFocus={i === 0}
+            />
+          ))}
+        </div>
+
+        {pwError && (
+          <p className="pw-gate-error">Нууц код буруу байна 😢</p>
+        )}
+
+        <button
+          className="pw-gate-btn"
+          disabled={pwDigits.some((d) => !d)}
+          onClick={checkPassword}
+        >
+          Нээх 💝
+        </button>
+      </div>
+    );
+  }
+
   // Determine startDate from welcome section
   const welcomeSec = gift.sections?.find((s) => s.type === "welcome");
   const startDate = welcomeSec?.data?.startDate
@@ -110,12 +215,13 @@ export default function GiftPreviewPage() {
 
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
-
       <GiftRenderer
         gift={gift}
         startDate={startDate}
         category={gift.category}
         initialSectionIndex={initialIndex}
+        giftId={giftId}
+        persistResponses={true}
       />
     </div>
   );

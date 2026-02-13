@@ -191,6 +191,9 @@
 }
 
 .gift-action-btn {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
   font-family: "Poppins", sans-serif;
   font-size: 0.78rem;
   padding: 6px 14px;
@@ -226,6 +229,13 @@
   border-color: rgba(244, 67, 54, 0.4);
   color: #f44336;
 }
+.gift-action-check-response {
+  margin-left: auto;
+}
+.gift-action-check-response:hover {
+  border-color: rgba(76, 175, 80, 0.4);
+  color: #4caf50;
+}
 
 /* Delete Confirm */
 .gift-delete-confirm {
@@ -246,6 +256,113 @@
   color: #f44336;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+/* ===== Inline Share Panel (Heart QR + URL) ===== */
+.gift-share-panel {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.gift-share-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.gift-share-panel-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gift-share-panel-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gift-share-panel-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.gift-share-panel-qr {
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gift-share-panel-qr-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 24px rgba(230, 0, 35, 0.25));
+}
+
+.gift-share-panel-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+}
+
+.gift-share-panel-loading span {
+  font-size: 2rem;
+  animation: giftPulse 1.5s ease-in-out infinite;
+}
+
+.gift-share-panel-error {
+  font-size: 0.85rem;
+  color: rgba(244, 67, 54, 0.9);
+  text-align: center;
+}
+
+.gift-share-panel-url {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gift-share-panel-url-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.gift-share-panel-url-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  font-family: monospace;
+  outline: none;
+}
+
+.gift-share-panel-url-input:focus {
+  border-color: rgba(255, 107, 157, 0.3);
 }
 
 .gift-action-delete-yes:hover {

@@ -15,7 +15,7 @@ import { IoMdMenu } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { IoColorPalette } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { IoMdPhonePortrait, IoIosTabletLandscape, IoMdDesktop } from "react-icons/io";
 
 import {
@@ -30,6 +30,7 @@ import {
 } from "./SectionEditors";
 
 import "./Builder.css";
+import "./ShareModal.css";
 
 const DEFAULT_BUILDER_THEME = {
   className: "theme-classic",
@@ -102,7 +103,7 @@ export default function Builder({ onBack, initialGift }) {
   const [editorOpen, setEditorOpen] = useState(false);
 
   // ✅ Sidebar drawer open/close (mobile/tablet)
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const selectedSection = gift.sections.find((s) => s.id === selectedSectionId);
 
@@ -157,6 +158,24 @@ export default function Builder({ onBack, initialGift }) {
         s.id === sectionId ? { ...s, data: newData } : s,
       ),
     }));
+  }, []);
+
+  const deleteSection = useCallback((sectionId) => {
+    setGift((prev) => {
+      const idx = prev.sections.findIndex((s) => s.id === sectionId);
+      if (idx === -1) return prev;
+      if (prev.sections.length <= 1) return prev;
+
+      const nextSections = prev.sections.filter((s) => s.id !== sectionId);
+      const nextSelectedId =
+        prev.sections[idx + 1]?.id ?? prev.sections[idx - 1]?.id ?? null;
+
+      setSelectedSectionId((current) =>
+        current === sectionId ? nextSelectedId : current,
+      );
+
+      return { ...prev, sections: nextSections };
+    });
   }, []);
 
   const applyTemplate = useCallback((tmpl) => {
@@ -496,20 +515,39 @@ export default function Builder({ onBack, initialGift }) {
                                   </span>
                                 </div>
 
-                                {/* ✅ Edit opens drawer */}
-                                <button
-                                  type="button"
-                                  className="builder-section-edit-btn"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedSectionId(section.id);
-                                    setEditorOpen(true);
-                                    setSidebarOpen(false); // ✅ mobile дээр хаах
-                                  }}
-                                  title="Edit"
+                                <div
+                                  className="builder-section-item-actions"
+                                  onClick={(e) => e.stopPropagation()}
                                 >
-                                  <MdEdit />
-                                </button>
+                                  {/* ✅ Edit opens drawer */}
+                                  <button
+                                    type="button"
+                                    className="builder-action-btn builder-action-edit"
+                                    onClick={() => {
+                                      setSelectedSectionId(section.id);
+                                      setEditorOpen(true);
+                                      setSidebarOpen(false); // ✅ mobile дээр хаах
+                                    }}
+                                    title="Edit"
+                                  >
+                                    <MdEdit />
+                                  </button>
+
+                                  {/* ✅ Delete section */}
+                                  <button
+                                    type="button"
+                                    className="builder-action-btn builder-action-delete"
+                                    onClick={() => deleteSection(section.id)}
+                                    title={
+                                      gift.sections.length <= 1
+                                        ? "At least 1 section must remain"
+                                        : "Delete"
+                                    }
+                                    disabled={gift.sections.length <= 1}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </Draggable>
@@ -527,6 +565,39 @@ export default function Builder({ onBack, initialGift }) {
             <div className="builder-sidebar-info">
               <span className="builder-sidebar-info-count">{gift.sections.length}</span>
               <span>section нэмэгдсэн</span>
+            </div>
+
+            {/* Password setup */}
+            <div className="pw-setup">
+              <div className="pw-setup-title">Нууц үг тохируулах</div>
+              <div className="pw-setup-row">
+                <label className="pw-setup-label">4 оронтой нууц үг</label>
+                <input
+                  className="pw-setup-input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="••••"
+                  value={gift.password || ""}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+                    setGift((prev) => ({ ...prev, password: val }));
+                  }}
+                />
+                <span className="pw-setup-tip">Жишээ: төрсөн өдрийн 4 орон (0315)</span>
+              </div>
+              <div className="pw-setup-row">
+                <label className="pw-setup-label">Нууц үгний санамж (hint)</label>
+                <input
+                  className="pw-setup-hint-input"
+                  type="text"
+                  placeholder="Жишээ: Миний төрсөн өдөр 🎂"
+                  value={gift.passwordHint || ""}
+                  onChange={(e) => {
+                    setGift((prev) => ({ ...prev, passwordHint: e.target.value }));
+                  }}
+                />
+              </div>
             </div>
           </div>
         </aside>

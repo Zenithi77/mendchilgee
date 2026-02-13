@@ -4,6 +4,11 @@ import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import "./GiftListPage.css";
 import Logo from "../assets/Logo";
+import { FaEye } from "react-icons/fa6";
+import { MdEdit ,MdMessage } from "react-icons/md";
+import { RiDeleteBin5Line } from "react-icons/ri";
+
+
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
   const { user } = useAuth();
@@ -53,6 +58,10 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     navigate(`/preview/${giftId}`);
   };
 
+  const handleCheckResponse = (giftId) => {
+    navigate(`/responses/${giftId}`);
+  };
+
   const copyShareLink = (giftId) => {
     const url = `${window.location.origin}/preview/${giftId}`;
     navigator.clipboard.writeText(url).then(() => {
@@ -61,7 +70,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       if (btn) {
         btn.textContent = "✓ Copied!";
         setTimeout(() => {
-          btn.textContent = "🔗 Share";
+          btn.textContent = "Copy Link";
         }, 1500);
       }
     });
@@ -170,20 +179,20 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                     className="gift-action-btn gift-action-edit"
                     onClick={() => onEditGift(gift)}
                   >
-                    ✏️ Edit
+                    <MdEdit /> Edit
                   </button>
                   <button
                     className="gift-action-btn gift-action-preview"
                     onClick={() => handlePreview(gift.id)}
                   >
-                    👁️ Preview
+                    <FaEye /> Preview
                   </button>
                   <button
                     className="gift-action-btn gift-action-share"
                     data-copy={gift.id}
                     onClick={() => copyShareLink(gift.id)}
                   >
-                    🔗 Share
+                    Copy Link
                   </button>
                   {confirmDeleteId === gift.id ? (
                     <div className="gift-delete-confirm">
@@ -207,9 +216,16 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                       className="gift-action-btn gift-action-delete"
                       onClick={() => setConfirmDeleteId(gift.id)}
                     >
-                      🗑️
+                      <RiDeleteBin5Line />
+
                     </button>
                   )}
+                  <button
+                    className="gift-action-btn gift-action-check-response"
+                    onClick={() => handleCheckResponse(gift.id)}
+                  >
+                    <MdMessage /> Хариу шалгах
+                  </button>
                 </div>
               </div>
             ))}

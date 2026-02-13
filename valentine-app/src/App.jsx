@@ -8,6 +8,7 @@ import CategorySelector from "./components/CategorySelector";
 import TemplateSelector from "./components/TemplateSelector";
 import Builder from "./components/Builder";
 import GiftPreviewPage from "./components/GiftPreviewPage";
+import GiftResponsesPage from "./components/GiftResponsesPage";
 import DemoPaymentPage from "./components/DemoPaymentPage";
 import PaymentSuccessPage from "./components/PaymentSuccessPage";
 import PaymentCancelPage from "./components/PaymentCancelPage";
@@ -33,6 +34,7 @@ function App() {
   return (
     <Routes>
       <Route path="/preview/:giftId" element={<GiftPreviewPage />} />
+      <Route path="/responses/:giftId" element={<GiftResponsesPage />} />
       <Route path="/demo-payments" element={<DemoPaymentPage />} />
       <Route path="/demo-payments/success" element={<PaymentSuccessPage />} />
       <Route path="/demo-payments/cancel" element={<PaymentCancelPage />} />

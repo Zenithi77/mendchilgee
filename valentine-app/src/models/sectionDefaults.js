@@ -223,35 +223,6 @@ const SECTION_DEFAULTS = {
     ],
   },
 
-  [SECTION_TYPES.SPARK_CUSTOMIZER]: {
-    stickers: ["💘", "🌹", "🎀", "🍫", "💌", "✨"],
-    badge: "2.14",
-    title: "Happy Valentine's Day",
-    subtitle: "Customize your Valentine 💖",
-    quizTitle: "How well do you know me?",
-    defaultQuestions: [
-      { q: "How well do you know me?", a1: "Movies 🎬", a2: "Partying 💃" },
-    ],
-    phoneStickers: ["💞", "🌸", "✨", "💗"],
-    phonePlaceholder: {
-      heart: "💖",
-      text: "Happy Valentine's Day",
-      sub: "Will you be mine? 💌",
-    },
-    phoneCTA: { title: "Be My Valentine? 💘", sub: "2.14 💌" },
-    musicBar: { icon: "🎵", title: "Your Song", sub: "YouTube" },
-    continueButton: "Continue 💌",
-    note: "",
-    revealFace: "🙂",
-    revealPill: "HOVER TO REVEAL",
-    labels: {
-      youtubeLink: "YouTube link",
-      youtubeHintOk: "OK",
-      youtubeHintTip: "Paste a YouTube link",
-      coverLabel: "Cover image",
-      coverHint: "Cover hint",
-    },
-  },
 };
 
 /**
