@@ -392,6 +392,7 @@
   letter-spacing: 4px;
   text-align: center;
   max-width: 200px;
+  border-color:rgba(0, 0, 0, 0.7);
 }
 
 .pw-setup-input:focus {
@@ -408,6 +409,7 @@
   font-family: "Poppins", sans-serif;
   outline: none;
   width: 100%;
+  border-color:rgba(0, 0, 0, 0.7);
 }
 
 .pw-setup-hint-input:focus {
