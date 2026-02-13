@@ -259,7 +259,7 @@ export default function GiftPreviewPage() {
         giftId={giftId}
         persistResponses={true}
       />
-      <Watermark visible={showWatermark} />
+      <Watermark visible={showWatermark} giftId={giftId} />
     </div>
   );
 }

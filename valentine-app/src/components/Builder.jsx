@@ -129,6 +129,19 @@ export default function Builder() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  // Auto-open upgrade modal when redirected from public view with ?upgrade=true
+  const locationObj = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(locationObj.search);
+    if (params.get("upgrade") === "true") {
+      setShowUpgradeModal(true);
+      // Clean up the URL param without navigation
+      const url = new URL(window.location);
+      url.searchParams.delete("upgrade");
+      window.history.replaceState({}, "", url);
+    }
+  }, [locationObj.search]);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
   const [previewReloadKey, setPreviewReloadKey] = useState(0);
@@ -446,7 +459,7 @@ export default function Builder() {
             <>
               <div className="builder-divider" />
               <span
-                className="builder-tier-badge"
+                className="builder-tier-badge builder-tier-badge-hide-mobile"
                 style={{
                   background: requiredTierMeta.bgColor,
                   color: requiredTierMeta.color,
@@ -461,12 +474,12 @@ export default function Builder() {
 
         <div className="builder-header-right">
           <button
-            className="builder-btn builder-btn-outline"
+            className="builder-btn builder-btn-outline builder-btn-preview"
             onClick={openFullPreview}
             disabled={gift.sections.length === 0 || saving}
           >
             <span className="builder-btn-icon">↗</span>
-            <span>View full screen</span>
+            <span className="builder-btn-preview-txt">Урьдчилан харах</span>
           </button>
 
           <div className="builder-divider" />
@@ -707,7 +720,15 @@ export default function Builder() {
                                   <button
                                     type="button"
                                     className="builder-action-btn builder-action-delete"
-                                    onClick={() => deleteSection(section.id)}
+                                    onClick={() => {
+                                      if (
+                                        window.confirm(
+                                          `"${getSectionLabel(section)}" хэсгийг устгах уу?`,
+                                        )
+                                      ) {
+                                        deleteSection(section.id);
+                                      }
+                                    }}
                                     title={
                                       gift.sections.length <= 1
                                         ? "At least 1 section must remain"
@@ -874,6 +895,7 @@ export default function Builder() {
                     className="builder-btn builder-btn-save"
                     onClick={async () => {
                       await handleSave();
+                      setEditorOpen(false);
                     }}
                     disabled={saving}
                     title="Хадгалах"

@@ -10,6 +10,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Watermark.css";
 
 const BRAND_URL = "https://bolzii.com";
@@ -32,7 +33,8 @@ function generatePatternTexts(count = 80) {
  *
  * @param {boolean} visible — whether to show the watermark
  */
-export default function Watermark({ visible }) {
+export default function Watermark({ visible, giftId }) {
+  const navigate = useNavigate();
   const patternTexts = useMemo(() => generatePatternTexts(80), []);
 
   if (!visible) return null;
@@ -71,14 +73,18 @@ export default function Watermark({ visible }) {
             {" · "}
             Watermark арилгахын тулд upgrade хийнэ үү
           </p>
-          <a
-            href={BRAND_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
             className="watermark-banner-cta"
+            onClick={() => {
+              if (giftId) {
+                navigate(`/builder/${giftId}?upgrade=true`);
+              } else {
+                window.open(BRAND_URL, "_blank");
+              }
+            }}
           >
             Upgrade хийх →
-          </a>
+          </button>
         </div>
       </div>
 

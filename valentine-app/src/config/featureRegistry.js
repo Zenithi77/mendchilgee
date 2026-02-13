@@ -89,7 +89,7 @@ export const FEATURE_REGISTRY = {
   [SECTION_TYPES.MEMORY_VIDEO]: {
     label: "Video",
     labelMn: "Видео хэсэг",
-    requiredTier: TIERS.STANDARD,
+    requiredTier: TIERS.PREMIUM,
     limits: {
       [TIERS.FREE]: { maxDurationMinutes: 0 },
       [TIERS.STANDARD]: { maxDurationMinutes: 2 },

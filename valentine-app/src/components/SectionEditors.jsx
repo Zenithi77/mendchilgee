@@ -33,6 +33,7 @@ function TextInputWithEmoji({
   onChange,
   placeholder,
   multiline = false,
+  rows = 4,
 }) {
   const handleEmoji = (emoji) => {
     onChange(insertEmojiAtCursor(value, emoji));
@@ -46,7 +47,7 @@ function TextInputWithEmoji({
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          rows={4}
+          rows={rows}
         />
       ) : (
         <input
@@ -262,6 +263,7 @@ export function WelcomeLetterEditor({
               onChange={(v) => updateLetter("content", v)}
               placeholder="Энд хайрын захидлаа бичнэ үү..."
               multiline
+              rows={8}
             />
           </FieldRow>
 

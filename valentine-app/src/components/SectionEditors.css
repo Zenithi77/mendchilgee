@@ -107,6 +107,8 @@
   transition: all 0.15s ease;
   resize: vertical;
   min-height: 80px;
+  max-height: 300px;
+  overflow-y: auto;
   box-sizing: border-box;
 }
 
