@@ -46,7 +46,7 @@ export default function Welcome({ startDate, onOpen }) {
           </div>
           <div className="timer-grid">
             {[
-              [time.d, 'Days'], [time.h, 'Hours'], [time.m, 'Minutes'], [time.s, 'Seconds']
+              [time.d, 'Өдөр'], [time.h, 'Цаг'], [time.m, 'Минут'], [time.s, 'Секунд']
             ].map(([val, label]) => (
               <div className="timer-box" key={label}>
                 <div className="timer-num">{val}</div>

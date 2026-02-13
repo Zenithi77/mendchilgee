@@ -213,10 +213,10 @@ export default function MemoryGallery2({ memories, onContinue, template }) {
               marginBottom: 20,
             }}
           >
-            {gallery.footerText || "Бүх дурсамж гайхалтай... 💕"}
+            {gallery.footerText || "Бүх дурсамж үнэ цэнэтэй... 💕"}
           </p>
           <button className="btn btn-magic" onClick={onContinue}>
-            {gallery.continueButton || "Болзоо төлөвлөх 💑"}
+            {gallery.continueButton || "Болзоо төлөвлөх 👩‍❤️‍👨"}
           </button>
         </div>
       </div>

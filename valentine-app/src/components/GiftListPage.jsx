@@ -2,13 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
+import { generateHeartQR } from "../utils/heartQr";
 import "./GiftListPage.css";
-import Logo from "../assets/Logo";
-import { FaEye } from "react-icons/fa6";
-import { MdEdit ,MdMessage } from "react-icons/md";
-import { RiDeleteBin5Line } from "react-icons/ri";
-
-
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
   const { user } = useAuth();
@@ -17,6 +12,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [sharePanel, setSharePanel] = useState(null);
 
   const fetchGifts = useCallback(async () => {
     if (!user) return;
@@ -58,22 +54,83 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     navigate(`/preview/${giftId}`);
   };
 
-  const handleCheckResponse = (giftId) => {
-    navigate(`/responses/${giftId}`);
-  };
+  const openSharePanel = useCallback(
+    async (gift) => {
+      if (!gift?.id) return;
 
-  const copyShareLink = (giftId) => {
-    const url = `${window.location.origin}/preview/${giftId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      // Brief visual feedback via a temp class
-      const btn = document.querySelector(`[data-copy="${giftId}"]`);
-      if (btn) {
-        btn.textContent = "✓ Copied!";
-        setTimeout(() => {
-          btn.textContent = "Copy Link";
-        }, 1500);
+      if (sharePanel?.id === gift.id) {
+        setSharePanel(null);
+        return;
       }
-    });
+
+      const url = `${window.location.origin}/preview/${gift.id}`;
+      const title = getGiftTitle(gift);
+      setSharePanel({ id: gift.id, title, url, qr: null, loading: true, error: null });
+
+      // Best-effort: also copy the URL
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        // ignore
+      }
+
+      try {
+        const qr = await generateHeartQR(url, { size: 700, color: "#e60023" });
+        setSharePanel((prev) =>
+          prev?.id === gift.id ? { ...prev, qr, loading: false } : prev,
+        );
+      } catch (err) {
+        console.error("Heart QR generation failed:", err);
+        setSharePanel((prev) =>
+          prev?.id === gift.id
+            ? { ...prev, loading: false, error: "QR үүсгэхэд алдаа гарлаа" }
+            : prev,
+        );
+      }
+    },
+    [sharePanel?.id],
+  );
+
+  /** Extract summary pills (step-question choices stored in finalSummary fields) */
+  const getGiftSummary = (gift) => {
+    const pills = [];
+    // Try to pull stepQuestions options chosen at build time
+    const stepSec = gift.sections?.find((s) => s.type === "stepQuestions");
+    const finalSec = gift.sections?.find((s) => s.type === "finalSummary");
+    const fields = finalSec?.data?.summaryFields || [];
+
+    // If the builder persisted choices inside the gift, use them
+    const choices = gift.choices || {};
+    for (const f of fields) {
+      const val = choices[f.key];
+      if (val) {
+        const display = Array.isArray(val) ? val.join(", ") : val;
+        pills.push({ emoji: f.emoji, label: f.label, value: display });
+      }
+    }
+
+    // Fallback: show info from sections
+    if (pills.length === 0) {
+      const letterSec = gift.sections?.find((s) => s.type === "loveLetter");
+      if (letterSec?.data?.title) {
+        pills.push({ emoji: "💌", label: "Захидал", value: letterSec.data.title });
+      }
+      if (stepSec?.data?.steps?.length) {
+        pills.push({ emoji: "📝", label: "Алхамууд", value: `${stepSec.data.steps.length} алхам` });
+      }
+      const gallerySec = gift.sections?.find((s) => s.type === "memoryGallery");
+      if (gallerySec?.data?.memories?.length) {
+        const withImg = gallerySec.data.memories.filter((m) => m.src).length;
+        if (withImg > 0) pills.push({ emoji: "📸", label: "Зураг", value: `${withImg} зураг` });
+      }
+    }
+
+    // Password status
+    if (gift.password) {
+      pills.push({ emoji: "🔒", label: "Нууц үг", value: "тохируулсан" });
+    }
+
+    return pills;
   };
 
   const formatDate = (timestamp) => {
@@ -128,13 +185,11 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
-          <div className="gift-list-header-emoji">
-            <Logo />
-          </div>
+          <div className="gift-list-header-emoji">💝</div>
           <h1 className="gift-list-title font-script">My Gifts</h1>
           <p className="gift-list-subtitle">
             {gifts.length === 0
-              ? "Одоохондоо бэлэг алга байна. Нэгийг нь хамтдаа бүтээх үү? 💝"
+              ? "Та одоогоор ямар ч бэлэг үүсгээгүй байна. Шинэ бэлэг үүсгэе! 💫"
               : `Танд нийт ${gifts.length} бэлэг байна 💌`}
           </p>
         </div>
@@ -143,7 +198,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         <div className="gift-list-actions">
           <button className="btn btn-create-gift" onClick={onCreateNew}>
             <span className="btn-create-icon">✨</span>
-            Create New Gift
+            Шинэ бэлэг үүсгэх
           </button>
         </div>
 
@@ -174,23 +229,37 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                   )}
                 </div>
 
+                {/* Summary pills */}
+                {(() => {
+                  const pills = getGiftSummary(gift);
+                  return pills.length > 0 ? (
+                    <div className="gift-card-summary">
+                      {pills.map((p, i) => (
+                        <span key={i} className="gift-card-summary-pill">
+                          {p.emoji} {p.label}: {p.value}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
+
                 <div className="gift-card-actions">
                   <button
                     className="gift-action-btn gift-action-edit"
                     onClick={() => onEditGift(gift)}
                   >
-                    <MdEdit /> Edit
+                    ✏️ Edit
                   </button>
                   <button
                     className="gift-action-btn gift-action-preview"
                     onClick={() => handlePreview(gift.id)}
                   >
-                    <FaEye /> Preview
+                    👁️ Preview
                   </button>
                   <button
                     className="gift-action-btn gift-action-share"
                     data-copy={gift.id}
-                    onClick={() => copyShareLink(gift.id)}
+                    onClick={() => openSharePanel(gift)}
                   >
                     Copy Link
                   </button>
@@ -216,17 +285,54 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                       className="gift-action-btn gift-action-delete"
                       onClick={() => setConfirmDeleteId(gift.id)}
                     >
-                      <RiDeleteBin5Line />
-
+                      🗑️
                     </button>
                   )}
-                  <button
-                    className="gift-action-btn gift-action-check-response"
-                    onClick={() => handleCheckResponse(gift.id)}
-                  >
-                    <MdMessage /> Хариу шалгах
-                  </button>
                 </div>
+
+                {sharePanel?.id === gift.id && (
+                  <div className="gift-share-panel">
+                    <div className="gift-share-panel-header">
+                      <div className="gift-share-panel-title">{sharePanel.title}</div>
+                      <button
+                        type="button"
+                        className="gift-share-panel-close"
+                        onClick={() => setSharePanel(null)}
+                        aria-label="Close"
+                        title="Close"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <div className="gift-share-panel-qr">
+                      {sharePanel.loading ? (
+                        <div className="gift-share-panel-loading">
+                          <span>💝</span>
+                          <p>QR үүсгэж байна...</p>
+                        </div>
+                      ) : sharePanel.qr ? (
+                        <img
+                          className="gift-share-panel-qr-img"
+                          src={sharePanel.qr}
+                          alt="Heart QR"
+                        />
+                      ) : (
+                        <div className="gift-share-panel-error">{sharePanel.error}</div>
+                      )}
+                    </div>
+
+                    <div className="gift-share-panel-url">
+                      <div className="gift-share-panel-url-label">URL</div>
+                      <input
+                        className="gift-share-panel-url-input"
+                        value={sharePanel.url}
+                        readOnly
+                        onFocus={(e) => e.target.select()}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -235,13 +341,19 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         {/* Empty State */}
         {gifts.length === 0 && (
           <div className="gift-list-empty">
+            <div className="gift-list-empty-icon">🎁</div>
             <p className="gift-list-empty-text">
-              Анхны Валентины бэлгээ урлаад, зүрхэндээ дотно хүндээ
-              хуваалцаарай.
+              Create your first Valentine's gift and share it with your special
+              someone!
             </p>
+            <button className="btn btn-create-gift" onClick={onCreateNew}>
+              <span className="btn-create-icon">💕</span>
+              Get Started
+            </button>
           </div>
         )}
       </div>
+
     </div>
   );
 }
