@@ -181,12 +181,52 @@ export default function Builder() {
   // ✅ Editor drawer open/close
   const [editorOpen, setEditorOpen] = useState(false);
 
+  // ── Unsaved-changes guard ──
+  // Snapshot of the section data when the editor drawer opens
+  const [sectionSnapshot, setSectionSnapshot] = useState(null);
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+
   // ✅ Sidebar drawer open/close (mobile/tablet)
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const selectedSection = gift?.sections?.find(
     (s) => s.id === selectedSectionId,
   );
+
+  // Helper: check if the current section data has diverged from the snapshot
+  const hasUnsavedEditorChanges = useCallback(() => {
+    if (!sectionSnapshot || !selectedSection) return false;
+    return (
+      JSON.stringify(selectedSection.data) !== JSON.stringify(sectionSnapshot)
+    );
+  }, [sectionSnapshot, selectedSection]);
+
+  // Attempt to close the editor drawer; shows warning if unsaved changes exist
+  const requestCloseEditor = useCallback(() => {
+    if (hasUnsavedEditorChanges()) {
+      setShowUnsavedWarning(true);
+    } else {
+      setEditorOpen(false);
+      setSectionSnapshot(null);
+    }
+  }, [hasUnsavedEditorChanges]);
+
+  // Discard changes: revert section data to the snapshot and close
+  const discardEditorChanges = useCallback(() => {
+    if (sectionSnapshot && selectedSectionId) {
+      setGift((prev) => ({
+        ...prev,
+        sections: prev.sections.map((s) =>
+          s.id === selectedSectionId
+            ? { ...s, data: JSON.parse(JSON.stringify(sectionSnapshot)) }
+            : s,
+        ),
+      }));
+    }
+    setShowUnsavedWarning(false);
+    setEditorOpen(false);
+    setSectionSnapshot(null);
+  }, [sectionSnapshot, selectedSectionId]);
 
   const addSection = useCallback((type) => {
     const section = createDefaultSection(type);
@@ -207,6 +247,8 @@ export default function Builder() {
     });
     setSelectedSectionId(section.id);
     setShowAddModal(false);
+    // Snapshot the newly created section so cancelling reverts to it
+    setSectionSnapshot(JSON.parse(JSON.stringify(section.data)));
     setEditorOpen(true);
     setSidebarOpen(false); // ✅ mobile дээр хаах
   }, []);
@@ -296,6 +338,14 @@ export default function Builder() {
       setSaving(false);
     }
   }, [gift, user, urlGiftId, navigate]);
+
+  // Save changes from the warning modal, then close
+  const saveAndCloseEditor = useCallback(async () => {
+    setShowUnsavedWarning(false);
+    await handleSave();
+    setEditorOpen(false);
+    setSectionSnapshot(null);
+  }, [handleSave]);
 
   const autoSaveOnceRef = useRef(false);
   useEffect(() => {
@@ -715,6 +765,12 @@ export default function Builder() {
                                     className="builder-action-btn builder-action-edit"
                                     onClick={() => {
                                       setSelectedSectionId(section.id);
+                                      // Snapshot the section data at open-time
+                                      setSectionSnapshot(
+                                        JSON.parse(
+                                          JSON.stringify(section.data),
+                                        ),
+                                      );
                                       setEditorOpen(true);
                                       setSidebarOpen(false); // ✅ mobile дээр хаах
                                     }}
@@ -880,11 +936,44 @@ export default function Builder() {
         </main>
 
         {/* ✅ Right drawer editor */}
+        {/* ✅ Unsaved-changes warning modal */}
+        {showUnsavedWarning && (
+          <>
+            <div className="builder-unsaved-overlay" />
+            <div className="builder-unsaved-modal">
+              <div className="builder-unsaved-icon">⚠️</div>
+              <h3 className="builder-unsaved-title">
+                Хадгалаагүй өөрчлөлт байна
+              </h3>
+              <p className="builder-unsaved-text">
+                Та өөрчлөлтөө хадгалахгүйгээр хаах гэж байна. Хадгалах уу?
+              </p>
+              <div className="builder-unsaved-actions">
+                <button
+                  type="button"
+                  className="builder-btn builder-btn-save"
+                  onClick={saveAndCloseEditor}
+                  disabled={saving}
+                >
+                  {saving ? "Хадгалж байна..." : "💾 Хадгалах"}
+                </button>
+                <button
+                  type="button"
+                  className="builder-btn builder-btn-outline builder-btn-discard"
+                  onClick={discardEditorChanges}
+                >
+                  Цуцлах
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
         {editorOpen && (
           <>
             <div
               className="builder-drawer-overlay"
-              onClick={() => setEditorOpen(false)}
+              onClick={requestCloseEditor}
             />
             <div className="builder-drawer">
               <div className="builder-drawer-header">
@@ -903,6 +992,7 @@ export default function Builder() {
                     onClick={async () => {
                       await handleSave();
                       setEditorOpen(false);
+                      setSectionSnapshot(null);
                     }}
                     disabled={saving}
                     title="Хадгалах"
@@ -913,7 +1003,7 @@ export default function Builder() {
                   <button
                     type="button"
                     className="builder-btn builder-btn-outline"
-                    onClick={() => setEditorOpen(false)}
+                    onClick={requestCloseEditor}
                     title="Хаах"
                   >
                     ✕

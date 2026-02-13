@@ -4,15 +4,28 @@ import Fireworks from "./Fireworks";
 import FlowerBloom from "./FlowerBloom";
 import StickerAnimation from "./StickerAnimation";
 
-export default function FinalSummary2({ choices, template}) {
+export default function FinalSummary2({ choices, template }) {
   const final = template?.finalSummary || {};
   const effects = template?.effects || {};
   const baseSummaryFields = final.summaryFields || [];
-  const hasMovieField = baseSummaryFields.some((f) => f?.key === "movie");
+
+  // Merge custom step questions into summary fields
+  const stepQSteps = template?.stepQuestions?.steps || [];
+  const existingKeys = new Set(baseSummaryFields.map((f) => f.key));
+  const customFields = stepQSteps
+    .filter((s) => !existingKeys.has(s.key))
+    .map((s) => ({
+      key: s.key,
+      emoji: s.emoji || "📝",
+      label: s.title || s.key,
+    }));
+  const mergedFields = [...baseSummaryFields, ...customFields];
+
+  const hasMovieField = mergedFields.some((f) => f?.key === "movie");
   const summaryFields =
     !hasMovieField && choices?.movie
-      ? [...baseSummaryFields, { key: "movie", emoji: "🎬", label: "Кино" }]
-      : baseSummaryFields;
+      ? [...mergedFields, { key: "movie", emoji: "🎬", label: "Кино" }]
+      : mergedFields;
   const loveQuotes = final.quotes || [
     "Чамтай хамт байх мөч бүр онцгой 💕",
     "Чи бол миний бүх зүйл 💝",

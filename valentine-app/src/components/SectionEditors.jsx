@@ -949,6 +949,10 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                                     `${emoji} ${timePart}`,
                                   );
                                 }}
+                                triggerLabel={
+                                  (opt.label || "").match(/^(\S+)\s/)?.[1] ||
+                                  "🕐"
+                                }
                               />
                             </div>
                             <select
@@ -1019,6 +1023,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                                 onSelect={(emoji) =>
                                   editOption(idx, oi, "emoji", emoji)
                                 }
+                                triggerLabel={opt.emoji || "😊"}
                               />
                             </div>
                             <input
@@ -1028,7 +1033,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                               onChange={(e) =>
                                 editOption(idx, oi, "name", e.target.value)
                               }
-                              placeholder="Нэр"
+                              placeholder="Сонголт"
                               style={{ flex: 1 }}
                             />
                             <input
@@ -1061,7 +1066,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
         </div>
 
         <button type="button" className="se-add-card-btn" onClick={addStep}>
-          <span>＋</span> Алхам нэмэх
+          <span>＋</span> Асуулт нэмэх
         </button>
       </div>
     </div>
