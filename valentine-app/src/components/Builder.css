@@ -1309,11 +1309,20 @@
   .builder-menu-btn {
     display: inline-flex;
   }
-  .builder-header-right .builder-btn-outline {
+  /* Hide non-preview outline buttons on mobile/tablet */
+  .builder-header-right .builder-btn-outline:not(.builder-btn-preview) {
     display: none;
+  }
+  /* Keep preview button visible but shorten text on small screens */
+  .builder-btn-preview {
+    padding: 8px 12px;
   }
   .builder-btn-exit-txt {
     display: none;
+  }
+  /* Hide tier badge on mobile/tablet */
+  .builder-tier-badge-hide-mobile {
+    display: none !important;
   }
   .builder-viewport-btn {
     display: none;
@@ -1323,6 +1332,17 @@
   }
   .builder-divider {
     display: none;
+  }
+  /* Fix watermark upgrade button overflow on mobile */
+  .builder-btn-upgrade {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .builder-header-right {
+    gap: 6px;
+    flex-shrink: 0;
   }
   @media (max-width: 1024px) {
     .builder-sidebar {
@@ -1382,6 +1402,17 @@
 @media (max-width: 520px) {
   .builder-sidebar {
     width: 100vw;
+  }
+  /* On very small screens, hide preview text and show icon only */
+  .builder-btn-preview-txt {
+    display: none;
+  }
+  .builder-btn-preview {
+    padding: 8px 10px;
+  }
+  .builder-btn-upgrade {
+    padding: 5px 10px;
+    font-size: 0.72rem;
   }
 }
 .builder-preview-placeholder {
