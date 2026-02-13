@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { SECTION_TYPES } from "../models/gift";
 import EmojiPicker from "./EmojiPicker";
-import { uploadMemoryPhoto, uploadMemoryVideo } from "../services/storageService";
+import {
+  uploadMemoryPhoto,
+  uploadMemoryVideo,
+} from "../services/storageService";
 import { useAuth } from "../contexts/AuthContext";
 import { getSectionLimits } from "../config/featureRegistry";
 import { TIERS, TIER_META } from "../config/tiers";
@@ -144,7 +147,11 @@ function VideoUploader({ src, onUploaded }) {
     <div className="se-image-uploader">
       {src ? (
         <div className="se-image-preview">
-          <video src={src} className="se-image-thumb" style={{ objectFit: "cover" }} />
+          <video
+            src={src}
+            className="se-image-thumb"
+            style={{ objectFit: "cover" }}
+          />
           <button
             type="button"
             className="se-image-remove"
@@ -352,7 +359,7 @@ export function QuestionEditor({ section, onUpdate }) {
             placeholder="Чи намайг хайрладаг юу? 🥺💕"
           />
         </FieldRow>
-    
+
         <FieldRow
           label={
             <div className="se-label-row">
@@ -423,7 +430,9 @@ export function QuestionEditor({ section, onUpdate }) {
               </div>
             </div>
           ) : (
-            <p className="se-hint">Toggle OFF үед “Үгүй” товч энгийн (хувилбар текстгүй) байна.</p>
+            <p className="se-hint">
+              Toggle OFF үед “Үгүй” товч энгийн (хувилбар текстгүй) байна.
+            </p>
           )}
         </FieldRow>
       </div>
@@ -440,8 +449,14 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
   const memories = data.memories || [];
 
   // Image limits from feature registry
-  const standardLimits = getSectionLimits(SECTION_TYPES.MEMORY_GALLERY, TIERS.STANDARD);
-  const premiumLimits = getSectionLimits(SECTION_TYPES.MEMORY_GALLERY, TIERS.PREMIUM);
+  const standardLimits = getSectionLimits(
+    SECTION_TYPES.MEMORY_GALLERY,
+    TIERS.STANDARD,
+  );
+  const premiumLimits = getSectionLimits(
+    SECTION_TYPES.MEMORY_GALLERY,
+    TIERS.PREMIUM,
+  );
   const standardMax = standardLimits?.maxImages || 6;
   const premiumMax = premiumLimits?.maxImages || 10;
   const isOverStandard = memories.length > standardMax;
@@ -530,10 +545,18 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
         </div>
 
         {/* Image count & tier info */}
-        <div className="se-image-limit-info" style={{ marginBottom: 8, fontSize: 13, color: isOverStandard ? '#a855f7' : '#6b7280' }}>
-          📷 {memories.length} / {isOverStandard ? premiumMax : standardMax} зураг
+        <div
+          className="se-image-limit-info"
+          style={{
+            marginBottom: 8,
+            fontSize: 13,
+            color: isOverStandard ? "#a855f7" : "#6b7280",
+          }}
+        >
+          📷 {memories.length} / {isOverStandard ? premiumMax : standardMax}{" "}
+          зураг
           {isOverStandard && (
-            <span style={{ marginLeft: 8, color: '#a855f7', fontWeight: 600 }}>
+            <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
               🟣 Премиум ({standardMax}-с дээш)
             </span>
           )}
@@ -544,10 +567,14 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
           className="se-add-card-btn"
           onClick={addMemory}
           disabled={isAtPremiumMax}
-          style={isAtPremiumMax ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+          style={isAtPremiumMax ? { opacity: 0.5, cursor: "not-allowed" } : {}}
         >
           <span>＋</span> Дурсамж нэмэх
-          {isAtPremiumMax && <span style={{ fontSize: 11, marginLeft: 6 }}>(хамгийн ихдээ {premiumMax})</span>}
+          {isAtPremiumMax && (
+            <span style={{ fontSize: 11, marginLeft: 6 }}>
+              (хамгийн ихдээ {premiumMax})
+            </span>
+          )}
         </button>
       </div>
     </div>
@@ -571,10 +598,7 @@ export function MovieSelectionEditor({ section, onUpdate }) {
   };
 
   const addMovie = () => {
-    updateMovies([
-      ...movies,
-      { title: "", posterUrl: "", linkUrl: "" },
-    ]);
+    updateMovies([...movies, { title: "", posterUrl: "", linkUrl: "" }]);
   };
 
   const removeMovie = (idx) => {
@@ -1074,10 +1098,7 @@ export function MemoryVideoEditor({ section, onUpdate }) {
   };
 
   const addVideo = () => {
-    updateVideos([
-      ...videos,
-      { src: "", caption: "", date: "" },
-    ]);
+    updateVideos([...videos, { src: "", caption: "", date: "" }]);
   };
 
   const removeVideo = (idx) => {
