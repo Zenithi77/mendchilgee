@@ -3,7 +3,6 @@ import {
   loginWithEmail,
   registerWithEmail,
   loginWithGoogle,
-  loginAnonymously,
 } from "../services/authService";
 import { saveTermsAgreement } from "../services/firestoreService";
 import { TERMS_VERSION } from "../legal/terms";
@@ -19,15 +18,6 @@ const AuthPage = ({ onAuthSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
-
-  // Pick up any Google OAuth error from sessionStorage (set by callback handler)
-  useState(() => {
-    const storedError = sessionStorage.getItem("google_auth_error");
-    if (storedError) {
-      setError(storedError);
-      sessionStorage.removeItem("google_auth_error");
-    }
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,19 +81,14 @@ const AuthPage = ({ onAuthSuccess }) => {
   const handleGoogleSignIn = async () => {
     setError("");
     setLoading(true);
-    // Redirect-based OAuth — navigates away from the page
-    loginWithGoogle();
-  };
-
-  const handleAnonymousSignIn = async () => {
-    setError("");
-    setLoading(true);
     try {
-      await loginAnonymously();
+      await loginWithGoogle();
       onAuthSuccess?.();
     } catch (err) {
-      console.error("Anonymous sign-in error:", err);
-      setError("Failed to continue as guest");
+      console.error("Google sign-in error:", err);
+      if (err.code !== "auth/popup-closed-by-user") {
+        setError("Google нэвтрэлт амжилтгүй боллоо.");
+      }
     } finally {
       setLoading(false);
     }
@@ -279,16 +264,6 @@ const AuthPage = ({ onAuthSuccess }) => {
                 />
               </svg>
               Google
-            </button>
-
-            <button
-              type="button"
-              className="auth-button auth-button-guest"
-              onClick={handleAnonymousSignIn}
-              disabled={loading}
-            >
-              <span className="auth-guest-icon">👤</span>
-              Guest
             </button>
           </div>
 

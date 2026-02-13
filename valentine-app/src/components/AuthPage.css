@@ -302,12 +302,12 @@
 
 /* Social Buttons */
 .auth-social-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  width: 100%;
 }
 
 .auth-button-google {
+  flex: 1;
   background: rgba(255, 255, 255, 0.08);
   border: 2px solid rgba(255, 255, 255, 0.15);
   color: #fff;
@@ -386,9 +386,5 @@
 
   .auth-icon {
     font-size: 3rem;
-  }
-
-  .auth-social-buttons {
-    grid-template-columns: 1fr;
   }
 }

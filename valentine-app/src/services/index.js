@@ -5,7 +5,6 @@ export { auth, db, storage } from "../firebase";
 export {
   loginWithEmail,
   registerWithEmail,
-  loginAnonymously,
   loginWithGoogle,
   logout,
   onAuthChange,

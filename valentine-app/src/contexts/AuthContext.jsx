@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   onAuthChange,
-  loginAnonymously,
   loginWithEmail,
   registerWithEmail,
   loginWithGoogle,
@@ -53,17 +52,6 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // Auto sign in anonymously if no user (optional - for Valentine app)
-  const signInAnonymouslyIfNeeded = async () => {
-    if (!user) {
-      try {
-        await loginAnonymously();
-      } catch (error) {
-        console.error("Anonymous sign in failed:", error);
-      }
-    }
-  };
-
   // Accept updated terms
   const acceptTerms = async () => {
     if (!user || user.isAnonymous) return;
@@ -83,11 +71,9 @@ export const AuthProvider = ({ children }) => {
     isAnonymous: user?.isAnonymous ?? false,
     needsTermsReaccept,
     acceptTerms,
-    signInAnonymouslyIfNeeded,
     loginWithEmail,
     registerWithEmail,
     loginWithGoogle,
-    loginAnonymously,
     logout,
   };
 

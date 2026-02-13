@@ -147,6 +147,12 @@ export function templateToGift(template) {
     theme: template.theme ? { ...template.theme } : {},
     effects: template.effects ? { ...template.effects } : {},
     sections,
+    // ── Tier / Payment fields ──
+    requiredTier: "free",
+    paidTier: "free",
+    activatedAt: null,
+    expiresAt: null,
+    paymentExpired: false,
   };
 }
 
@@ -189,5 +195,11 @@ export function createEmptyGift() {
     theme: {},
     effects: {},
     sections: [],
+    // ── Tier / Payment fields ──
+    requiredTier: "free",
+    paidTier: "free",
+    activatedAt: null,
+    expiresAt: null,
+    paymentExpired: false,
   };
 }

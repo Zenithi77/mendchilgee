@@ -1,0 +1,246 @@
+/* ═══════════════════════════════════════════════════════════════
+   UpgradeModal — explains tier upgrade & triggers payment
+   ═══════════════════════════════════════════════════════════════ */
+
+.upgrade-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
+  animation: upgrade-fade 0.2s ease;
+}
+
+@keyframes upgrade-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.upgrade-modal {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: upgrade-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes upgrade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.upgrade-modal-header {
+  padding: 28px 28px 0;
+  text-align: center;
+}
+
+.upgrade-modal-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.upgrade-modal-title {
+  font-family: "Quicksand", "Poppins", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 6px;
+}
+
+.upgrade-modal-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Reasons list ── */
+.upgrade-reasons {
+  padding: 20px 28px 0;
+}
+
+.upgrade-reasons-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.upgrade-reason-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.upgrade-reason-item:last-child {
+  border-bottom: none;
+}
+
+.upgrade-reason-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.upgrade-reason-label {
+  font-size: 0.88rem;
+  color: #334155;
+  font-weight: 500;
+  flex: 1;
+}
+
+.upgrade-reason-tier {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+/* ── Plan info box ── */
+.upgrade-plan-box {
+  margin: 20px 28px;
+  padding: 18px;
+  background: linear-gradient(135deg, #f0f9ff, #faf5ff);
+  border-radius: 16px;
+  border: 1px solid rgba(168, 85, 247, 0.12);
+}
+
+.upgrade-plan-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.upgrade-plan-label {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.upgrade-plan-value {
+  font-size: 0.88rem;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.upgrade-plan-price {
+  font-size: 1.3rem;
+  color: #a855f7;
+  font-weight: 800;
+}
+
+/* ── Actions ── */
+.upgrade-actions {
+  padding: 0 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.upgrade-pay-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b9d, #c471ed);
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.upgrade-pay-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(255, 107, 157, 0.35);
+}
+
+.upgrade-pay-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upgrade-cancel-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.upgrade-cancel-btn:hover {
+  color: #64748b;
+}
+
+/* ── Loading state ── */
+.upgrade-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.upgrade-loading-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: upgrade-spin 0.6s linear infinite;
+}
+
+@keyframes upgrade-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .upgrade-modal {
+    max-width: 100%;
+    border-radius: 20px;
+  }
+
+  .upgrade-modal-header {
+    padding: 20px 20px 0;
+  }
+
+  .upgrade-reasons,
+  .upgrade-actions {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .upgrade-plan-box {
+    margin: 16px 20px;
+  }
+}

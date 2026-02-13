@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGift } from "../services/giftService";
+import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
+import Watermark from "./Watermark";
+import { shouldShowWatermark, isPaymentExpired } from "../utils/tierUtils";
 import "./GiftPreviewPage.css";
 import "./ShareModal.css";
 
@@ -31,7 +34,9 @@ export default function GiftPreviewPage() {
         if (sessionStorage.getItem(`pw-${giftId}`) === "1") {
           setUnlocked(true);
         }
-      } catch {}
+      } catch {
+        // sessionStorage may not be available in some environments
+      }
     }
   }, [gift, giftId, unlocked]);
 
@@ -47,6 +52,20 @@ export default function GiftPreviewPage() {
         if (!data) {
           setError("Gift олдсонгүй");
         } else {
+          // ── Expiration check on load ──
+          // If payment has expired, mark it so watermark reappears
+          if (!data.paymentExpired && isPaymentExpired(data)) {
+            data.paymentExpired = true;
+            data.paidTier = "free";
+            // Persist expiration to Firestore (fire-and-forget)
+            updateGift(giftId, {
+              paymentExpired: true,
+              paidTier: "free",
+            }).catch((err) =>
+              console.warn("Failed to persist expiration:", err),
+            );
+          }
+
           setGift(data);
 
           // Apply theme CSS variables
@@ -128,7 +147,11 @@ export default function GiftPreviewPage() {
     if (entered === gift.password) {
       setUnlocked(true);
       // remember for this session so refresh doesn't re-ask
-      try { sessionStorage.setItem(`pw-${giftId}`, "1"); } catch {}
+      try {
+        sessionStorage.setItem(`pw-${giftId}`, "1");
+      } catch {
+        // sessionStorage may not be available in some environments
+      }
     } else {
       setPwError(true);
     }
@@ -144,10 +167,19 @@ export default function GiftPreviewPage() {
         // side-effect in render — schedule state update
         if (!unlocked) setTimeout(() => setUnlocked(true), 0);
       }
-    } catch {}
+    } catch {
+      // sessionStorage may not be available in some environments
+    }
   }
 
-  if (needsPassword && !sessionStorage.getItem?.(`pw-${giftId}`)) {
+  let sessionUnlocked = false;
+  try {
+    sessionUnlocked = sessionStorage.getItem(`pw-${giftId}`) === "1";
+  } catch {
+    // sessionStorage may not be available in some environments
+  }
+
+  if (needsPassword && !sessionUnlocked) {
     return (
       <div className="gift-preview-page pw-gate">
         <div className="pw-gate-icon">🔒</div>
@@ -179,9 +211,7 @@ export default function GiftPreviewPage() {
           ))}
         </div>
 
-        {pwError && (
-          <p className="pw-gate-error">Нууц код буруу байна 😢</p>
-        )}
+        {pwError && <p className="pw-gate-error">Нууц код буруу байна 😢</p>}
 
         <button
           className="pw-gate-btn"
@@ -210,8 +240,14 @@ export default function GiftPreviewPage() {
       if (typeof idx === "number" && idx >= 0) initialIndex = idx;
     }
   } catch (e) {
+    console.warn("Error parsing URL hash for section index:", e);
     initialIndex = 0;
   }
+
+  // Check if watermark should be shown — only on the public view, not inside
+  // the builder's iframe preview.
+  const isInIframe = window.self !== window.top;
+  const showWatermark = !isInIframe && shouldShowWatermark(gift);
 
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
@@ -223,6 +259,7 @@ export default function GiftPreviewPage() {
         giftId={giftId}
         persistResponses={true}
       />
+      <Watermark visible={showWatermark} />
     </div>
   );
 }

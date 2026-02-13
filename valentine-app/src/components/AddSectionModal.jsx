@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { getAvailableSectionTypes } from "../sections/sectionRegistry";
+import { FEATURE_REGISTRY } from "../config/featureRegistry";
+import { TIER_META, TIERS } from "../config/tiers";
 import "./AddSectionModal.css";
 
 /**
@@ -38,22 +40,45 @@ export default function AddSectionModal({ open, onClose, onSelect }) {
         <div className="asm-body">
           <div className="asm-grid">
             {sectionTypes.map(
-              ({ type, labelMn, descMn, icon, iconBg, iconColor }) => (
-                <button
-                  key={type}
-                  className="asm-card"
-                  onClick={() => onSelect(type)}
-                >
-                  <div
-                    className="asm-card-icon"
-                    style={{ background: iconBg, color: iconColor }}
+              ({ type, labelMn, descMn, icon, iconBg, iconColor }) => {
+                const feature = FEATURE_REGISTRY[type];
+                const requiredTier = feature?.requiredTier || TIERS.FREE;
+                const tierMeta = TIER_META[requiredTier];
+
+                return (
+                  <button
+                    key={type}
+                    className="asm-card"
+                    onClick={() => onSelect(type)}
+                    title={
+                      requiredTier !== TIERS.FREE
+                        ? `Watermark-гүй нийтлэхийн тулд ${tierMeta.label} plan шаардлагатай.`
+                        : undefined
+                    }
                   >
-                    <span>{icon}</span>
-                  </div>
-                  <h3 className="asm-card-title">{labelMn}</h3>
-                  <p className="asm-card-desc">{descMn}</p>
-                </button>
-              ),
+                    <div
+                      className="asm-card-icon"
+                      style={{ background: iconBg, color: iconColor }}
+                    >
+                      <span>{icon}</span>
+                    </div>
+
+                    {/* ── Tier badge ── */}
+                    <span
+                      className="asm-tier-badge"
+                      style={{
+                        background: tierMeta.bgColor,
+                        color: tierMeta.color,
+                      }}
+                    >
+                      {tierMeta.badge} {tierMeta.label}
+                    </span>
+
+                    <h3 className="asm-card-title">{labelMn}</h3>
+                    <p className="asm-card-desc">{descMn}</p>
+                  </button>
+                );
+              },
             )}
           </div>
         </div>

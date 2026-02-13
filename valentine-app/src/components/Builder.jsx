@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Logo from "../assets/Logo";
@@ -9,14 +9,26 @@ import { saveOrUpdateGift } from "../services/giftService";
 import { useAuth } from "../contexts/AuthContext";
 
 import AddSectionModal from "./AddSectionModal";
+import UpgradeModal from "./UpgradeModal";
 import GiftPreview, { VIEWPORT_PRESETS } from "./GiftPreview";
 import { TEMPLATES } from "../templateConfigs";
+import { TIER_META } from "../config/tiers";
+import { FEATURE_REGISTRY } from "../config/featureRegistry";
+import {
+  getRequiredTier,
+  needsUpgrade,
+  getRemainingDays,
+} from "../utils/tierUtils";
 import { IoMdMenu } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { IoColorPalette } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { IoMdPhonePortrait, IoIosTabletLandscape, IoMdDesktop } from "react-icons/io";
+import {
+  IoMdPhonePortrait,
+  IoIosTabletLandscape,
+  IoMdDesktop,
+} from "react-icons/io";
 
 import {
   WelcomeLetterEditor,
@@ -78,9 +90,22 @@ export default function Builder({ onBack, initialGift }) {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
   const [previewReloadKey, setPreviewReloadKey] = useState(0);
+
+  // ── Tier calculations (memoized, deterministic) ──
+  const requiredTier = useMemo(
+    () => getRequiredTier(gift.sections),
+    [gift.sections],
+  );
+  const showUpgradeBtn = useMemo(() => needsUpgrade(gift), [gift]);
+  const requiredTierMeta = TIER_META[requiredTier];
+  const remainingDays = useMemo(
+    () => getRemainingDays(gift.expiresAt),
+    [gift.expiresAt],
+  );
 
   // ✅ Responsive view state (header-д)
   const [viewport, setViewport] = useState("desktop"); // desktop|tablet|mobile
@@ -193,8 +218,11 @@ export default function Builder({ onBack, initialGift }) {
     try {
       setSaving(true);
       setSaveStatus(null);
-      const docId = await saveOrUpdateGift(gift, user.uid);
-      setGift((prev) => ({ ...prev, id: docId }));
+      // Compute and persist requiredTier before saving
+      const tierToSave = getRequiredTier(gift.sections);
+      const giftToSave = { ...gift, requiredTier: tierToSave };
+      const docId = await saveOrUpdateGift(giftToSave, user.uid);
+      setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
       setPreviewReloadKey((k) => k + 1);
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus(null), 2500);
@@ -245,8 +273,12 @@ export default function Builder({ onBack, initialGift }) {
     const { type } = selectedSection;
 
     if (type === SECTION_TYPES.WELCOME || type === SECTION_TYPES.LOVE_LETTER) {
-      const welcomeSec = gift.sections.find((s) => s.type === SECTION_TYPES.WELCOME);
-      const letterSec = gift.sections.find((s) => s.type === SECTION_TYPES.LOVE_LETTER);
+      const welcomeSec = gift.sections.find(
+        (s) => s.type === SECTION_TYPES.WELCOME,
+      );
+      const letterSec = gift.sections.find(
+        (s) => s.type === SECTION_TYPES.LOVE_LETTER,
+      );
       return (
         <WelcomeLetterEditor
           welcomeSection={welcomeSec}
@@ -257,22 +289,52 @@ export default function Builder({ onBack, initialGift }) {
     }
 
     if (type === SECTION_TYPES.QUESTION)
-      return <QuestionEditor section={selectedSection} onUpdate={updateSectionData} />;
+      return (
+        <QuestionEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
 
     if (type === SECTION_TYPES.MOVIE_SELECTION)
-      return <MovieSelectionEditor section={selectedSection} onUpdate={updateSectionData} />;
+      return (
+        <MovieSelectionEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
 
     if (type === SECTION_TYPES.MEMORY_GALLERY)
-      return <MemoryGalleryEditor section={selectedSection} onUpdate={updateSectionData} />;
+      return (
+        <MemoryGalleryEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
 
     if (type === SECTION_TYPES.STEP_QUESTIONS)
-      return <StepQuestionsEditor section={selectedSection} onUpdate={updateSectionData} />;
+      return (
+        <StepQuestionsEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
 
     if (type === SECTION_TYPES.FINAL_SUMMARY)
-      return <FinalSummaryEditor section={selectedSection} onUpdate={updateSectionData} />;
+      return (
+        <FinalSummaryEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
 
     if (type === SECTION_TYPES.MEMORY_VIDEO)
-      return <MemoryVideoEditor section={selectedSection} onUpdate={updateSectionData} />;
+      return (
+        <MemoryVideoEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
 
     return <GenericEditor section={selectedSection} />;
   };
@@ -285,6 +347,13 @@ export default function Builder({ onBack, initialGift }) {
         onSelect={addSection}
       />
 
+      <UpgradeModal
+        open={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        gift={gift}
+        giftId={gift.id}
+      />
+
       <header className="builder-header">
         <div className="builder-header-left">
           <button className="builder-btn builder-btn-outline" onClick={onBack}>
@@ -294,7 +363,10 @@ export default function Builder({ onBack, initialGift }) {
 
           <div className="builder-divider" />
 
-          <span className="builder-project-name"><Logo />Builder</span>
+          <span className="builder-project-name">
+            <Logo />
+            Builder
+          </span>
 
           {/* ✅ Mobile/Tablet menu button */}
           <button
@@ -327,7 +399,9 @@ export default function Builder({ onBack, initialGift }) {
                   title={VIEWPORT_PRESETS[k].label}
                 >
                   <span className="builder-viewport-icon">{icons[k]}</span>
-                  <span className="builder-viewport-label">{VIEWPORT_PRESETS[k].label}</span>
+                  <span className="builder-viewport-label">
+                    {VIEWPORT_PRESETS[k].label}
+                  </span>
                 </button>
               );
             })}
@@ -347,10 +421,36 @@ export default function Builder({ onBack, initialGift }) {
           <div className="builder-divider" />
 
           {saveStatus === "saved" && (
-            <span className="builder-save-badge builder-save-ok">✓ Хадгалсан</span>
+            <span className="builder-save-badge builder-save-ok">
+              ✓ Хадгалсан
+            </span>
           )}
           {saveStatus === "error" && (
             <span className="builder-save-badge builder-save-err">✕ Алдаа</span>
+          )}
+
+          {/* ── Upgrade / Remove Watermark button ── */}
+          {showUpgradeBtn && (
+            <button
+              className="builder-btn builder-btn-upgrade"
+              onClick={() => setShowUpgradeModal(true)}
+            >
+              <span>✨ Watermark арилгах</span>
+            </button>
+          )}
+
+          {/* ── Required tier badge ── */}
+          {requiredTier !== "free" && (
+            <span
+              className="builder-tier-badge"
+              style={{
+                background: requiredTierMeta.bgColor,
+                color: requiredTierMeta.color,
+              }}
+              title={`Энэ бэлэг ${requiredTierMeta.label} plan шаардана`}
+            >
+              {requiredTierMeta.badge} {requiredTierMeta.label}
+            </span>
           )}
 
           <button
@@ -414,16 +514,25 @@ export default function Builder({ onBack, initialGift }) {
             {/* Style / Template selector */}
             {showStylePanel && (
               <div className="builder-settings-panel">
-                <div style={{ marginBottom: 8, fontSize: 12, color: "#64748b", fontWeight: 700 }}>
+                <div
+                  style={{
+                    marginBottom: 8,
+                    fontSize: 12,
+                    color: "#64748b",
+                    fontWeight: 700,
+                  }}
+                >
                   Choose a template
                 </div>
 
                 <div className="template-grid">
                   {TEMPLATES.map((tmpl, i) => {
                     const cols = tmpl.theme?.colors || {};
-                    const primary = cols["--t-primary"] || cols["--t-secondary"] || "#ff6b9d";
+                    const primary =
+                      cols["--t-primary"] || cols["--t-secondary"] || "#ff6b9d";
                     const accent = cols["--t-accent"] || primary;
-                    const isSelected = gift.theme?.className === tmpl.theme?.className;
+                    const isSelected =
+                      gift.theme?.className === tmpl.theme?.className;
                     const bg = `linear-gradient(135deg, ${accent}, ${primary})`;
 
                     return (
@@ -442,7 +551,9 @@ export default function Builder({ onBack, initialGift }) {
                         style={{ background: bg }}
                         disabled={saving}
                       >
-                        <div className="template-tile-label">{tmpl.card?.name || tmpl.id}</div>
+                        <div className="template-tile-label">
+                          {tmpl.card?.name || tmpl.id}
+                        </div>
                       </button>
                     );
                   })}
@@ -491,7 +602,9 @@ export default function Builder({ onBack, initialGift }) {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 className={`builder-section-item ${
-                                  selectedSectionId === section.id ? "selected" : ""
+                                  selectedSectionId === section.id
+                                    ? "selected"
+                                    : ""
                                 } ${snapshot.isDragging ? "dragging" : ""}`}
                                 onClick={() => {
                                   setSelectedSectionId(section.id);
@@ -513,6 +626,23 @@ export default function Builder({ onBack, initialGift }) {
                                   <span className="builder-section-item-name">
                                     {getSectionLabel(section)}
                                   </span>
+                                  {/* Tier badge per section */}
+                                  {(() => {
+                                    const feat = FEATURE_REGISTRY[section.type];
+                                    if (feat && feat.requiredTier !== "free") {
+                                      const tm = TIER_META[feat.requiredTier];
+                                      return (
+                                        <span
+                                          className="builder-section-tier-dot"
+                                          style={{ color: tm.color }}
+                                          title={`${tm.label} plan`}
+                                        >
+                                          {tm.badge}
+                                        </span>
+                                      );
+                                    }
+                                    return null;
+                                  })()}
                                 </div>
 
                                 <div
@@ -563,8 +693,21 @@ export default function Builder({ onBack, initialGift }) {
 
           <div className="builder-sidebar-footer">
             <div className="builder-sidebar-info">
-              <span className="builder-sidebar-info-count">{gift.sections.length}</span>
+              <span className="builder-sidebar-info-count">
+                {gift.sections.length}
+              </span>
               <span>section нэмэгдсэн</span>
+              {remainingDays > 0 && (
+                <span
+                  style={{
+                    marginLeft: 8,
+                    fontSize: "0.72rem",
+                    color: "#22c55e",
+                  }}
+                >
+                  ⏱ {remainingDays} хоног үлдсэн
+                </span>
+              )}
             </div>
 
             {/* Password setup */}
@@ -580,21 +723,30 @@ export default function Builder({ onBack, initialGift }) {
                   placeholder="••••"
                   value={gift.password || ""}
                   onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+                    const val = e.target.value
+                      .replace(/[^0-9]/g, "")
+                      .slice(0, 4);
                     setGift((prev) => ({ ...prev, password: val }));
                   }}
                 />
-                <span className="pw-setup-tip">Жишээ: төрсөн өдрийн 4 орон (0315)</span>
+                <span className="pw-setup-tip">
+                  Жишээ: төрсөн өдрийн 4 орон (0315)
+                </span>
               </div>
               <div className="pw-setup-row">
-                <label className="pw-setup-label">Нууц үгний санамж (hint)</label>
+                <label className="pw-setup-label">
+                  Нууц үгний санамж (hint)
+                </label>
                 <input
                   className="pw-setup-hint-input"
                   type="text"
                   placeholder="Жишээ: Миний төрсөн өдөр 🎂"
                   value={gift.passwordHint || ""}
                   onChange={(e) => {
-                    setGift((prev) => ({ ...prev, passwordHint: e.target.value }));
+                    setGift((prev) => ({
+                      ...prev,
+                      passwordHint: e.target.value,
+                    }));
                   }}
                 />
               </div>
@@ -628,7 +780,6 @@ export default function Builder({ onBack, initialGift }) {
             </div>
           ) : (
             <div className="builder-preview-placeholder ">
-
               <h2>Түр хүлээнэ үү...</h2>
             </div>
           )}
@@ -637,12 +788,17 @@ export default function Builder({ onBack, initialGift }) {
         {/* ✅ Right drawer editor */}
         {editorOpen && (
           <>
-            <div className="builder-drawer-overlay" onClick={() => setEditorOpen(false)} />
+            <div
+              className="builder-drawer-overlay"
+              onClick={() => setEditorOpen(false)}
+            />
             <div className="builder-drawer">
               <div className="builder-drawer-header">
                 <div className="builder-drawer-title">
                   <span>
-                    {selectedSection ? getSectionLabel(selectedSection) : "Section сонгоно уу"}
+                    {selectedSection
+                      ? getSectionLabel(selectedSection)
+                      : "Section сонгоно уу"}
                   </span>
                 </div>
 
