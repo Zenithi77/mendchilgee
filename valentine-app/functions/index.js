@@ -52,9 +52,8 @@ function safeEqualHex(a, b) {
 
 // Server-side price map (smallest currency unit, e.g. MNT)
 const PRICE_MAP = {
-  basic: 5000,
-  premium: 15000,
-  subscription: 5000,
+  basic: 6000,
+  premium: 9000,
 };
 
 // ── createBylCheckout ────────────────────────────────────────────────────
@@ -63,7 +62,7 @@ exports.createBylCheckout = onRequest(async (req, res) => {
   const cfg = getConfig();
 
   // CORS
-  res.set("Access-Control-Allow-Origin", cfg.baseUrl || "*");
+  res.set("Access-Control-Allow-Origin", cfg.baseUrl || "http://localhost:5173");
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(204).send("");
