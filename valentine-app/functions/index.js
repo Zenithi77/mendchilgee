@@ -75,9 +75,9 @@ const TIER_DURATION_DAYS = {
  */
 function getCorsOrigin(req, cfg) {
   const origin = req.get("Origin") || "";
-  const allowed = [cfg.baseUrl, "http://localhost:5173"].filter(Boolean);
+  const allowed = [cfg.baseUrl, "https://www.bolzii.com"].filter(Boolean);
   if (allowed.includes(origin)) return origin;
-  return cfg.baseUrl || "http://localhost:5173";
+  return cfg.baseUrl || "https://www.bolzii.com";
 }
 
 exports.createBylCheckout = onRequest(async (req, res) => {

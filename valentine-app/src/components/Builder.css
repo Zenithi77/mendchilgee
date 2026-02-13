@@ -151,6 +151,49 @@
   white-space: nowrap;
 }
 
+/* ── Big tier badge (sidebar) ── */
+.builder-tier-badge-big {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.builder-tier-badge-big-icon {
+  font-size: 1.3rem;
+}
+
+.builder-tier-badge-big-label {
+  letter-spacing: 0.5px;
+}
+
+/* ── Save button styled like add-btn ── */
+.builder-add-btn.builder-add-btn-save {
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, #ec4899, #a855f7);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.builder-add-btn.builder-add-btn-save:hover:not(:disabled) {
+  background: linear-gradient(135deg, #db2777, #9333ea);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.builder-add-btn.builder-add-btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .builder-section-tier-dot {
   font-size: 0.7rem;
   margin-left: 2px;
@@ -250,6 +293,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
+  margin-top: 8px;
+  margin-bottom: 4px;
 }
 
 .builder-add-btn:hover {
@@ -510,8 +555,18 @@
   background: #f8fafc;
   overflow-y: auto;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Viewport toggle under preview ── */
+.builder-preview-viewport {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 0 16px;
+  flex-shrink: 0;
 }
 
 /* ── Editor Panel ── */
@@ -1262,6 +1317,9 @@
   }
   .builder-viewport-btn {
     display: none;
+  }
+  .builder-preview-viewport .builder-viewport-btn {
+    display: inline-flex;
   }
   .builder-divider {
     display: none;

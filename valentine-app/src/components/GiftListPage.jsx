@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import { generateHeartQR } from "../utils/heartQr";
+import { shouldShowWatermark, getRequiredTier } from "../utils/tierUtils";
+import { TIER_META } from "../config/tiers";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -51,7 +53,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
   };
 
   const handlePreview = (giftId) => {
-    navigate(`/preview/${giftId}`);
+    navigate(`/${giftId}`);
   };
 
   const openSharePanel = useCallback(
@@ -63,9 +65,16 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         return;
       }
 
-      const url = `${window.location.origin}/preview/${gift.id}`;
+      const url = `${window.location.origin}/${gift.id}`;
       const title = getGiftTitle(gift);
-      setSharePanel({ id: gift.id, title, url, qr: null, loading: true, error: null });
+      setSharePanel({
+        id: gift.id,
+        title,
+        url,
+        qr: null,
+        loading: true,
+        error: null,
+      });
 
       // Best-effort: also copy the URL
       try {
@@ -113,15 +122,28 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     if (pills.length === 0) {
       const letterSec = gift.sections?.find((s) => s.type === "loveLetter");
       if (letterSec?.data?.title) {
-        pills.push({ emoji: "💌", label: "Захидал", value: letterSec.data.title });
+        pills.push({
+          emoji: "💌",
+          label: "Захидал",
+          value: letterSec.data.title,
+        });
       }
       if (stepSec?.data?.steps?.length) {
-        pills.push({ emoji: "📝", label: "Алхамууд", value: `${stepSec.data.steps.length} алхам` });
+        pills.push({
+          emoji: "📝",
+          label: "Алхамууд",
+          value: `${stepSec.data.steps.length} алхам`,
+        });
       }
       const gallerySec = gift.sections?.find((s) => s.type === "memoryGallery");
       if (gallerySec?.data?.memories?.length) {
         const withImg = gallerySec.data.memories.filter((m) => m.src).length;
-        if (withImg > 0) pills.push({ emoji: "📸", label: "Зураг", value: `${withImg} зураг` });
+        if (withImg > 0)
+          pills.push({
+            emoji: "📸",
+            label: "Зураг",
+            value: `${withImg} зураг`,
+          });
       }
     }
 
@@ -227,6 +249,23 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                       {gift.category}
                     </span>
                   )}
+                  {(() => {
+                    const tier = getRequiredTier(gift.sections);
+                    const meta = TIER_META[tier];
+                    return (
+                      <span
+                        className="gift-card-badge gift-card-badge-tier"
+                        style={{ borderColor: meta.color, color: meta.color }}
+                      >
+                        {meta.badge} {meta.label}
+                      </span>
+                    );
+                  })()}
+                  {shouldShowWatermark(gift) && (
+                    <span className="gift-card-badge gift-card-badge-watermark">
+                      💧 Watermark
+                    </span>
+                  )}
                 </div>
 
                 {/* Summary pills */}
@@ -255,6 +294,12 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                     onClick={() => handlePreview(gift.id)}
                   >
                     👁️ Preview
+                  </button>
+                  <button
+                    className="gift-action-btn gift-action-responses"
+                    onClick={() => navigate(`/responses/${gift.id}`)}
+                  >
+                    📬 Responses
                   </button>
                   <button
                     className="gift-action-btn gift-action-share"
@@ -293,7 +338,9 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                 {sharePanel?.id === gift.id && (
                   <div className="gift-share-panel">
                     <div className="gift-share-panel-header">
-                      <div className="gift-share-panel-title">{sharePanel.title}</div>
+                      <div className="gift-share-panel-title">
+                        {sharePanel.title}
+                      </div>
                       <button
                         type="button"
                         className="gift-share-panel-close"
@@ -318,7 +365,9 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                           alt="Heart QR"
                         />
                       ) : (
-                        <div className="gift-share-panel-error">{sharePanel.error}</div>
+                        <div className="gift-share-panel-error">
+                          {sharePanel.error}
+                        </div>
                       )}
                     </div>
 
@@ -353,7 +402,6 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
           </div>
         )}
       </div>
-
     </div>
   );
 }

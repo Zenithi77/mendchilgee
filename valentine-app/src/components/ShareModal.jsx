@@ -15,7 +15,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
   const [copied, setCopied] = useState(false);
   const canvasRef = useRef(null);
 
-  const shareUrl = `${window.location.origin}/preview/${giftId}`;
+  const shareUrl = `${window.location.origin}/${giftId}`;
 
   useEffect(() => {
     if (!open || !giftId) return;
@@ -30,7 +30,9 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
         console.error("QR generation failed:", err);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [open, giftId, shareUrl]);
 
   if (!open) return null;
@@ -53,7 +55,9 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
   return (
     <div className="share-modal-overlay" onClick={onClose}>
       <div className="share-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="share-modal-close" onClick={onClose}>✕</button>
+        <button className="share-modal-close" onClick={onClose}>
+          ✕
+        </button>
 
         <div className="share-modal-header">
           <span className="share-modal-emoji">💝</span>
@@ -95,10 +99,17 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
 
         {/* Actions */}
         <div className="share-modal-actions">
-          <button className="share-modal-btn share-modal-btn-download" onClick={handleDownloadQR} disabled={!qrDataUrl}>
+          <button
+            className="share-modal-btn share-modal-btn-download"
+            onClick={handleDownloadQR}
+            disabled={!qrDataUrl}
+          >
             ⬇️ QR татах
           </button>
-          <button className="share-modal-btn share-modal-btn-close" onClick={onClose}>
+          <button
+            className="share-modal-btn share-modal-btn-close"
+            onClick={onClose}
+          >
             Хаах
           </button>
         </div>

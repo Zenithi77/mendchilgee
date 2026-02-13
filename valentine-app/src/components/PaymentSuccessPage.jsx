@@ -90,7 +90,7 @@ export default function PaymentSuccessPage() {
           Watermark арилсан байна. Бэлгээ хуваалцаарай! 💕
         </p>
         {giftId ? (
-          <Link to={`/preview/${giftId}`}>← Бэлгээ харах</Link>
+          <Link to={`/${giftId}`}>← Бэлгээ харах</Link>
         ) : (
           <Link to="/">← Нүүр хуудас руу буцах</Link>
         )}

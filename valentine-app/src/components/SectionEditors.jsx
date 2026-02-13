@@ -69,21 +69,18 @@ function TextInputWithEmoji({
 function ImageUploader({ src, onUploaded }) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     try {
       setUploading(true);
-      setProgress(0);
       const url = await uploadMemoryPhoto(file, user.uid);
       onUploaded(url);
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
       setUploading(false);
-      setProgress(0);
     }
   };
 

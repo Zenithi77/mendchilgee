@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { giftToTemplate, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
+import { saveGiftResponse } from "../services/giftResponseService";
 import HeartRain from "./HeartRain";
 import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
 
@@ -37,8 +38,17 @@ export default function GiftRenderer({
   persistResponses = false,
 }) {
   const [sectionIndex, setSectionIndex] = useState(initialSectionIndex || 0);
+  const [prevInitialIndex, setPrevInitialIndex] = useState(
+    initialSectionIndex || 0,
+  );
   const [choices, setChoices] = useState(() => buildInitialChoices(gift));
   const [heartRain, setHeartRain] = useState(false);
+
+  // Adjust sectionIndex when initialSectionIndex prop changes (deep-linking)
+  if ((initialSectionIndex || 0) !== prevInitialIndex) {
+    setPrevInitialIndex(initialSectionIndex || 0);
+    setSectionIndex(initialSectionIndex || 0);
+  }
 
   // ── Persistent music state ──
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -50,7 +60,10 @@ export default function GiftRenderer({
   const template = useMemo(() => giftToTemplate(gift), [gift]);
 
   // Extract music config from love letter
-  const musicConfig = useMemo(() => template.loveLetter?.music || null, [template]);
+  const musicConfig = useMemo(
+    () => template.loveLetter?.music || null,
+    [template],
+  );
 
   // Music elapsed timer
   useEffect(() => {
@@ -98,11 +111,6 @@ export default function GiftRenderer({
     [gift.sections],
   );
 
-  // respond to external initial section index changes (deep-linking)
-  useEffect(() => {
-    setSectionIndex(initialSectionIndex || 0);
-  }, [initialSectionIndex]);
-
   const goNext = useCallback(() => {
     const nextIndex = sectionIndex + 1;
     if (nextIndex < gift.sections.length) {
@@ -119,6 +127,20 @@ export default function GiftRenderer({
   const updateChoice = useCallback((key, val) => {
     setChoices((prev) => ({ ...prev, [key]: val }));
   }, []);
+
+  // ── Auto-save choices when reaching finalSummary (public preview) ──
+  useEffect(() => {
+    const current = gift.sections[sectionIndex];
+    if (
+      persistResponses &&
+      giftId &&
+      current?.type === SECTION_TYPES.FINAL_SUMMARY
+    ) {
+      saveGiftResponse(giftId, choices).catch((err) =>
+        console.warn("Failed to save gift response:", err),
+      );
+    }
+  }, [sectionIndex, persistResponses, giftId, choices, gift.sections]);
 
   // ── Render current section ──────────────────────────────────
 
@@ -144,7 +166,13 @@ export default function GiftRenderer({
         );
 
       case SECTION_TYPES.LOVE_LETTER:
-        return <Component letter={template.loveLetter} onClose={goNext} onMusicStart={startMusic} />;
+        return (
+          <Component
+            letter={template.loveLetter}
+            onClose={goNext}
+            onMusicStart={startMusic}
+          />
+        );
 
       case SECTION_TYPES.QUESTION:
         return <Component onYes={goNext} template={template} />;
@@ -227,7 +255,9 @@ export default function GiftRenderer({
               <div className="pmb-progress-bar">
                 <div
                   className="pmb-progress-fill"
-                  style={{ width: `${Math.min((musicElapsed / (musicConfig.duration || 240)) * 100, 100)}%` }}
+                  style={{
+                    width: `${Math.min((musicElapsed / (musicConfig.duration || 240)) * 100, 100)}%`,
+                  }}
                 />
               </div>
               <span className="pmb-time">{formatTime(musicElapsed)}</span>
@@ -235,7 +265,10 @@ export default function GiftRenderer({
           </div>
           <button
             className="pmb-toggle"
-            onClick={(e) => { e.stopPropagation(); toggleMusic(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMusic();
+            }}
           >
             {musicPlaying ? "⏸" : "▶️"}
           </button>

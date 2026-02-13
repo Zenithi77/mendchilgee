@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { templateToGift } from "./models/gift";
 import AuthPage from "./components/AuthPage";
@@ -33,7 +33,22 @@ const RELATIONSHIP_START = new Date("2024-03-15");
 function App() {
   return (
     <Routes>
-      <Route path="/preview/:giftId" element={<GiftPreviewPage />} />
+      <Route
+        path="/builder/:giftId"
+        element={
+          <AuthGuard>
+            <Builder />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/builder"
+        element={
+          <AuthGuard>
+            <Builder />
+          </AuthGuard>
+        }
+      />
       <Route path="/responses/:giftId" element={<GiftResponsesPage />} />
       <Route path="/demo-payments" element={<DemoPaymentPage />} />
       <Route path="/demo-payments/success" element={<PaymentSuccessPage />} />
@@ -42,18 +57,40 @@ function App() {
       <Route path="/payment/cancel" element={<PaymentCancelPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/:giftId" element={<GiftPreviewPage />} />
       <Route path="*" element={<MainApp />} />
     </Routes>
   );
 }
 
+/** Wraps routes that require authentication */
+function AuthGuard({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="app">
+        <div className="auth-loading">
+          <div className="auth-loading-spinner">💕</div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
+  return children;
+}
+
 function MainApp() {
   const { user, loading, logout, needsTermsReaccept } = useAuth();
+  const navigate = useNavigate();
   const [category, setCategory] = useState(null);
   const [template, setTemplate] = useState(null); // kept for theme/effects at app level
   const [page, setPage] = useState("list"); // "list" | "category" | "template"
-  const [showBuilder, setShowBuilder] = useState(false);
-  const [builderGift, setBuilderGift] = useState(null);
 
   // Apply theme CSS variables when template changes
   useEffect(() => {
@@ -76,12 +113,14 @@ function MainApp() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  const handleSelectTemplate = useCallback((tmpl) => {
-    setTemplate(tmpl);
-    setBuilderGift(templateToGift(tmpl));
-    setShowBuilder(true);
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
+  const handleSelectTemplate = useCallback(
+    (tmpl) => {
+      setTemplate(tmpl);
+      const newGift = templateToGift(tmpl);
+      navigate("/builder", { state: { initialGift: newGift } });
+    },
+    [navigate],
+  );
 
   const clearThemeVars = useCallback(() => {
     const root = document.documentElement;
@@ -101,29 +140,26 @@ function MainApp() {
 
   const resetToList = useCallback(() => {
     setTemplate(null);
-    setBuilderGift(null);
     setCategory(null);
     setPage("list");
-    setShowBuilder(false);
     clearThemeVars();
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [clearThemeVars]);
 
   const resetToCategory = useCallback(() => {
     setTemplate(null);
-    setBuilderGift(null);
     setCategory(null);
     setPage("category");
-    setShowBuilder(false);
     clearThemeVars();
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [clearThemeVars]);
 
-  const handleEditGift = useCallback((gift) => {
-    setBuilderGift(gift);
-    setShowBuilder(true);
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
+  const handleEditGift = useCallback(
+    (gift) => {
+      navigate(`/builder/${gift.id}`);
+    },
+    [navigate],
+  );
 
   const themeClass = template ? template.theme.className : "";
 
@@ -151,11 +187,6 @@ function MainApp() {
         <TermsReacceptModal />
       </div>
     );
-  }
-
-  // Builder takes over the full viewport
-  if (showBuilder) {
-    return <Builder onBack={resetToList} initialGift={builderGift} />;
   }
 
   return (
@@ -201,7 +232,7 @@ function MainApp() {
       {page === "category" && (
         <CategorySelector
           onSelect={handleSelectCategory}
-          onOpenBuilder={() => setShowBuilder(true)}
+          onOpenBuilder={() => navigate("/builder")}
         />
       )}
       {page === "template" && (

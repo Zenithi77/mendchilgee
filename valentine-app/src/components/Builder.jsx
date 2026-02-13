@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Logo from "../assets/Logo";
 import { createEmptyGift, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import { createDefaultSection } from "../models/sectionDefaults";
-import { saveOrUpdateGift } from "../services/giftService";
+import { saveOrUpdateGift, getGift } from "../services/giftService";
 import { useAuth } from "../contexts/AuthContext";
 
 import AddSectionModal from "./AddSectionModal";
@@ -70,21 +70,59 @@ const DEFAULT_EFFECTS = {
   stickers: ["💕", "💖", "💗", "💓", "💞", "💘"],
 };
 
-export default function Builder({ onBack, initialGift }) {
+export default function Builder() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { giftId: urlGiftId } = useParams();
+  const location = useLocation();
+  const stateGift = location.state?.initialGift;
 
   const [gift, setGift] = useState(() => {
-    const g = initialGift
-      ? JSON.parse(JSON.stringify(initialGift))
-      : createEmptyGift();
-    if (!g.theme?.className) g.theme = { ...DEFAULT_BUILDER_THEME };
-    if (!g.effects?.floatingHearts) g.effects = { ...DEFAULT_EFFECTS };
+    const g = stateGift
+      ? JSON.parse(JSON.stringify(stateGift))
+      : urlGiftId
+        ? null // will be loaded from Firestore
+        : createEmptyGift();
+    if (g && !g.theme?.className) g.theme = { ...DEFAULT_BUILDER_THEME };
+    if (g && !g.effects?.floatingHearts) g.effects = { ...DEFAULT_EFFECTS };
     return g;
   });
 
+  const [giftLoading, setGiftLoading] = useState(!!urlGiftId && !stateGift);
+
+  // Load gift from Firestore when accessed via /builder/:giftId
+  useEffect(() => {
+    if (!urlGiftId || stateGift || gift?.id === urlGiftId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        setGiftLoading(true);
+        const data = await getGift(urlGiftId);
+        if (cancelled) return;
+        if (data) {
+          if (!data.theme?.className) data.theme = { ...DEFAULT_BUILDER_THEME };
+          if (!data.effects?.floatingHearts)
+            data.effects = { ...DEFAULT_EFFECTS };
+          setGift(data);
+          if (data.sections?.length > 0)
+            setSelectedSectionId(data.sections[0].id);
+        } else {
+          navigate("/", { replace: true });
+        }
+      } catch (err) {
+        console.error("Failed to load gift:", err);
+        navigate("/", { replace: true });
+      } finally {
+        if (!cancelled) setGiftLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [urlGiftId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [selectedSectionId, setSelectedSectionId] = useState(() => {
-    if (initialGift?.sections?.length > 0) return initialGift.sections[0].id;
+    if (stateGift?.sections?.length > 0) return stateGift.sections[0].id;
     return null;
   });
 
@@ -97,14 +135,17 @@ export default function Builder({ onBack, initialGift }) {
 
   // ── Tier calculations (memoized, deterministic) ──
   const requiredTier = useMemo(
-    () => getRequiredTier(gift.sections),
-    [gift.sections],
+    () => (gift ? getRequiredTier(gift.sections) : "free"),
+    [gift?.sections],
   );
-  const showUpgradeBtn = useMemo(() => needsUpgrade(gift), [gift]);
+  const showUpgradeBtn = useMemo(
+    () => (gift ? needsUpgrade(gift) : false),
+    [gift],
+  );
   const requiredTierMeta = TIER_META[requiredTier];
   const remainingDays = useMemo(
-    () => getRemainingDays(gift.expiresAt),
-    [gift.expiresAt],
+    () => getRemainingDays(gift?.expiresAt),
+    [gift?.expiresAt],
   );
 
   // ✅ Responsive view state (header-д)
@@ -128,9 +169,11 @@ export default function Builder({ onBack, initialGift }) {
   const [editorOpen, setEditorOpen] = useState(false);
 
   // ✅ Sidebar drawer open/close (mobile/tablet)
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const selectedSection = gift.sections.find((s) => s.id === selectedSectionId);
+  const selectedSection = gift?.sections?.find(
+    (s) => s.id === selectedSectionId,
+  );
 
   const addSection = useCallback((type) => {
     const section = createDefaultSection(type);
@@ -214,7 +257,7 @@ export default function Builder({ onBack, initialGift }) {
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!user) return;
+    if (!user || !gift) return;
     try {
       setSaving(true);
       setSaveStatus(null);
@@ -223,6 +266,10 @@ export default function Builder({ onBack, initialGift }) {
       const giftToSave = { ...gift, requiredTier: tierToSave };
       const docId = await saveOrUpdateGift(giftToSave, user.uid);
       setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
+      // Update URL to include giftId if not already present
+      if (docId && !urlGiftId) {
+        navigate(`/builder/${docId}`, { replace: true });
+      }
       setPreviewReloadKey((k) => k + 1);
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus(null), 2500);
@@ -235,12 +282,12 @@ export default function Builder({ onBack, initialGift }) {
     } finally {
       setSaving(false);
     }
-  }, [gift, user]);
+  }, [gift, user, urlGiftId, navigate]);
 
   const autoSaveOnceRef = useRef(false);
   useEffect(() => {
     if (autoSaveOnceRef.current) return;
-    if (!gift?.id && user) {
+    if (gift && !gift.id && user) {
       autoSaveOnceRef.current = true;
       (async () => {
         try {
@@ -253,9 +300,9 @@ export default function Builder({ onBack, initialGift }) {
   }, [gift?.id, user, handleSave]);
 
   const openFullPreview = useCallback(async () => {
-    const docId = gift.id || (await handleSave());
-    if (docId) navigate(`/preview/${docId}`);
-  }, [gift.id, handleSave, navigate]);
+    const docId = gift?.id || (await handleSave());
+    if (docId) navigate(`/${docId}`);
+  }, [gift?.id, handleSave, navigate]);
 
   const getSectionLabel = (section) => {
     const reg = SECTION_REGISTRY[section.type];
@@ -339,6 +386,25 @@ export default function Builder({ onBack, initialGift }) {
     return <GenericEditor section={selectedSection} />;
   };
 
+  // Show loading state while fetching gift from Firestore
+  if (giftLoading || !gift) {
+    return (
+      <div
+        className="builder"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ textAlign: "center", color: "#fff" }}>
+          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>💕</div>
+          <p>Уншиж байна...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="builder">
       <AddSectionModal
@@ -356,17 +422,13 @@ export default function Builder({ onBack, initialGift }) {
 
       <header className="builder-header">
         <div className="builder-header-left">
-          <button className="builder-btn builder-btn-outline" onClick={onBack}>
+          <button
+            className="builder-btn builder-btn-outline"
+            onClick={() => navigate("/")}
+          >
             <span className="builder-btn-icon">←</span>
             <span className="builder-btn-exit-txt">Буцах</span>
           </button>
-
-          <div className="builder-divider" />
-
-          <span className="builder-project-name">
-            <Logo />
-            Builder
-          </span>
 
           {/* ✅ Mobile/Tablet menu button */}
           <button
@@ -379,33 +441,22 @@ export default function Builder({ onBack, initialGift }) {
             <IoMdMenu />
           </button>
 
-          {/* ✅ Responsive buttons header-д */}
-          <div className="builder-divider" />
-
-          <div className="builder-header-viewport">
-            {["desktop", "tablet", "mobile"].map((k) => {
-              const icons = {
-                desktop: <IoMdDesktop />,
-                tablet: <IoIosTabletLandscape />,
-                mobile: <IoMdPhonePortrait />,
-              };
-
-              return (
-                <button
-                  key={k}
-                  type="button"
-                  className={`builder-viewport-btn ${viewport === k ? "active" : ""}`}
-                  onClick={() => setViewport(k)}
-                  title={VIEWPORT_PRESETS[k].label}
-                >
-                  <span className="builder-viewport-icon">{icons[k]}</span>
-                  <span className="builder-viewport-label">
-                    {VIEWPORT_PRESETS[k].label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {/* ── Tier badge in header ── */}
+          {requiredTier !== "free" && (
+            <>
+              <div className="builder-divider" />
+              <span
+                className="builder-tier-badge"
+                style={{
+                  background: requiredTierMeta.bgColor,
+                  color: requiredTierMeta.color,
+                }}
+                title={`Энэ бэлэг ${requiredTierMeta.label} plan шаардана`}
+              >
+                {requiredTierMeta.badge} {requiredTierMeta.label}
+              </span>
+            </>
+          )}
         </div>
 
         <div className="builder-header-right">
@@ -438,28 +489,6 @@ export default function Builder({ onBack, initialGift }) {
               <span>✨ Watermark арилгах</span>
             </button>
           )}
-
-          {/* ── Required tier badge ── */}
-          {requiredTier !== "free" && (
-            <span
-              className="builder-tier-badge"
-              style={{
-                background: requiredTierMeta.bgColor,
-                color: requiredTierMeta.color,
-              }}
-              title={`Энэ бэлэг ${requiredTierMeta.label} plan шаардана`}
-            >
-              {requiredTierMeta.badge} {requiredTierMeta.label}
-            </span>
-          )}
-
-          <button
-            className="builder-btn builder-btn-save"
-            onClick={handleSave}
-            disabled={saving || gift.sections.length === 0}
-          >
-            <span>{saving ? "Хадгалж байна..." : "Хадгалах"}</span>
-          </button>
         </div>
       </header>
 
@@ -562,17 +591,28 @@ export default function Builder({ onBack, initialGift }) {
             )}
 
             {!showStylePanel && (
-              <button
-                className="builder-add-btn"
-                onClick={() => {
-                  setShowAddModal(true);
-                  setSidebarOpen(false); // ✅ mobile дээр хаах
-                }}
-                type="button"
-              >
-                <span className="builder-add-icon">＋</span>
-                Хуудас нэмэх
-              </button>
+              <>
+                <button
+                  className="builder-add-btn"
+                  onClick={() => {
+                    setShowAddModal(true);
+                    setSidebarOpen(false); // ✅ mobile дээр хаах
+                  }}
+                  type="button"
+                >
+                  <span className="builder-add-icon">＋</span>
+                  Хуудас нэмэх
+                </button>
+
+                <button
+                  className="builder-add-btn builder-add-btn-save"
+                  onClick={handleSave}
+                  disabled={saving || gift.sections.length === 0}
+                  type="button"
+                >
+                  <span>{saving ? "Хадгалж байна..." : "💾 Хадгалах"}</span>
+                </button>
+              </>
             )}
 
             <div className="builder-section-list">
@@ -768,7 +808,7 @@ export default function Builder({ onBack, initialGift }) {
                   }}
                 >
                   <iframe
-                    src={`/preview/${gift.id}?r=${previewReloadKey}${
+                    src={`/${gift.id}?r=${previewReloadKey}${
                       selectedSectionId ? `#section-${selectedSectionId}` : ""
                     }`}
                     className="builder-preview-iframe"
@@ -783,6 +823,32 @@ export default function Builder({ onBack, initialGift }) {
               <h2>Түр хүлээнэ үү...</h2>
             </div>
           )}
+
+          {/* ✅ Viewport toggle under preview */}
+          <div className="builder-preview-viewport">
+            {["desktop", "tablet", "mobile"].map((k) => {
+              const icons = {
+                desktop: <IoMdDesktop />,
+                tablet: <IoIosTabletLandscape />,
+                mobile: <IoMdPhonePortrait />,
+              };
+
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  className={`builder-viewport-btn ${viewport === k ? "active" : ""}`}
+                  onClick={() => setViewport(k)}
+                  title={VIEWPORT_PRESETS[k].label}
+                >
+                  <span className="builder-viewport-icon">{icons[k]}</span>
+                  <span className="builder-viewport-label">
+                    {VIEWPORT_PRESETS[k].label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </main>
 
         {/* ✅ Right drawer editor */}

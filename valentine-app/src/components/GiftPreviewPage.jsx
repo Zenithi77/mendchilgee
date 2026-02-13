@@ -12,7 +12,7 @@ import "./ShareModal.css";
  * GiftPreviewPage — standalone page that loads a gift from Firestore
  * by its document ID and renders it full-screen via GiftRenderer.
  *
- * Route: /preview/:giftId
+ * Route: /:giftId
  */
 export default function GiftPreviewPage() {
   const { giftId } = useParams();
