@@ -54,15 +54,37 @@ function safeEqualHex(a, b) {
 const PRICE_MAP = {
   basic: 6000,
   premium: 9000,
+  standard: 6000,
+};
+
+// Tier expiration durations in days
+const TIER_DURATION_DAYS = {
+  free: 7,
+  standard: 14,
+  premium: 30,
 };
 
 // ── createBylCheckout ────────────────────────────────────────────────────
+
+/**
+ * Returns the appropriate CORS origin for the request.
+ * Allows both the production base URL and localhost for development.
+ * @param {object} req The incoming request.
+ * @param {object} cfg The app configuration.
+ * @return {string} The allowed origin.
+ */
+function getCorsOrigin(req, cfg) {
+  const origin = req.get("Origin") || "";
+  const allowed = [cfg.baseUrl, "http://localhost:5173"].filter(Boolean);
+  if (allowed.includes(origin)) return origin;
+  return cfg.baseUrl || "http://localhost:5173";
+}
 
 exports.createBylCheckout = onRequest(async (req, res) => {
   const cfg = getConfig();
 
   // CORS
-  res.set("Access-Control-Allow-Origin", cfg.baseUrl || "http://localhost:5173");
+  res.set("Access-Control-Allow-Origin", getCorsOrigin(req, cfg));
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(204).send("");
@@ -72,6 +94,7 @@ exports.createBylCheckout = onRequest(async (req, res) => {
   const body = req.body || {};
   const plan = body.plan;
   const customerEmail = body.customerEmail || null;
+  const giftId = body.giftId || null;
 
   if (!PRICE_MAP[plan]) {
     return res.status(400).json({error: "Invalid plan"});
@@ -79,12 +102,13 @@ exports.createBylCheckout = onRequest(async (req, res) => {
 
   const amount = PRICE_MAP[plan];
   const randomStr = Math.random().toString(36).slice(2, 9);
-  const clientRef = `demo_${Date.now()}_${randomStr}_${plan}`;
+  const clientRef = `gift_${Date.now()}_${randomStr}_${plan}`;
 
   const encodedRef = encodeURIComponent(clientRef);
+  const giftParam = giftId ? `&giftId=${encodeURIComponent(giftId)}` : "";
   const payload = {
-    success_url: `${cfg.baseUrl}/demo-payments/success?ref=${encodedRef}`,
-    cancel_url: `${cfg.baseUrl}/demo-payments/cancel`,
+    success_url: `${cfg.baseUrl}/payment/success?ref=${encodedRef}${giftParam}`,
+    cancel_url: `${cfg.baseUrl}`,
     client_reference_id: clientRef,
     customer_email: customerEmail,
     items: [
@@ -130,6 +154,7 @@ exports.createBylCheckout = onRequest(async (req, res) => {
         .set({
           client_reference_id: clientRef,
           plan,
+          giftId: giftId || null,
           amount,
           status: "pending",
           checkout_id: checkoutData.id || null,
@@ -232,6 +257,33 @@ exports.bylWebhook = onRequest(async (req, res) => {
               });
             }
           });
+
+          // ── Update gift document with tier & expiration ──
+          const paymentDoc = await paymentDocRef.get();
+          const paymentData = paymentDoc.exists ? paymentDoc.data() : {};
+          const paidGiftId = paymentData.giftId;
+          const paidPlan = paymentData.plan || "standard";
+
+          if (paidGiftId) {
+            const now = new Date();
+            const durationDays = TIER_DURATION_DAYS[paidPlan] ||
+                TIER_DURATION_DAYS.standard;
+            const expiresAt = new Date(
+                now.getTime() + durationDays * 24 * 60 * 60 * 1000,
+            );
+
+            await db.collection("gifts").doc(paidGiftId).update({
+              paidTier: paidPlan,
+              activatedAt: admin.firestore.FieldValue.serverTimestamp(),
+              expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
+              paymentExpired: false,
+            });
+
+            console.log(
+                `Gift ${paidGiftId} upgraded to ${paidPlan}, ` +
+                `expires ${expiresAt.toISOString()}`,
+            );
+          }
         }
       }
     }
@@ -259,7 +311,7 @@ exports.bylWebhook = onRequest(async (req, res) => {
 exports.checkPaymentStatus = onRequest(async (req, res) => {
   const cfg = getConfig();
 
-  res.set("Access-Control-Allow-Origin", cfg.baseUrl || "*");
+  res.set("Access-Control-Allow-Origin", getCorsOrigin(req, cfg));
   res.set("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.status(204).send("");
@@ -277,5 +329,53 @@ exports.checkPaymentStatus = onRequest(async (req, res) => {
     status: data?.status || "pending",
     paidAt: data?.paidAt || null,
     amount: data?.amount || null,
+    plan: data?.plan || null,
+    giftId: data?.giftId || null,
   });
+});
+
+// ── checkExpiredGifts ────────────────────────────────────────────────────
+// Callable endpoint to expire gifts whose expiresAt has passed.
+// Can be triggered by Cloud Scheduler or manually.
+
+exports.checkExpiredGifts = onRequest(async (req, res) => {
+  const cfg = getConfig();
+
+  res.set("Access-Control-Allow-Origin", getCorsOrigin(req, cfg));
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).send("");
+
+  try {
+    const now = admin.firestore.Timestamp.now();
+
+    // Find gifts where expiresAt <= now AND paymentExpired !== true
+    const snapshot = await db.collection("gifts")
+        .where("expiresAt", "<=", now)
+        .where("paymentExpired", "==", false)
+        .get();
+
+    if (snapshot.empty) {
+      return res.json({expired: 0, message: "No gifts to expire"});
+    }
+
+    const batch = db.batch();
+    let count = 0;
+
+    snapshot.forEach((doc) => {
+      batch.update(doc.ref, {
+        paymentExpired: true,
+        paidTier: "free",
+      });
+      count++;
+    });
+
+    await batch.commit();
+
+    console.log(`Expired ${count} gifts`);
+    return res.json({expired: count, message: `Expired ${count} gifts`});
+  } catch (err) {
+    console.error("checkExpiredGifts error:", err);
+    return res.status(500).json({error: "internal_error"});
+  }
 });

@@ -3,6 +3,8 @@ import { SECTION_TYPES } from "../models/gift";
 import EmojiPicker from "./EmojiPicker";
 import { uploadMemoryPhoto, uploadMemoryVideo } from "../services/storageService";
 import { useAuth } from "../contexts/AuthContext";
+import { getSectionLimits } from "../config/featureRegistry";
+import { TIERS, TIER_META } from "../config/tiers";
 import "./SectionEditors.css";
 
 // ═══════════════════════════════════════════════════════════════
@@ -437,11 +439,20 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
   const data = section?.data || {};
   const memories = data.memories || [];
 
+  // Image limits from feature registry
+  const standardLimits = getSectionLimits(SECTION_TYPES.MEMORY_GALLERY, TIERS.STANDARD);
+  const premiumLimits = getSectionLimits(SECTION_TYPES.MEMORY_GALLERY, TIERS.PREMIUM);
+  const standardMax = standardLimits?.maxImages || 6;
+  const premiumMax = premiumLimits?.maxImages || 10;
+  const isOverStandard = memories.length > standardMax;
+  const isAtPremiumMax = memories.length >= premiumMax;
+
   const updateMemories = (updated) => {
     onUpdate(section.id, { ...data, memories: updated });
   };
 
   const addMemory = () => {
+    if (isAtPremiumMax) return; // Hard cap at premium limit
     updateMemories([
       ...memories,
       {
@@ -518,8 +529,25 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
           ))}
         </div>
 
-        <button type="button" className="se-add-card-btn" onClick={addMemory}>
+        {/* Image count & tier info */}
+        <div className="se-image-limit-info" style={{ marginBottom: 8, fontSize: 13, color: isOverStandard ? '#a855f7' : '#6b7280' }}>
+          📷 {memories.length} / {isOverStandard ? premiumMax : standardMax} зураг
+          {isOverStandard && (
+            <span style={{ marginLeft: 8, color: '#a855f7', fontWeight: 600 }}>
+              🟣 Премиум ({standardMax}-с дээш)
+            </span>
+          )}
+        </div>
+
+        <button
+          type="button"
+          className="se-add-card-btn"
+          onClick={addMemory}
+          disabled={isAtPremiumMax}
+          style={isAtPremiumMax ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+        >
           <span>＋</span> Дурсамж нэмэх
+          {isAtPremiumMax && <span style={{ fontSize: 11, marginLeft: 6 }}>(хамгийн ихдээ {premiumMax})</span>}
         </button>
       </div>
     </div>

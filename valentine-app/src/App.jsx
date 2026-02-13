@@ -38,6 +38,8 @@ function App() {
       <Route path="/demo-payments" element={<DemoPaymentPage />} />
       <Route path="/demo-payments/success" element={<PaymentSuccessPage />} />
       <Route path="/demo-payments/cancel" element={<PaymentCancelPage />} />
+      <Route path="/payment/success" element={<PaymentSuccessPage />} />
+      <Route path="/payment/cancel" element={<PaymentCancelPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="*" element={<MainApp />} />
