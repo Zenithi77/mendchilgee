@@ -138,7 +138,7 @@ const SECTION_DEFAULTS = {
     headerIconAnimation: "bearLove 1.5s ease infinite",
     placeholderHint: "Зургаа энд нэмнэ үү",
     footerText: "Бүх дурсамж үнэ цэнэтэй... 💕",
-    continueButton: "Үргэлжлүүлэх 💑",
+    continueButton: "Үргэлжлүүлэх 👩‍❤️‍💋‍👨",
     memories: [
       {
         type: "image",

@@ -288,7 +288,7 @@ export const CATEGORIES = [
   },
   {
     id: "new-couple",
-    emoji: "💑",
+    emoji: "👩‍❤️‍💋‍👨",
     name: "Шинэ хос",
     desc: "Саяхан үерхэж эхэлсэн хосууд",
     vibe: "Шинэлэг, сэтгэл хөдлөм, хөөрхөн",
