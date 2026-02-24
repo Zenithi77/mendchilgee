@@ -100,6 +100,11 @@ export default function Builder() {
         const data = await getGift(urlGiftId);
         if (cancelled) return;
         if (data) {
+          // Only the owner can access the builder for this gift
+          if (data.userId !== user?.uid) {
+            navigate("/", { replace: true });
+            return;
+          }
           if (!data.theme?.className) data.theme = { ...DEFAULT_BUILDER_THEME };
           if (!data.effects?.floatingHearts)
             data.effects = { ...DEFAULT_EFFECTS };

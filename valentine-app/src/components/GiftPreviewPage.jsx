@@ -247,7 +247,9 @@ export default function GiftPreviewPage() {
   // Check if watermark should be shown — only on the public view, not inside
   // the builder's iframe preview.
   const isInIframe = window.self !== window.top;
-  const showWatermark = !isInIframe && shouldShowWatermark(gift);
+  // DISABLED: watermark temporarily turned off for preview
+  // const showWatermark = !isInIframe && shouldShowWatermark(gift);
+  const showWatermark = false;
 
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
