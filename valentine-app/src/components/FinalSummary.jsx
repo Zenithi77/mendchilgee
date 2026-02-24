@@ -95,7 +95,7 @@ export default function FinalSummary({ choices }) {
 
         {/* Love Meter */}
         <div className="meter">
-          <div className="meter-label">Догдлолын түвшин</div>
+          <div className="meter-label">Чамайг санаж байна</div>
           <div className="meter-track">
             <div className="meter-fill" style={{ width: `${meterW}%` }} />
           </div>

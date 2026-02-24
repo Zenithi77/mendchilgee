@@ -74,6 +74,7 @@ export default function FlowerBloom({
           <div className="flower-leaf flower-leaf-right">{leafChar}</div>
         </div>
       ))}
+      {/* hello */}
       {/* Petals floating */}
       {phase === "full" &&
         [...Array(8)].map((_, i) => (

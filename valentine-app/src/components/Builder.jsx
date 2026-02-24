@@ -764,7 +764,7 @@ export default function Builder() {
                                   className="builder-section-item-actions"
                                   onClick={(e) => e.stopPropagation()}
                                 >
-                                  {/* ✅ Edit opens drawer */}
+                                  
                                   <button
                                     type="button"
                                     className="builder-action-btn builder-action-edit"
@@ -777,14 +777,14 @@ export default function Builder() {
                                         ),
                                       );
                                       setEditorOpen(true);
-                                      setSidebarOpen(false); // ✅ mobile дээр хаах
+                                      setSidebarOpen(false);
                                     }}
                                     title="Edit"
                                   >
                                     <MdEdit />
                                   </button>
 
-                                  {/* ✅ Delete section */}
+                                
                                   <button
                                     type="button"
                                     className="builder-action-btn builder-action-delete"

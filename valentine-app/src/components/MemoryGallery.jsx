@@ -80,7 +80,7 @@ export default function MemoryGallery({ onContinue }) {
         </h2>
         <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
           Хамтдаа туулсан онцгой мөчүүд 🌟<br />
-          <span style={{ fontSize: '0.75rem' }}>Доош scroll хийж үзнэ үү ⬇️</span>
+          <span style={{ fontSize: '0.75rem' }}>Доош scroll хийж үзнэ үү</span>
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export default function MemoryGallery({ onContinue }) {
                 ) : (
                   <div className="memory-placeholder">
                     <div className="icon">{mem.placeholder}</div>
-                    <div className="hint">Зургаа энд нэмнэ үү</div>
+                    <div className="hint">Хүссэн зургаа энд нэмнэ үү</div>
                   </div>
                 )}
               </div>
