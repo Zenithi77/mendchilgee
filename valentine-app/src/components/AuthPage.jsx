@@ -227,9 +227,9 @@ const AuthPage = ({ onAuthSuccess }) => {
               {loading ? (
                 <span className="auth-spinner"></span>
               ) : isLogin ? (
-                "Sign In"
+                "Нэвтрэх"
               ) : (
-                "Sign Up"
+                "Бүртгүүлэх"
               )}
             </button>
           </form>
@@ -269,14 +269,14 @@ const AuthPage = ({ onAuthSuccess }) => {
 
           <div className="auth-footer">
             <p>
-              {isLogin ? "Don't have an account?" : "Already have an account?"}
+              {isLogin ? "Бүртгэлгүй юу?" : "Өмнө нь бүртгэлтэй юу?"}
               <button
                 type="button"
                 className="auth-toggle-button"
                 onClick={toggleMode}
                 disabled={loading}
               >
-                {isLogin ? "Sign Up" : "Sign In"}
+                {isLogin ? "Бүртгүүлэх" : "Нэвтрэх"}
               </button>
             </p>
           </div>
