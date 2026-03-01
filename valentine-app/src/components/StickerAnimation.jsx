@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 
 const DEFAULT_STICKERS = [
-  "💕",
-  "💖",
-  "💗",
-  "💓",
-  "💞",
-  "💘",
-  "❤️‍🔥",
-  "🥰",
-  "😘",
-  "💋",
+  "🎉",
+  "✨",
+  "🌟",
+  "🎊",
+  "🎁",
+  "🌸",
+  "🌹",
+  "💐",
+  "🎀",
+  "⭐",
 ];
 
 export default function StickerAnimation({

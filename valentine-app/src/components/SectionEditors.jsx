@@ -212,7 +212,7 @@ export function WelcomeLetterEditor({
             <TextInputWithEmoji
               value={wd.title}
               onChange={(v) => updateWelcome("title", v)}
-              placeholder="Happy Valentine's Day 💕"
+              placeholder="Мэндчилгээ 🎉"
             />
           </FieldRow>
 
@@ -220,7 +220,7 @@ export function WelcomeLetterEditor({
             <TextInputWithEmoji
               value={wd.subtitle}
               onChange={(v) => updateWelcome("subtitle", v)}
-              placeholder="Тусгай урилга ❤️"
+              placeholder="Тусгай мэндчилгээ ✨"
               multiline
             />
           </FieldRow>
@@ -238,7 +238,7 @@ export function WelcomeLetterEditor({
             <TextInputWithEmoji
               value={wd.buttonText}
               onChange={(v) => updateWelcome("buttonText", v)}
-              placeholder="Урилга нээх 💌"
+              placeholder="Мэндчилгээ нээх 🎁"
             />
           </FieldRow>
         </div>
@@ -355,7 +355,7 @@ export function QuestionEditor({ section, onUpdate }) {
           <TextInputWithEmoji
             value={data.text}
             onChange={(v) => update("text", v)}
-            placeholder="Чи намайг хайрладаг юу? 🥺💕"
+            placeholder="Та надад санагдах уу? 🥺✨"
           />
         </FieldRow>
 
@@ -655,7 +655,7 @@ export function MovieSelectionEditor({ section, onUpdate }) {
           <TextInputWithEmoji
             value={data.continueButton}
             onChange={(v) => update("continueButton", v)}
-            placeholder="Үргэлжлүүлэх 💕"
+            placeholder="Үргэлжлүүлэх ✨"
           />
         </FieldRow>
 
@@ -798,7 +798,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">📝 Болзооны төлөвлөгөө</h3>
+        <h3 className="se-group-title">📝 Төлөвлөгөө</h3>
 
         <div className="se-steps">
           {steps.map((step, idx) => (

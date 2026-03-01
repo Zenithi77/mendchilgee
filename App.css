@@ -80,7 +80,7 @@
 }
 
 .watermark-banner-brand {
-  color: #FFC4D0 !important;
+  color: #6b8f9e !important;
   font-weight: 700 !important;
   text-decoration: none !important;
 }
@@ -92,7 +92,7 @@
   font-size: 12px !important;
   font-weight: 600 !important;
   color: #fff !important;
-  background: linear-gradient(135deg, #FFC4D0, #F7DDDE) !important;
+  background: linear-gradient(135deg, #6b8f9e, #8baa97) !important;
   border: none !important;
   border-radius: 20px !important;
   cursor: pointer !important;

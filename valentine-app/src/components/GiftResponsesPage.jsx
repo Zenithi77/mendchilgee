@@ -99,7 +99,7 @@ export default function GiftResponsesPage() {
       <div className="gift-preview-page gift-preview-error">
         <div className="gift-preview-error-icon">📭</div>
         <h2>Хариу алга байна</h2>
-        <p>Энэ бэлэгт одоогоор хариу ирээгүй байна.</p>
+        <p>Энэ мэндчилгээнд одоогоор хариу ирээгүй байна.</p>
         <button className="gift-preview-back-btn" onClick={() => navigate(-1)}>
           ← Буцах
         </button>

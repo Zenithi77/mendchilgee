@@ -99,7 +99,7 @@ function LetterPreview({ data }) {
         </div>
 
         <button className="pv-secondary-btn" type="button">
-          {closeText} 💕
+          {closeText} ✨
         </button>
       </div>
     </div>

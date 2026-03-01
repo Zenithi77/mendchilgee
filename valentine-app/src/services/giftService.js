@@ -13,6 +13,7 @@ import {
   where,
   getDocs,
   serverTimestamp,
+  increment,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -79,4 +80,19 @@ export async function getUserGifts(userId) {
  */
 export async function deleteGift(giftId) {
   await deleteDoc(doc(db, COLLECTION, giftId));
+}
+
+/**
+ * Increment the view counter for a gift.
+ * Called when a recipient opens the gift preview page.
+ */
+export async function incrementViewCount(giftId) {
+  try {
+    await updateDoc(doc(db, COLLECTION, giftId), {
+      viewCount: increment(1),
+      lastViewedAt: serverTimestamp(),
+    });
+  } catch (err) {
+    console.warn("Failed to increment view count:", err);
+  }
 }

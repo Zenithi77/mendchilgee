@@ -18,15 +18,13 @@ import TermsReacceptModal from "./components/TermsReacceptModal";
 import FloatingHearts from "./components/FloatingHearts";
 import "./App.css";
 
-// ⬇️ ЭНДЭЭС ӨӨРЧЛӨХ: Хосын эхлэсэн огноо
-const RELATIONSHIP_START = new Date("2024-03-15");
+// Mendchilgee.site — Дижитал мэндчилгээний платформ
 
 /*
   FLOW:
-  0. CategorySelector — Категори сонгох (crush, new-couple, long-term, y2k)
+  0. CategorySelector — Баярын төрөл сонгох (march8, soldiers-day, birthday, valentine, general)
   1. TemplateSelector — Загвар сонгох (категориор шүүсэн)
   2. GiftRenderer — Data-driven section renderer
-     (welcome → loveLetter → question → memoryGallery → stepQuestions → finalSummary)
   Builder — Standalone full-screen gift builder (separate from the numbered flow)
 */
 
@@ -71,8 +69,8 @@ function AuthGuard({ children }) {
     return (
       <div className="app">
         <div className="auth-loading">
-          <div className="auth-loading-spinner">💕</div>
-          <p>Loading...</p>
+          <div className="auth-loading-spinner">🎉</div>
+          <p>Ачааллаж байна...</p>
         </div>
       </div>
     );
@@ -168,8 +166,8 @@ function MainApp() {
     return (
       <div className="app">
         <div className="auth-loading">
-          <div className="auth-loading-spinner">💕</div>
-          <p>Loading...</p>
+          <div className="auth-loading-spinner">🎉</div>
+          <p>Ачаалж байна...</p>
         </div>
       </div>
     );

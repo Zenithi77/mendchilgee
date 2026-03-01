@@ -6,8 +6,8 @@ import {
 } from "../utils/youtube";
 
 const FALLBACK_QUESTIONS = [
-  { q: "How well do you know me?", a1: "Movies 🎬", a2: "Partying 💃" },
-  { q: "Coffee or Tea?", a1: "Coffee ☕", a2: "Tea 🍵" },
+  { q: "Намайг хир сайн мэдэх вэ?", a1: "Кино 🎬", a2: "Үдэшлөг 💃" },
+  { q: "Кофе эсвэл цай?", a1: "Кофе ☕", a2: "Цай 🍵" },
 ];
 
 export default function SparkCustomizer({
@@ -22,12 +22,12 @@ export default function SparkCustomizer({
   const phoneStickers = sc.phoneStickers || ["💞", "🌸", "✨", "💗"];
   const placeholder = sc.phonePlaceholder || {
     heart: "💖",
-    text: "Happy Valentine's Day",
-    sub: "Will you go on a date with me? 💌",
+    text: "Мэндчилгээ",
+    sub: "Танд зориулсан тусгай хуудас 💌",
   };
   const cta = sc.phoneCTA || {
-    title: "Be My Valentine? 💘",
-    sub: "2.14 — болзоонд хамт гарах уу? 🌹",
+    title: "Мэндчилгээ 🎉",
+    sub: "Танд зориулав 🌹",
   };
   const musicBar = sc.musicBar || {
     icon: "🎵",
@@ -100,10 +100,10 @@ export default function SparkCustomizer({
 
           <div className="spark-badge">{sc.badge || "2.14"}</div>
           <h1 className="font-script spark-title">
-            {sc.title || "Happy Valentine's Day"}
+            {sc.title || "Мэндчилгээ"}
           </h1>
           <p className="spark-sub">
-            {sc.subtitle || "Valentine-д зориулсан маш гоё болзооны урилга 💖"}
+            {sc.subtitle || "Тусгай мэндчилгээний хуудас 🌟"}
           </p>
         </div>
 

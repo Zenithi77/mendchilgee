@@ -25,7 +25,7 @@ export default function MemoryVideo({ data, onContinue }) {
           <p style={{ color: "rgba(255,255,255,0.5)" }}>Бичлэг оруулаагүй байна</p>
           {onContinue && (
             <button className="btn btn-magic" style={{ marginTop: 24 }} onClick={onContinue}>
-              Үргэлжлүүлэх 💕
+              Үргэлжлүүлэх ✨
             </button>
           )}
         </div>
@@ -109,7 +109,7 @@ export default function MemoryVideo({ data, onContinue }) {
         {onContinue && (
           <div className="mv-continue">
             <button className="btn btn-magic" onClick={onContinue}>
-              {data?.continueButton || "Үргэлжлүүлэх 💕"}
+              {data?.continueButton || "Үргэлжлүүлэх ✨"}
             </button>
           </div>
         )}

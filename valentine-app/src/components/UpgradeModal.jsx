@@ -86,7 +86,7 @@ export default function UpgradeModal({ open, onClose, gift, giftId }) {
           <div className="upgrade-modal-icon">✨</div>
           <h2 className="upgrade-modal-title">Watermark арилгах</h2>
           <p className="upgrade-modal-subtitle">
-            Таны бэлэгт дараах feature-ууд ашиглагдсан тул upgrade шаардлагатай
+            Таны мэндчилгээнд дараах feature-ууд ашиглагдсан тул upgrade шаардлагатай
           </p>
         </div>
 

@@ -23,8 +23,8 @@
 }
 
 .emoji-picker-trigger:hover {
-  border-color: #f9a8d4;
-  background: #fdf2f8;
+  border-color: #b8c4cc;
+  background: #f5f7f9;
   transform: scale(1.05);
 }
 
@@ -33,7 +33,7 @@
   z-index: 9999;
   width: 280px;
   background: #fff;
-  border: 1px solid #fce7f3;
+  border: 1px solid #e2e6eb;
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
   padding: 8px;
@@ -76,10 +76,10 @@
 }
 
 .emoji-picker-tab:hover {
-  background: #fdf2f8;
+  background: #f5f7f9;
 }
 .emoji-picker-tab.active {
-  background: #fce7f3;
+  background: #e2e6eb;
 }
 
 .emoji-picker-grid {
@@ -98,7 +98,7 @@
   background: transparent;
 }
 .emoji-picker-grid::-webkit-scrollbar-thumb {
-  background: #fce7f3;
+  background: #e2e6eb;
   border-radius: 10px;
 }
 
@@ -117,6 +117,6 @@
 }
 
 .emoji-picker-item:hover {
-  background: #fdf2f8;
+  background: #f5f7f9;
   transform: scale(1.2);
 }

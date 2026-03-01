@@ -111,7 +111,7 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
               </div>
             </div>
             <button className="ll-close-btn" onClick={handleClose}>
-              {letter.closeButtonText || "Уншлаа 💕"}
+              {letter.closeButtonText || "Уншлаа ✨"}
             </button>
           </div>
         )}

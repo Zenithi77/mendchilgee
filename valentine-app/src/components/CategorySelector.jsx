@@ -15,9 +15,9 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
       <div className="category-container">
         {/* Header */}
         <div className="cat-header">
-          <div className="cat-header-emoji">💕</div>
-          <h1 className="font-script cat-header-title">Valentine's Day 2026</h1>
-          <p className="cat-header-sub">Хайрын шатаа сонгоорой 💫</p>
+          <div className="cat-header-emoji">🎉</div>
+          <h1 className="font-script cat-header-title">Мэндчилгээ</h1>
+          <p className="cat-header-sub">Баярын төрлөө сонгоорой 💫</p>
         </div>
 
         {/* Builder entry point */}
@@ -28,7 +28,7 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
               onClick={onOpenBuilder}
               style={{ fontSize: "0.95rem" }}
             >
-              ✨ Өөрөө бүтээх — Gift Builder
+              ✨ Өөрөө бүтээх — Мэндчилгээ Builder
             </button>
           </div>
         )}

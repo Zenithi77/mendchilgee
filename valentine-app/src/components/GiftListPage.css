@@ -56,7 +56,7 @@
 
 .gift-list-title {
   font-size: 2.5rem;
-  background: linear-gradient(135deg, #ff6b9d, #c471ed, #7c4dff);
+  background: linear-gradient(135deg, #FFC4D0, #F7DDDE, #FBE8E7);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -85,17 +85,17 @@
   font-weight: 600;
   font-family: "Poppins", sans-serif;
   color: #fff;
-  background: linear-gradient(135deg, #ff6b9d, #c471ed);
+  background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
   border: none;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+  box-shadow: 0 4px 20px rgba(107, 143, 158, 0.3);
 }
 
 .btn-create-gift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 107, 157, 0.45);
+  box-shadow: 0 8px 30px rgba(107, 143, 158, 0.45);
 }
 
 .btn-create-icon {
@@ -120,7 +120,7 @@
 
 .gift-card:hover {
   background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 107, 157, 0.2);
+  border-color: rgba(107, 143, 158, 0.2);
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
@@ -170,14 +170,14 @@
   font-size: 0.72rem;
   padding: 3px 10px;
   border-radius: 20px;
-  background: rgba(255, 107, 157, 0.12);
-  color: rgba(255, 107, 157, 0.9);
-  border: 1px solid rgba(255, 107, 157, 0.15);
+  background: rgba(107, 143, 158, 0.12);
+  color: rgba(107, 143, 158, 0.9);
+  border: 1px solid rgba(107, 143, 158, 0.15);
 }
 
 .gift-card-badge-cat {
   background: rgba(124, 77, 255, 0.12);
-  color: rgba(196, 113, 237, 0.9);
+  color: rgba(139, 170, 151, 0.9);
   border-color: rgba(124, 77, 255, 0.15);
   text-transform: capitalize;
 }
@@ -377,7 +377,7 @@
 }
 
 .gift-share-panel-url-input:focus {
-  border-color: rgba(255, 107, 157, 0.3);
+  border-color: rgba(107, 143, 158, 0.3);
 }
 
 .gift-action-delete-yes:hover {

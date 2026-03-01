@@ -77,7 +77,7 @@ export default function PaymentSuccessPage() {
         <div className="status-icon">🎉</div>
         <h1>Төлбөр амжилттай!</h1>
         <p>
-          Таны бэлэг{" "}
+          Таны мэндчилгээ{" "}
           <strong>
             {tierMeta.badge} {tierMeta.label}
           </strong>{" "}
@@ -87,10 +87,10 @@ export default function PaymentSuccessPage() {
           Идэвхтэй хугацаа: <strong>{durationDays} хоног</strong>
         </p>
         <p style={{ color: "#64748b", fontSize: "0.85rem" }}>
-          Watermark арилсан байна. Бэлгээ хуваалцаарай! 💕
+          Watermark арилсан байна. Мэндчилгээгээ хуваалцаарай! ✨
         </p>
         {giftId ? (
-          <Link to={`/${giftId}`}>← Бэлгээ харах</Link>
+          <Link to={`/${giftId}`}>← Мэндчилгээг харах</Link>
         ) : (
           <Link to="/">← Нүүр хуудас руу буцах</Link>
         )}

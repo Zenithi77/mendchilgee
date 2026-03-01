@@ -147,7 +147,7 @@ function QuizMode({ quizQuestions, character, onDone }) {
       {/* Next / Done button */}
       {canProceed && (
         <button className="quiz-next-btn" onClick={goNext}>
-          {qIdx < quizQuestions.length - 1 ? "Дараах ➜" : "Үргэлжлүүлэх 💕"}
+          {qIdx < quizQuestions.length - 1 ? "Дараах ➨" : "Үргэлжлүүлэх ✨"}
         </button>
       )}
     </div>

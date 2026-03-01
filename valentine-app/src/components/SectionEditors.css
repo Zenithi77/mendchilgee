@@ -86,8 +86,8 @@
 
 .se-input:focus {
   outline: none;
-  border-color: #f9a8d4;
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+  border-color: #b8c4cc;
+  box-shadow: 0 0 0 3px rgba(107, 143, 158, 0.08);
 }
 
 .se-input-short {
@@ -114,8 +114,8 @@
 
 .se-textarea:focus {
   outline: none;
-  border-color: #f9a8d4;
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.08);
+  border-color: #b8c4cc;
+  box-shadow: 0 0 0 3px rgba(107, 143, 158, 0.08);
 }
 
 .se-input-with-emoji {
@@ -168,7 +168,7 @@
 }
 
 .se-toggle input:checked + .se-toggle-slider {
-  background: linear-gradient(135deg, #ec4899, #a855f7);
+  background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
 }
 
 .se-toggle input:checked + .se-toggle-slider::after {
@@ -206,7 +206,7 @@
 }
 
 .se-list-item .se-input:focus {
-  border-color: #f9a8d4;
+  border-color: #b8c4cc;
   background: #fff;
 }
 
@@ -246,7 +246,7 @@
   justify-content: center;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #ec4899, #a855f7);
+  background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
   color: #fff;
   font-size: 1.1rem;
   cursor: pointer;
@@ -256,15 +256,15 @@
 
 .se-add-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.3);
+  box-shadow: 0 4px 14px rgba(107, 143, 158, 0.3);
 }
 
 .se-add-btn-sm {
   padding: 4px 12px;
-  border: 1px dashed #f9a8d4;
+  border: 1px dashed #b8c4cc;
   border-radius: 8px;
   background: transparent;
-  color: #ec4899;
+  color: #FFC4D0;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
@@ -273,8 +273,8 @@
 }
 
 .se-add-btn-sm:hover {
-  background: #fdf2f8;
-  border-color: #ec4899;
+  background: #f5f7f9;
+  border-color: #FFC4D0;
 }
 
 /* ── Cards (for memories) ── */
@@ -297,8 +297,8 @@
 }
 
 .se-card:hover {
-  border-color: #fce7f3;
-  box-shadow: 0 2px 10px rgba(236, 72, 153, 0.06);
+  border-color: #e2e6eb;
+  box-shadow: 0 2px 10px rgba(107, 143, 158, 0.06);
 }
 
 .se-card-header {
@@ -320,10 +320,10 @@
   justify-content: center;
   gap: 8px;
   padding: 12px;
-  border: 2px dashed #f9a8d4;
+  border: 2px dashed #b8c4cc;
   border-radius: 14px;
   background: transparent;
-  color: #ec4899;
+  color: #FFC4D0;
   font-weight: 700;
   font-size: 0.88rem;
   cursor: pointer;
@@ -332,8 +332,8 @@
 }
 
 .se-add-card-btn:hover {
-  background: #fdf2f8;
-  border-color: #ec4899;
+  background: #f5f7f9;
+  border-color: #FFC4D0;
 }
 
 /* ── Steps (for stepQuestions) ── */
@@ -353,7 +353,7 @@
 }
 
 .se-step:hover {
-  border-color: #fce7f3;
+  border-color: #e2e6eb;
 }
 
 .se-step-header {
@@ -367,7 +367,7 @@
 }
 
 .se-step-header:hover {
-  background: #fdf2f8;
+  background: #f5f7f9;
 }
 
 .se-step-header-left {

@@ -152,7 +152,7 @@ export default function StepQuestions({
           >
             {step < totalSteps - 1
               ? stepUI.nextButton || "Дараагийх →"
-              : stepUI.doneButton || "Баталгаажуулах 💕"}
+              : stepUI.doneButton || "Баталгаажуулах ✨"}
           </button>
         </div>
       </div>

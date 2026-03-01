@@ -74,7 +74,7 @@ export default function Welcome2({ startDate, onOpen, template }) {
             textShadow: "0 0 40px rgba(255,107,157,0.3)",
           }}
         >
-          {welcome.title || "Happy Valentine's Day 💕"}
+          {welcome.title || "Мэндчилгээ 🎉"}
         </h1>
         <p
           style={{
@@ -86,7 +86,7 @@ export default function Welcome2({ startDate, onOpen, template }) {
           }}
         >
           {welcome.subtitle ||
-            "Хамгийн хайртай хүндээ зориулсан\nтусгай урилга ❤️"}
+            "Танд зориулсан \nтусгай мэндчилгээ ✨"}
         </p>
 
         {/* Timer */}
@@ -98,7 +98,7 @@ export default function Welcome2({ startDate, onOpen, template }) {
               marginBottom: 8,
             }}
           >
-            {timer.title || "Бид хамт байсан хугацаа"}
+            {timer.title || "Цаг хугацаа"}
           </div>
           <div className="timer-grid">
             {[
@@ -116,7 +116,7 @@ export default function Welcome2({ startDate, onOpen, template }) {
         </div>
 
         <button className="btn btn-love" onClick={onOpen}>
-          {welcome.buttonText || "Урилга нээх 💌"}
+          {welcome.buttonText || "Мэндчилгээ нээх 🎁"}
         </button>
       </div>
     </div>

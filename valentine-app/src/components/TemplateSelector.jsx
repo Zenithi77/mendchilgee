@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { getTemplatesByCategory } from "../templateConfigs";
+import { getTemplatesByCategory, CATEGORIES } from "../templateConfigs";
 
-const CATEGORY_NAMES = {
-  crush: "Crush / Дурлал 😍",
-  "new-couple": "Шинэ хос 👩‍❤️‍👨",
-  "long-term": "Удаан хос 💍",
-  y2k: "2000s Хосууд 📟",
-  "long-distance": "Холын хайр 🌍",
-};
+const CATEGORY_NAMES = Object.fromEntries(
+  CATEGORIES.map((c) => [c.id, `${c.emoji} ${c.label}`])
+);
 
 export default function TemplateSelector({ onSelect, category }) {
   const [hovered, setHovered] = useState(null);
@@ -25,11 +21,11 @@ export default function TemplateSelector({ onSelect, category }) {
       <div className="selector-container">
         {/* Header */}
         <div className="selector-header">
-          <div className="selector-icon">💌</div>
+          <div className="selector-icon">🎉</div>
           <h1 className="font-script selector-title">
-            {CATEGORY_NAMES[category] || "Valentine's Day Урилга"}
+            {CATEGORY_NAMES[category] || "Мэндчилгээ"}
           </h1>
-          <p className="selector-subtitle">Загвараа сонгоорой 💕</p>
+          <p className="selector-subtitle">Загвараа сонгоорой ✨</p>
         </div>
 
         {/* Template Cards */}
@@ -68,9 +64,11 @@ export default function TemplateSelector({ onSelect, category }) {
 
                 {/* Feature tags */}
                 <div className="template-tags">
-                  <span className="template-tag">
-                    {tmpl.stepQuestions.steps.length} асуулт
-                  </span>
+                  {tmpl.stepQuestions?.steps?.length > 0 && (
+                    <span className="template-tag">
+                      {tmpl.stepQuestions.steps.length} асуулт
+                    </span>
+                  )}
                   {tmpl.card.tags.map((tag, ti) => (
                     <span key={ti} className="template-tag">
                       {tag}

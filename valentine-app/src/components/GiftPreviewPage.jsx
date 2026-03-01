@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getGift } from "../services/giftService";
+import { getGift, incrementViewCount } from "../services/giftService";
 import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import Watermark from "./Watermark";
@@ -20,6 +20,8 @@ export default function GiftPreviewPage() {
   const [gift, setGift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showShareBar, setShowShareBar] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   /* ── password gate state ── */
   const [unlocked, setUnlocked] = useState(false);
@@ -68,6 +70,12 @@ export default function GiftPreviewPage() {
 
           setGift(data);
 
+          // ── Increment view counter (fire-and-forget) ──
+          const isInIframe = window.self !== window.top;
+          if (!isInIframe) {
+            incrementViewCount(giftId);
+          }
+
           // Apply theme CSS variables
           if (data.theme?.colors) {
             const root = document.documentElement;
@@ -107,7 +115,7 @@ export default function GiftPreviewPage() {
   if (loading) {
     return (
       <div className="gift-preview-page gift-preview-loading">
-        <div className="gift-preview-spinner">💝</div>
+        <div className="gift-preview-spinner">🎉</div>
         <p>Ачаалж байна...</p>
       </div>
     );
@@ -247,9 +255,39 @@ export default function GiftPreviewPage() {
   // Check if watermark should be shown — only on the public view, not inside
   // the builder's iframe preview.
   const isInIframe = window.self !== window.top;
-  // DISABLED: watermark temporarily turned off for preview
-  // const showWatermark = !isInIframe && shouldShowWatermark(gift);
   const showWatermark = false;
+
+  const shareUrl = `${window.location.origin}/${giftId}`;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+      const input = document.createElement("input");
+      input.value = shareUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleShareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, "_blank");
+  };
+
+  const handleShareMessenger = () => {
+    window.open(`fb-messenger://share/?link=${encodeURIComponent(shareUrl)}`, "_blank");
+    // Fallback for desktop
+    setTimeout(() => {
+      window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=0&redirect_uri=${encodeURIComponent(shareUrl)}`, "_blank");
+    }, 500);
+  };
 
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
@@ -262,6 +300,41 @@ export default function GiftPreviewPage() {
         persistResponses={true}
       />
       <Watermark visible={showWatermark} giftId={giftId} />
+
+      {/* Floating back-to-home & share buttons */}
+      {!isInIframe && (
+        <>
+          <button
+            className="gift-preview-back-floating"
+            onClick={() => navigate("/")}
+            title="Нүүр хуудас руу буцах"
+          >
+            ← Нүүр
+          </button>
+
+          <button
+            className="gift-preview-share-fab"
+            onClick={() => setShowShareBar(!showShareBar)}
+            title="Хуваалцах"
+          >
+            📤
+          </button>
+
+          {showShareBar && (
+            <div className="gift-preview-share-bar">
+              <button className="share-btn share-btn-fb" onClick={handleShareFacebook}>
+                📘 Facebook
+              </button>
+              <button className="share-btn share-btn-msg" onClick={handleShareMessenger}>
+                💬 Messenger
+              </button>
+              <button className="share-btn share-btn-copy" onClick={handleCopyLink}>
+                {copied ? "✅ Хуулагдсан!" : "📋 Линк хуулах"}
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

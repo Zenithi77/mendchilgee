@@ -14,7 +14,7 @@
     135deg,
     var(--bg-dark) 0%,
     var(--bg-mid) 50%,
-    #2d0040 100%
+    #252830 100%
   );
 }
 
@@ -89,7 +89,7 @@
   backdrop-filter: blur(20px);
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 100px rgba(255, 107, 157, 0.1);
+    0 0 100px rgba(107, 143, 158, 0.1);
   animation: cardSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -131,7 +131,7 @@
   font-size: 2.5rem;
   color: var(--pink);
   margin-bottom: 8px;
-  text-shadow: 0 0 30px rgba(255, 107, 157, 0.3);
+  text-shadow: 0 0 30px rgba(107, 143, 158, 0.3);
 }
 
 .auth-subtitle {
@@ -178,8 +178,8 @@
 
 .auth-input:focus {
   border-color: var(--pink);
-  background: rgba(255, 107, 157, 0.08);
-  box-shadow: 0 0 20px rgba(255, 107, 157, 0.15);
+  background: rgba(107, 143, 158, 0.08);
+  box-shadow: 0 0 20px rgba(107, 143, 158, 0.15);
 }
 
 .auth-input:disabled {
@@ -245,12 +245,12 @@
   background: linear-gradient(135deg, var(--pink) 0%, var(--hot-pink) 100%);
   color: #fff;
   border: none;
-  box-shadow: 0 8px 25px rgba(255, 107, 157, 0.35);
+  box-shadow: 0 8px 25px rgba(107, 143, 158, 0.35);
 }
 
 .auth-button-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(255, 107, 157, 0.45);
+  box-shadow: 0 12px 35px rgba(107, 143, 158, 0.45);
 }
 
 .auth-button-primary:active:not(:disabled) {

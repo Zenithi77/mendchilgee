@@ -163,7 +163,7 @@ export default function StepQuestions({ choices, updateChoice, onDone }) {
             disabled={!isSelected}
             onClick={handleNext}
           >
-            {step < totalSteps - 1 ? 'Дараагийх →' : 'Баталгаажуулах 💕'}
+            {step < totalSteps - 1 ? 'Дараагийх →' : 'Баталгаажуулах ✨'}
           </button>
         </div>
       </div>

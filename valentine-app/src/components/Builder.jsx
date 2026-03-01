@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Logo from "../assets/Logo";
 import { createEmptyGift, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
@@ -10,7 +9,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import AddSectionModal from "./AddSectionModal";
 import UpgradeModal from "./UpgradeModal";
-import GiftPreview, { VIEWPORT_PRESETS } from "./GiftPreview";
+import { VIEWPORT_PRESETS } from "./GiftPreview";
 import { TEMPLATES } from "../templateConfigs";
 import { TIER_META } from "../config/tiers";
 import { FEATURE_REGISTRY } from "../config/featureRegistry";
@@ -19,11 +18,9 @@ import {
   needsUpgrade,
   getRemainingDays,
 } from "../utils/tierUtils";
-import { IoMdMenu } from "react-icons/io";
-import { IoClose } from "react-icons/io5";
-import { IoColorPalette } from "react-icons/io5";
+import { IoClose, IoColorPalette, IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import {
   IoMdPhonePortrait,
   IoIosTabletLandscape,
@@ -47,27 +44,27 @@ import "./ShareModal.css";
 const DEFAULT_BUILDER_THEME = {
   className: "theme-classic",
   colors: {
-    "--t-primary": "#ff6b9d",
-    "--t-secondary": "#ff4081",
-    "--t-accent": "#c471ed",
-    "--t-accent2": "#7c4dff",
-    "--t-soft": "#ff9a9e",
-    "--t-light": "#ffd1dc",
-    "--t-bg": "#0d0015",
-    "--t-bg2": "#1a0025",
+    "--t-primary": "#FFC4D0",
+    "--t-secondary": "#F7DDDE",
+    "--t-accent": "#FBE8E7",
+    "--t-accent2": "#FCF5EE",
+    "--t-soft": "#FBE8E7",
+    "--t-light": "#FCF5EE",
+    "--t-bg": "#111518",
+    "--t-bg2": "#1c2025",
     "--t-glass": "rgba(255, 255, 255, 0.04)",
-    "--t-glass-border": "rgba(255, 100, 150, 0.15)",
+    "--t-glass-border": "rgba(255, 196, 208, 0.15)",
   },
 };
 
 const DEFAULT_EFFECTS = {
-  floatingHearts: ["❤️", "💕", "💖", "💗", "💝"],
-  heartRain: ["❤️", "💖", "💗", "💕", "💘", "💝"],
-  confettiColors: ["#ff6b9d", "#ff4081", "#c471ed", "#7c4dff"],
-  clickSparkles: ["✨", "💖", "💕", "⭐"],
+  floatingHearts: ["🎉", "✨", "🌟", "🎊", "⭐"],
+  heartRain: ["🎉", "✨", "🌸", "🌟", "🎊", "⭐"],
+  confettiColors: ["#FFC4D0", "#F7DDDE", "#FBE8E7", "#FCF5EE"],
+  clickSparkles: ["✨", "🌟", "🎉", "⭐"],
   flowers: [],
   leafEmoji: "🍃",
-  stickers: ["💕", "💖", "💗", "💓", "💞", "💘"],
+  stickers: ["🎉", "✨", "🌟", "🎊", "🎁", "🌸"],
 };
 
 export default function Builder() {
@@ -131,6 +128,79 @@ export default function Builder() {
     return null;
   });
 
+  // ── Slide-based navigation ──
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const slideTrackRef = useRef(null);
+  const [pendingFocusSectionId, setPendingFocusSectionId] = useState(null);
+
+  // ── Phone iframe scale ──
+  const phoneScreenRef = useRef(null);
+  const [iframeScale, setIframeScale] = useState(0.58);
+  const [iframeHeight, setIframeHeight] = useState(844);
+
+  useEffect(() => {
+    const el = phoneScreenRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const w = entry.contentRect.width;
+        const h = entry.contentRect.height;
+        const s = w / 390;
+        setIframeScale(s);
+        setIframeHeight(Math.ceil(h / s));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [gift?.id]);
+
+  // Sync selectedSectionId from activeSlideIndex
+  useEffect(() => {
+    const sec = gift?.sections?.[activeSlideIndex];
+    if (sec && sec.id !== selectedSectionId) {
+      setSelectedSectionId(sec.id);
+      setSectionSnapshot(JSON.parse(JSON.stringify(sec.data)));
+    }
+  }, [activeSlideIndex, gift?.sections]);
+
+  // Clamp activeSlideIndex when sections change
+  useEffect(() => {
+    if (gift?.sections && activeSlideIndex >= gift.sections.length) {
+      setActiveSlideIndex(Math.max(0, gift.sections.length - 1));
+    }
+  }, [gift?.sections?.length]);
+
+  // Focus newly added section
+  useEffect(() => {
+    if (pendingFocusSectionId && gift?.sections) {
+      const idx = gift.sections.findIndex((s) => s.id === pendingFocusSectionId);
+      if (idx >= 0) {
+        setActiveSlideIndex(idx);
+      }
+      setPendingFocusSectionId(null);
+    }
+  }, [pendingFocusSectionId, gift?.sections]);
+
+  // Slide navigation helpers
+  const goToSlide = useCallback(
+    (idx) => {
+      const len = gift?.sections?.length ?? 0;
+      if (len > 0 && idx >= 0 && idx < len) {
+        setActiveSlideIndex(idx);
+      }
+    },
+    [gift?.sections?.length],
+  );
+
+  const prevSlide = useCallback(
+    () => goToSlide(activeSlideIndex - 1),
+    [activeSlideIndex, goToSlide],
+  );
+  const nextSlide = useCallback(
+    () => goToSlide(activeSlideIndex + 1),
+    [activeSlideIndex, goToSlide],
+  );
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -183,11 +253,7 @@ export default function Builder() {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
-  // ✅ Editor drawer open/close
-  const [editorOpen, setEditorOpen] = useState(false);
-
   // ── Unsaved-changes guard ──
-  // Snapshot of the section data when the editor drawer opens
   const [sectionSnapshot, setSectionSnapshot] = useState(null);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
 
@@ -206,17 +272,17 @@ export default function Builder() {
     );
   }, [sectionSnapshot, selectedSection]);
 
-  // Attempt to close the editor drawer; shows warning if unsaved changes exist
+  // Attempt to collapse the editor; shows warning if unsaved changes exist
   const requestCloseEditor = useCallback(() => {
     if (hasUnsavedEditorChanges()) {
       setShowUnsavedWarning(true);
     } else {
-      setEditorOpen(false);
+      setSelectedSectionId(null);
       setSectionSnapshot(null);
     }
   }, [hasUnsavedEditorChanges]);
 
-  // Discard changes: revert section data to the snapshot and close
+  // Discard changes: revert section data to the snapshot and collapse
   const discardEditorChanges = useCallback(() => {
     if (sectionSnapshot && selectedSectionId) {
       setGift((prev) => ({
@@ -229,7 +295,7 @@ export default function Builder() {
       }));
     }
     setShowUnsavedWarning(false);
-    setEditorOpen(false);
+    setSelectedSectionId(null);
     setSectionSnapshot(null);
   }, [sectionSnapshot, selectedSectionId]);
 
@@ -250,34 +316,11 @@ export default function Builder() {
 
       return { ...prev, sections: [...prev.sections, section] };
     });
-    setSelectedSectionId(section.id);
+    setPendingFocusSectionId(section.id);
     setShowAddModal(false);
     // Snapshot the newly created section so cancelling reverts to it
     setSectionSnapshot(JSON.parse(JSON.stringify(section.data)));
-    setEditorOpen(true);
-    setSidebarOpen(false); // ✅ mobile дээр хаах
   }, []);
-
-  const reorder = useCallback((list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  }, []);
-
-  const onDragEnd = useCallback(
-    (result) => {
-      const { source, destination } = result;
-      if (!destination) return;
-      if (destination.index === source.index) return;
-
-      setGift((prev) => ({
-        ...prev,
-        sections: reorder(prev.sections, source.index, destination.index),
-      }));
-    },
-    [reorder],
-  );
 
   const updateSectionData = useCallback((sectionId, newData) => {
     setGift((prev) => ({
@@ -295,15 +338,9 @@ export default function Builder() {
       if (prev.sections.length <= 1) return prev;
 
       const nextSections = prev.sections.filter((s) => s.id !== sectionId);
-      const nextSelectedId =
-        prev.sections[idx + 1]?.id ?? prev.sections[idx - 1]?.id ?? null;
-
-      setSelectedSectionId((current) =>
-        current === sectionId ? nextSelectedId : current,
-      );
-
       return { ...prev, sections: nextSections };
     });
+    // activeSlideIndex will be clamped by the effect
   }, []);
 
   const applyTemplate = useCallback((tmpl) => {
@@ -344,11 +381,11 @@ export default function Builder() {
     }
   }, [gift, user, urlGiftId, navigate]);
 
-  // Save changes from the warning modal, then close
+  // Save changes from the warning modal, then collapse
   const saveAndCloseEditor = useCallback(async () => {
     setShowUnsavedWarning(false);
     await handleSave();
-    setEditorOpen(false);
+    setSelectedSectionId(null);
     setSectionSnapshot(null);
   }, [handleSave]);
 
@@ -461,6 +498,141 @@ export default function Builder() {
     return <GenericEditor section={selectedSection} />;
   };
 
+  // ── Slide preview card renderer ──
+  const renderSlidePreview = (section) => {
+    const { type, data } = section;
+    const reg = SECTION_REGISTRY[type];
+    const icon = reg?.icon || "📄";
+    const label = reg?.labelMn || reg?.label || type;
+
+    switch (type) {
+      case SECTION_TYPES.WELCOME:
+        return (
+          <div className="slide-pv slide-pv-welcome">
+            <div className="slide-pv-emoji">{data?.character?.bodyEmoji || data?.character?.envelopeEmojis?.heart || "💝"}</div>
+            <h3 className="slide-pv-title">{data?.title || "Мэндчилгээ"}</h3>
+            <p className="slide-pv-sub">{data?.subtitle || ""}</p>
+            {data?.buttonText && (
+              <div className="slide-pv-mock-btn">{data.buttonText}</div>
+            )}
+          </div>
+        );
+
+      case SECTION_TYPES.LOVE_LETTER:
+        return (
+          <div className="slide-pv slide-pv-letter">
+            <div className="slide-pv-letter-icon">💌</div>
+            <div className="slide-pv-letter-text">
+              {(data?.content || "Захидлын агуулга...").slice(0, 150)}
+              {(data?.content || "").length > 150 ? "..." : ""}
+            </div>
+          </div>
+        );
+
+      case SECTION_TYPES.QUESTION:
+        return (
+          <div className="slide-pv slide-pv-question">
+            <div className="slide-pv-question-icon">{icon}</div>
+            <div className="slide-pv-question-text">
+              {data?.text || "Асуулга хэсэг"}
+            </div>
+            {data?.yesButton && (
+              <div className="slide-pv-mock-btn">{data.yesButton.text} {data.yesButton.emoji}</div>
+            )}
+          </div>
+        );
+
+      case SECTION_TYPES.MEMORY_GALLERY: {
+        const photos = data?.memories?.filter((m) => m.src) || [];
+        return (
+          <div className="slide-pv slide-pv-gallery">
+            {photos.length > 0 ? (
+              <div className="slide-pv-photos">
+                {photos.slice(0, 4).map((m, i) => (
+                  <div key={i} className="slide-pv-photo">
+                    <img src={m.src} alt="" />
+                  </div>
+                ))}
+                {photos.length > 4 && (
+                  <div className="slide-pv-photo-more">+{photos.length - 4}</div>
+                )}
+              </div>
+            ) : (
+              <div className="slide-pv-gallery-empty">
+                <span>📸</span>
+                <span>{data?.headerTitle || "Зургийн цомог"}</span>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      case SECTION_TYPES.MOVIE_SELECTION: {
+        const movies = data?.movies || [];
+        return (
+          <div className="slide-pv slide-pv-movies">
+            <div className="slide-pv-movies-title">{data?.title || "Кино сонголт"}</div>
+            <div className="slide-pv-movies-grid">
+              {movies.slice(0, 3).map((m, i) => (
+                <div key={i} className="slide-pv-movie">
+                  {m.posterUrl ? (
+                    <img src={m.posterUrl} alt={m.title} />
+                  ) : (
+                    <span>🎬</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      }
+
+      case SECTION_TYPES.MEMORY_VIDEO:
+        return (
+          <div className="slide-pv slide-pv-video">
+            <div className="slide-pv-video-icon">🎬</div>
+            <div className="slide-pv-video-label">{label}</div>
+            {data?.url && (
+              <div className="slide-pv-video-url">{data.url.slice(0, 40)}...</div>
+            )}
+          </div>
+        );
+
+      case SECTION_TYPES.STEP_QUESTIONS:
+        return (
+          <div className="slide-pv slide-pv-steps">
+            <div className="slide-pv-steps-icon">📝</div>
+            <div className="slide-pv-steps-label">{label}</div>
+            {data?.steps && (
+              <div className="slide-pv-steps-list">
+                {data.steps.slice(0, 3).map((s, i) => (
+                  <div key={i} className="slide-pv-step-item">
+                    {s.emoji} {s.title}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+
+      case SECTION_TYPES.FINAL_SUMMARY:
+        return (
+          <div className="slide-pv slide-pv-summary">
+            <div className="slide-pv-summary-icon">{data?.headerEmoji || "🎊"}</div>
+            <div className="slide-pv-summary-label">{data?.title || label}</div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="slide-pv slide-pv-generic">
+            <div className="slide-pv-generic-icon">{icon}</div>
+            <div className="slide-pv-generic-label">{label}</div>
+          </div>
+        );
+    }
+  };
+
   // Show loading state while fetching gift from Firestore
   if (giftLoading || !gift) {
     return (
@@ -473,7 +645,7 @@ export default function Builder() {
         }}
       >
         <div style={{ textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>💕</div>
+          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🎉</div>
           <p>Уншиж байна...</p>
         </div>
       </div>
@@ -505,15 +677,18 @@ export default function Builder() {
             <span className="builder-btn-exit-txt">Буцах</span>
           </button>
 
-          {/* ✅ Mobile/Tablet menu button */}
+          {/* ✅ Mobile: open style panel drawer */}
           <button
             type="button"
             className="builder-menu-btn"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open menu"
-            title="Menu"
+            onClick={() => {
+              setShowStylePanel(true);
+              setSidebarOpen(true);
+            }}
+            aria-label="Open style"
+            title="Загвар"
           >
-            <IoMdMenu />
+            <IoColorPalette />
           </button>
 
           {/* ── Tier badge in header ── */}
@@ -526,7 +701,7 @@ export default function Builder() {
                   background: requiredTierMeta.bgColor,
                   color: requiredTierMeta.color,
                 }}
-                title={`Энэ бэлэг ${requiredTierMeta.label} plan шаардана`}
+                title={`Энэ мэндчилгээ ${requiredTierMeta.label} plan шаардана`}
               >
                 {requiredTierMeta.badge} {requiredTierMeta.label}
               </span>
@@ -568,7 +743,7 @@ export default function Builder() {
       </header>
 
       <div className="builder-body">
-        {/* ✅ Sidebar overlay (mobile/tablet) */}
+        {/* ✅ Sidebar overlay (mobile/tablet - only for style panel) */}
         {sidebarOpen && (
           <div
             className="builder-sidebar-overlay"
@@ -576,6 +751,7 @@ export default function Builder() {
           />
         )}
 
+        {/* ═══ LEFT PANEL: Editor Sidebar ═══ */}
         <aside className={`builder-sidebar ${sidebarOpen ? "open" : ""}`}>
           <div className="builder-sidebar-inner">
             {/* ✅ Sidebar topbar close (mobile/tablet) */}
@@ -591,27 +767,24 @@ export default function Builder() {
               </button>
             </div>
 
+            {/* Tabs: Тохиргоо / Загвар */}
             <div className="button-group-container">
               <button
                 className={`builder-tab-btn btn-style ${!showStylePanel ? "active" : ""}`}
                 type="button"
-                onClick={() => {
-                  setShowStylePanel(false);
-                }}
+                onClick={() => setShowStylePanel(false)}
               >
                 <IoIosSettings />
-                <span>Settings</span>
+                <span>Тохиргоо</span>
               </button>
 
               <button
                 className={`builder-tab-btn btn-style ${showStylePanel ? "active" : ""}`}
                 type="button"
-                onClick={() => {
-                  setShowStylePanel(true);
-                }}
+                onClick={() => setShowStylePanel(true)}
               >
                 <IoColorPalette />
-                <span>Style</span>
+                <span>Загвар</span>
               </button>
             </div>
 
@@ -626,7 +799,7 @@ export default function Builder() {
                     fontWeight: 700,
                   }}
                 >
-                  Choose a template
+                  Загвар сонгох
                 </div>
 
                 <div className="template-grid">
@@ -646,10 +819,8 @@ export default function Builder() {
                         className={`template-tile template-${i + 1} ${isSelected ? "selected" : ""}`}
                         onClick={async () => {
                           applyTemplate(tmpl);
-                          // Persist immediately so the iframe preview (loaded from Firestore)
-                          // reflects the selected template without needing an extra button.
                           await handleSave();
-                          setSidebarOpen(false); // ✅ сонгосны дараа хаах
+                          setSidebarOpen(false);
                         }}
                         title={tmpl.card?.name || tmpl.id}
                         style={{ background: bg }}
@@ -665,14 +836,13 @@ export default function Builder() {
               </div>
             )}
 
+            {/* Settings tab: current section's editor */}
             {!showStylePanel && (
               <>
+                {/* Add + Save buttons */}
                 <button
                   className="builder-add-btn"
-                  onClick={() => {
-                    setShowAddModal(true);
-                    setSidebarOpen(false); // ✅ mobile дээр хаах
-                  }}
+                  onClick={() => setShowAddModal(true)}
                   type="button"
                 >
                   <span className="builder-add-icon">＋</span>
@@ -687,260 +857,239 @@ export default function Builder() {
                 >
                   <span>{saving ? "Хадгалж байна..." : "💾 Хадгалах"}</span>
                 </button>
+
+                {/* Active section header badge */}
+                {selectedSection && (
+                  <div className="builder-active-section-header">
+                    <div className="builder-active-section-left">
+                      <span className="builder-active-section-icon">
+                        {getSectionIcon(selectedSection)}
+                      </span>
+                      <span className="builder-active-section-name">
+                        {getSectionLabel(selectedSection)}
+                      </span>
+                      <span className="builder-active-section-counter">
+                        {activeSlideIndex + 1}/{gift.sections.length}
+                      </span>
+                    </div>
+                    <div className="builder-active-section-actions">
+                      {/* Navigate to previous section */}
+                      <button
+                        type="button"
+                        className="builder-action-btn builder-action-nav"
+                        onClick={() => goToSlide(activeSlideIndex - 1)}
+                        disabled={activeSlideIndex <= 0}
+                        title="Өмнөх хуудас"
+                      >
+                        ◀
+                      </button>
+                      {/* Navigate to next section */}
+                      <button
+                        type="button"
+                        className="builder-action-btn builder-action-nav"
+                        onClick={() => goToSlide(activeSlideIndex + 1)}
+                        disabled={activeSlideIndex >= gift.sections.length - 1}
+                        title="Дараагийн хуудас"
+                      >
+                        ▶
+                      </button>
+                      {/* Delete */}
+                      <button
+                        type="button"
+                        className="builder-action-btn builder-action-delete"
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `"${getSectionLabel(selectedSection)}" хэсгийг устгах уу?`
+                            )
+                          ) {
+                            deleteSection(selectedSection.id);
+                          }
+                        }}
+                        title={
+                          gift.sections.length <= 1
+                            ? "Хамгийн багадаа 1 хэсэг байх ёстой"
+                            : "Устгах"
+                        }
+                        disabled={gift.sections.length <= 1}
+                      >
+                        <MdDelete />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Section editor content */}
+                {selectedSection ? (
+                  <div className="builder-section-editor-wrap">
+                    {renderEditor()}
+                  </div>
+                ) : gift.sections.length === 0 ? (
+                  <div className="builder-section-empty">
+                    <span className="builder-section-empty-icon">📋</span>
+                    <p>Section нэмэгдээгүй байна</p>
+                    <p className="builder-section-empty-hint">
+                      Дээрх товч дарж section нэмнэ үү
+                    </p>
+                  </div>
+                ) : null}
               </>
             )}
-
-            <div className="builder-section-list">
-              {gift.sections.length === 0 && (
-                <div className="builder-section-empty">
-                  <span className="builder-section-empty-icon">📋</span>
-                  <p>Section нэмэгдээгүй байна</p>
-                  <p className="builder-section-empty-hint">
-                    Дээрх товч дарж section нэмнэ үү
-                  </p>
-                </div>
-              )}
-
-              {gift.sections.length > 0 && (
-                <DragDropContext onDragEnd={onDragEnd}>
-                  <Droppable droppableId="sections">
-                    {(provided) => (
-                      <div ref={provided.innerRef} {...provided.droppableProps}>
-                        {gift.sections.map((section, idx) => (
-                          <Draggable
-                            key={section.id}
-                            draggableId={String(section.id)}
-                            index={idx}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                className={`builder-section-item ${
-                                  selectedSectionId === section.id
-                                    ? "selected"
-                                    : ""
-                                } ${snapshot.isDragging ? "dragging" : ""}`}
-                                onClick={() => {
-                                  setSelectedSectionId(section.id);
-                                  setSidebarOpen(false); // ✅ сонгомогц хаах
-                                }}
-                              >
-                                <div className="builder-section-item-left">
-                                  <span
-                                    className="builder-drag-handle"
-                                    {...provided.dragHandleProps}
-                                    onClick={(e) => e.stopPropagation()}
-                                    title="Чирж эрэмбэлэх"
-                                  >
-                                    ⠿
-                                  </span>
-                                  <span className="builder-section-item-icon">
-                                    {getSectionIcon(section)}
-                                  </span>
-                                  <span className="builder-section-item-name">
-                                    {getSectionLabel(section)}
-                                  </span>
-                                  {/* Tier badge per section */}
-                                  {(() => {
-                                    const feat = FEATURE_REGISTRY[section.type];
-                                    if (feat && feat.requiredTier !== "free") {
-                                      const tm = TIER_META[feat.requiredTier];
-                                      return (
-                                        <span
-                                          className="builder-section-tier-dot"
-                                          style={{ color: tm.color }}
-                                          title={`${tm.label} plan`}
-                                        >
-                                          {tm.badge}
-                                        </span>
-                                      );
-                                    }
-                                    return null;
-                                  })()}
-                                </div>
-
-                                <div
-                                  className="builder-section-item-actions"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  
-                                  <button
-                                    type="button"
-                                    className="builder-action-btn builder-action-edit"
-                                    onClick={() => {
-                                      setSelectedSectionId(section.id);
-                                      // Snapshot the section data at open-time
-                                      setSectionSnapshot(
-                                        JSON.parse(
-                                          JSON.stringify(section.data),
-                                        ),
-                                      );
-                                      setEditorOpen(true);
-                                      setSidebarOpen(false);
-                                    }}
-                                    title="Edit"
-                                  >
-                                    <MdEdit />
-                                  </button>
-
-                                
-                                  <button
-                                    type="button"
-                                    className="builder-action-btn builder-action-delete"
-                                    onClick={() => {
-                                      if (
-                                        window.confirm(
-                                          `"${getSectionLabel(section)}" хэсгийг устгах уу?`,
-                                        )
-                                      ) {
-                                        deleteSection(section.id);
-                                      }
-                                    }}
-                                    title={
-                                      gift.sections.length <= 1
-                                        ? "At least 1 section must remain"
-                                        : "Delete"
-                                    }
-                                    disabled={gift.sections.length <= 1}
-                                  >
-                                    <MdDelete />
-                                  </button>
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              )}
-            </div>
           </div>
 
-          <div className="builder-sidebar-footer">
-            <div className="builder-sidebar-info">
-              <span className="builder-sidebar-info-count">
-                {gift.sections.length}
-              </span>
-              <span>section нэмэгдсэн</span>
-              {remainingDays > 0 && (
-                <span
-                  style={{
-                    marginLeft: 8,
-                    fontSize: "0.72rem",
-                    color: "#22c55e",
-                  }}
-                >
-                  ⏱ {remainingDays} хоног үлдсэн
-                </span>
-              )}
-            </div>
 
-            {/* Password setup */}
-            <div className="pw-setup">
-              <div className="pw-setup-title">Нууц үг тохируулах</div>
-              <div className="pw-setup-row">
-                <label className="pw-setup-label">4 оронтой нууц үг</label>
-                <input
-                  className="pw-setup-input"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={4}
-                  placeholder="••••"
-                  value={gift.password || ""}
-                  onChange={(e) => {
-                    const val = e.target.value
-                      .replace(/[^0-9]/g, "")
-                      .slice(0, 4);
-                    setGift((prev) => ({ ...prev, password: val }));
-                  }}
-                />
-                <span className="pw-setup-tip">
-                  Жишээ: төрсөн өдрийн 4 орон (0315)
-                </span>
-              </div>
-              <div className="pw-setup-row">
-                <label className="pw-setup-label">
-                  Нууц үгний санамж (hint)
-                </label>
-                <input
-                  className="pw-setup-hint-input"
-                  type="text"
-                  placeholder="Жишээ: Миний төрсөн өдөр 🎂"
-                  value={gift.passwordHint || ""}
-                  onChange={(e) => {
-                    setGift((prev) => ({
-                      ...prev,
-                      passwordHint: e.target.value,
-                    }));
-                  }}
-                />
-              </div>
-            </div>
-          </div>
         </aside>
 
-        {/* ✅ Main = preview only */}
-        <main className="builder-main builder-main-previewOnly">
-          {gift.id ? (
-            <div className="builder-preview-outer">
-              <div className="builder-preview-center">
-                <div
-                  className="builder-preview-frame"
-                  style={{
-                    width: VIEWPORT_PRESETS[viewport].width,
-                    height: VIEWPORT_PRESETS[viewport].height,
-                    transform: `scale(1)`,
-                  }}
-                >
-                  <iframe
-                    src={`/${gift.id}?r=${previewReloadKey}${
-                      selectedSectionId ? `#section-${selectedSectionId}` : ""
-                    }`}
-                    className="builder-preview-iframe"
-                    title="Full preview"
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"
-                  />
-                </div>
+        {/* ═══ MOBILE: Phone Preview with real iframe ═══ */}
+        {gift.id && (
+          <div className="builder-phone-preview-panel">
+            <div className="builder-phone-frame">
+              <div className="builder-phone-notch" />
+              <div className="builder-phone-screen" ref={phoneScreenRef}>
+                <iframe
+                  key={previewReloadKey}
+                  className="builder-phone-iframe"
+                  src={`/${gift.id}`}
+                  title="Урьдчилан харах"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  style={{ transform: `scale(${iframeScale})`, height: `${iframeHeight}px` }}
+                />
+              </div>
+              <div className="builder-phone-home-bar" />
+            </div>
+            <button
+              type="button"
+              className="builder-phone-reload-btn"
+              onClick={() => setPreviewReloadKey((k) => k + 1)}
+              title="Шинэчлэх"
+            >
+              🔄 Шинэчлэх
+            </button>
+          </div>
+        )}
+
+        {/* ═══ RIGHT PANEL: Slide Carousel (desktop) ═══ */}
+        <main className="builder-main builder-slides-main">
+          <div className="builder-slides-container">
+            {/* Navigation arrow left */}
+            <button
+              type="button"
+              className="builder-slide-arrow builder-slide-arrow-left"
+              onClick={prevSlide}
+              disabled={activeSlideIndex <= 0}
+            >
+              <IoChevronBack />
+            </button>
+
+            {/* Slides track */}
+            <div className="builder-slides-viewport">
+              <div
+                className="builder-slides-track"
+                ref={slideTrackRef}
+                style={{
+                  transform: `translateX(-${activeSlideIndex * 100}%)`,
+                }}
+              >
+                {gift.sections.map((section, idx) => {
+                  const isActive = idx === activeSlideIndex;
+                  const reg = SECTION_REGISTRY[section.type];
+                  const feat = FEATURE_REGISTRY[section.type];
+                  const tierDot =
+                    feat && feat.requiredTier !== "free"
+                      ? TIER_META[feat.requiredTier]
+                      : null;
+
+                  return (
+                    <div
+                      key={section.id}
+                      className={`builder-slide-card ${isActive ? "active" : ""}`}
+                      onClick={() => goToSlide(idx)}
+                    >
+                      <div className="builder-slide-card-label">
+                        <span>{reg?.icon || "📄"}</span>
+                        <span>{reg?.labelMn || reg?.label || section.type}</span>
+                        {tierDot && (
+                          <span
+                            className="builder-section-tier-dot"
+                            style={{ color: tierDot.color }}
+                          >
+                            {tierDot.badge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="builder-slide-card-body">
+                        {renderSlidePreview(section)}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          ) : (
-            <div className="builder-preview-placeholder ">
-              <h2>Түр хүлээнэ үү...</h2>
+
+            {/* Navigation arrow right */}
+            <button
+              type="button"
+              className="builder-slide-arrow builder-slide-arrow-right"
+              onClick={nextSlide}
+              disabled={activeSlideIndex >= gift.sections.length - 1}
+            >
+              <IoChevronForward />
+            </button>
+          </div>
+
+          {/* Slide dots indicator */}
+          {gift.sections.length > 1 && (
+            <div className="builder-slide-dots">
+              {gift.sections.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`builder-slide-dot ${idx === activeSlideIndex ? "active" : ""}`}
+                  onClick={() => goToSlide(idx)}
+                />
+              ))}
             </div>
           )}
-
-          {/* ✅ Viewport toggle under preview */}
-          <div className="builder-preview-viewport">
-            {["desktop", "tablet", "mobile"].map((k) => {
-              const icons = {
-                desktop: <IoMdDesktop />,
-                tablet: <IoIosTabletLandscape />,
-                mobile: <IoMdPhonePortrait />,
-              };
-
-              return (
-                <button
-                  key={k}
-                  type="button"
-                  className={`builder-viewport-btn ${viewport === k ? "active" : ""}`}
-                  onClick={() => setViewport(k)}
-                  title={VIEWPORT_PRESETS[k].label}
-                >
-                  <span className="builder-viewport-icon">{icons[k]}</span>
-                  <span className="builder-viewport-label">
-                    {VIEWPORT_PRESETS[k].label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         </main>
 
-        {/* ✅ Right drawer editor */}
+        {/* ✅ Mobile bottom action bar */}
+        <div className="builder-mobile-bar">
+          <button
+            type="button"
+            className="builder-mobile-bar-btn"
+            onClick={() => goToSlide(activeSlideIndex - 1)}
+            disabled={activeSlideIndex <= 0}
+          >
+            <span>◀</span>
+            <span>Өмнөх</span>
+          </button>
+          <button
+            type="button"
+            className="builder-mobile-bar-btn builder-mobile-bar-add"
+            onClick={() => setShowAddModal(true)}
+          >
+            <span className="builder-mobile-bar-plus">＋</span>
+          </button>
+          <button
+            type="button"
+            className="builder-mobile-bar-btn"
+            onClick={handleSave}
+            disabled={saving || gift.sections.length === 0}
+          >
+            <span>{saving ? "⏳" : "💾"}</span>
+            <span>{saving ? "..." : "Хадгалах"}</span>
+          </button>
+          <button
+            type="button"
+            className="builder-mobile-bar-btn"
+            onClick={() => goToSlide(activeSlideIndex + 1)}
+            disabled={activeSlideIndex >= gift.sections.length - 1}
+          >
+            <span>▶</span>
+            <span>Дараах</span>
+          </button>
+        </div>
+
         {/* ✅ Unsaved-changes warning modal */}
         {showUnsavedWarning && (
           <>
@@ -969,65 +1118,6 @@ export default function Builder() {
                 >
                   Цуцлах
                 </button>
-              </div>
-            </div>
-          </>
-        )}
-
-        {editorOpen && (
-          <>
-            <div
-              className="builder-drawer-overlay"
-              onClick={requestCloseEditor}
-            />
-            <div className="builder-drawer">
-              <div className="builder-drawer-header">
-                <div className="builder-drawer-title">
-                  <span>
-                    {selectedSection
-                      ? getSectionLabel(selectedSection)
-                      : "Section сонгоно уу"}
-                  </span>
-                </div>
-
-                <div className="builder-drawer-actions">
-                  <button
-                    type="button"
-                    className="builder-btn builder-btn-save"
-                    onClick={async () => {
-                      await handleSave();
-                      setEditorOpen(false);
-                      setSectionSnapshot(null);
-                    }}
-                    disabled={saving}
-                    title="Хадгалах"
-                  >
-                    <span>{saving ? "Хадгалж байна..." : "Хадгалах"}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="builder-btn builder-btn-outline"
-                    onClick={requestCloseEditor}
-                    title="Хаах"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              <div className="builder-drawer-body">
-                {selectedSection ? (
-                  renderEditor()
-                ) : (
-                  <div className="builder-empty-state">
-                    <div className="builder-empty-icon">✨</div>
-                    <h3 className="builder-empty-title">Section сонгоно уу</h3>
-                    <p className="builder-empty-text">
-                      Зүүн талын жагсаалтаас section сонгоод Edit дарна уу.
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           </>

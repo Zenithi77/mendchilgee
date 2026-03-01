@@ -48,7 +48,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
     if (!qrDataUrl) return;
     const a = document.createElement("a");
     a.href = qrDataUrl;
-    a.download = `valentine-gift-qr.png`;
+    a.download = `mendchilgee-qr.png`;
     a.click();
   };
 
@@ -61,7 +61,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
 
         <div className="share-modal-header">
           <span className="share-modal-emoji">💝</span>
-          <h2 className="share-modal-title">Бэлэг хуваалцах</h2>
+          <h2 className="share-modal-title">Мэндчилгээ хуваалцах</h2>
           <p className="share-modal-subtitle">{giftTitle}</p>
         </div>
 
@@ -82,7 +82,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
           )}
         </div>
 
-        <p className="share-modal-hint">QR код уншуулж бэлгээ нээнэ үү</p>
+        <p className="share-modal-hint">QR код уншуулж мэндчилгээг нээнэ үү</p>
 
         {/* Link */}
         <div className="share-modal-link-row">

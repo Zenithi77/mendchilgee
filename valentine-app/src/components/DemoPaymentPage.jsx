@@ -8,29 +8,29 @@ const FUNCTIONS_BASE =
 const PLANS = [
   {
     id: "basic",
-    name: "Basic",
+    name: "Суурь",
     price: "5,000₮",
-    features: ["1 Valentine gift", "Basic templates", "Share link"],
+    features: ["1 мэндчилгээ", "Суурь загварууд", "Хуваалцах линк"],
   },
   {
     id: "premium",
-    name: "Premium",
+    name: "Премиум",
     price: "15,000₮",
     features: [
-      "Unlimited gifts",
-      "All templates",
-      "Custom music",
-      "Priority support",
+      "Хязгааргүй мэндчилгээ",
+      "Бүх загвар",
+      "Хөгжим нэмэх",
+      "Тэргүүн дэмжлэг",
     ],
   },
   {
     id: "subscription",
-    name: "Subscription",
-    price: "5,000₮/mo",
+    name: "Бүртгэл",
+    price: "5,000₮/сар",
     features: [
-      "Everything in Premium",
-      "Monthly new templates",
-      "Early access",
+      "Премиум бүх боломж",
+      "Шинэ загварууд сар бүр",
+      "Эрт хүртээмжтэй",
     ],
   },
 ];
@@ -51,14 +51,14 @@ export default function DemoPaymentPage() {
       const json = await res.json();
       if (!res.ok) {
         console.error(json);
-        setError("Payment initialization failed. Please try again.");
+        setError("Төлбөр эхлүүлэх амжилтгүй боллоо. Дахин оролдоно уу.");
         return;
       }
       // Redirect to BYL checkout page
       window.location.href = json.checkoutUrl;
     } catch (err) {
       console.error(err);
-      setError("Network error. Please try again.");
+      setError("Сүлжээний алдаа. Дахин оролдоно уу.");
     } finally {
       setLoading(null);
     }
@@ -67,8 +67,8 @@ export default function DemoPaymentPage() {
   return (
     <div className="demo-payment-page">
       <div className="payment-header">
-        <h1>💝 Choose Your Plan</h1>
-        <p>Create unforgettable Valentine gifts for your loved ones</p>
+        <h1>✨ Төлөвлөгөө сонгох</h1>
+        <p>Хайртай хүмүүстээ онцгой мэндчилгээ илгээрэй</p>
       </div>
 
       {error && <div className="payment-error">{error}</div>}
@@ -80,7 +80,7 @@ export default function DemoPaymentPage() {
             className={`plan-card ${plan.id === "premium" ? "featured" : ""}`}
           >
             {plan.id === "premium" && (
-              <span className="plan-badge">Most Popular</span>
+              <span className="plan-badge">Хамгийн их сонгодог</span>
             )}
             <h2>{plan.name}</h2>
             <div className="plan-price">{plan.price}</div>
@@ -94,7 +94,7 @@ export default function DemoPaymentPage() {
               disabled={loading !== null}
               onClick={() => createCheckout(plan.id)}
             >
-              {loading === plan.id ? "Processing…" : "Get Started"}
+              {loading === plan.id ? "Боловсруулж байна…" : "Эхлүүлэх"}
             </button>
           </div>
         ))}

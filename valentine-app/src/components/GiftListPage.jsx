@@ -179,10 +179,11 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
   const getGiftEmoji = (gift) => {
     const category = gift.category;
     const emojiMap = {
-      crush: "💘",
-      "new-couple": "💕",
-      "long-term": "💖",
-      y2k: "🌸",
+      march8: "🌷",
+      "soldiers-day": "🎖️",
+      birthday: "🎂",
+      valentine: "💕",
+      general: "🎊",
     };
     return emojiMap[category] || "🎁";
   };
@@ -195,8 +196,8 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     return (
       <div className="gift-list-page">
         <div className="gift-list-loading">
-          <div className="gift-list-loading-icon">💝</div>
-          <p>Loading your gifts...</p>
+          <div className="gift-list-loading-icon">🎉</div>
+          <p>Ачаалж байна...</p>
         </div>
       </div>
     );
@@ -207,12 +208,12 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
-          <div className="gift-list-header-emoji">💝</div>
-          <h1 className="gift-list-title font-script">My Gifts</h1>
+          <div className="gift-list-header-emoji">🎉</div>
+          <h1 className="gift-list-title font-script">Миний мэндчилгээнүүд</h1>
           <p className="gift-list-subtitle">
             {gifts.length === 0
-              ? "Та одоогоор ямар ч бэлэг үүсгээгүй байна. Шинэ бэлэг үүсгэе! 💫"
-              : `Танд нийт ${gifts.length} бэлэг байна 💌`}
+              ? "Та одоогоор мэндчилгээ үүсгээгүй байна. Шинээр үүсгэе! 💫"
+              : `Танд нийт ${gifts.length} мэндчилгээ байна 📌`}
           </p>
         </div>
 
@@ -220,7 +221,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         <div className="gift-list-actions">
           <button className="btn btn-create-gift" onClick={onCreateNew}>
             <span className="btn-create-icon">✨</span>
-            Шинэ бэлэг үүсгэх
+            Шинэ мэндчилгээ үүсгэх
           </button>
         </div>
 
@@ -310,19 +311,19 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                   </button>
                   {confirmDeleteId === gift.id ? (
                     <div className="gift-delete-confirm">
-                      <span>Delete?</span>
+                      <span>Устгах уу?</span>
                       <button
                         className="gift-action-btn gift-action-delete-yes"
                         onClick={() => handleDelete(gift.id)}
                         disabled={deletingId === gift.id}
                       >
-                        {deletingId === gift.id ? "..." : "Yes"}
+                        {deletingId === gift.id ? "..." : "Тийм"}
                       </button>
                       <button
                         className="gift-action-btn gift-action-delete-no"
                         onClick={() => setConfirmDeleteId(null)}
                       >
-                        No
+                        Үгүй
                       </button>
                     </div>
                   ) : (
@@ -390,14 +391,14 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         {/* Empty State */}
         {gifts.length === 0 && (
           <div className="gift-list-empty">
-            <div className="gift-list-empty-icon">🎁</div>
+            <div className="gift-list-empty-icon">�</div>
             <p className="gift-list-empty-text">
-              Create your first Valentine's gift and share it with your special
-              someone!
+              Онцгой мэндчилгээ үүсгээд хайртай хүмүүстээ линкээр
+              илгээгээрэй!
             </p>
             <button className="btn btn-create-gift" onClick={onCreateNew}>
-              <span className="btn-create-icon">💕</span>
-              Get Started
+              <span className="btn-create-icon">✨</span>
+              Эхлүүлэх
             </button>
           </div>
         )}

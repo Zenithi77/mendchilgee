@@ -134,7 +134,7 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
                   <span className="sq-sparkle s1">✨</span>
                   <span className="sq-sparkle s2">💖</span>
                   <span className="sq-sparkle s3">⭐</span>
-                  <span className="sq-sparkle s4">💕</span>
+                  <span className="sq-sparkle s4">✨</span>
                 </div>
               </div>
               <p className="sq-box-hint">Нууц хайрцгийг нээгээрэй 💝</p>
@@ -149,14 +149,14 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
                 <span className="sq-fw fw2">✨</span>
                 <span className="sq-fw fw3">💖</span>
                 <span className="sq-fw fw4">🎇</span>
-                <span className="sq-fw fw5">💕</span>
+                <span className="sq-fw fw5">✨</span>
                 <span className="sq-fw fw6">⭐</span>
               </div>
               <h2 className="sq-reveal-text font-script">
                 {q.revealText || "Бүх зүйлд чинь дуртай 💖"}
               </h2>
               <button className="sq-next-btn glow" onClick={goNext}>
-                Үргэлжлүүлэх 💕
+                Үргэлжлүүлэх ✨
               </button>
             </div>
           )}
@@ -221,7 +221,7 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
 
         {answered && (
           <button className="sq-next-btn" onClick={goNext}>
-            {qIdx < questions.length - 1 ? "Дараах ➜" : "Үргэлжлүүлэх 💕"}
+            {qIdx < questions.length - 1 ? "Дараах ➨" : "Үргэлжлүүлэх ✨"}
           </button>
         )}
       </div>
@@ -240,7 +240,7 @@ const DEFAULT_QUESTIONS = [
       { emoji: "4️⃣", name: "4 жил" },
     ],
     correctIndex: 1,
-    explanation: "Тэр өдрийг үнэхээр тод санаж байна 💕",
+    explanation: "Тэр өдрийг үнэхээр тод санаж байна ✨",
   },
   {
     text: "Би чамайг өдөрт хэдэн удаа боддог гэж бодож байна?",
@@ -263,7 +263,7 @@ const DEFAULT_QUESTIONS = [
       { emoji: "💖", name: "Бүгд" },
     ],
     correctIndex: 3,
-    explanation: "Ойлгомжтой биздээ 😊💕",
+    explanation: "Ойлгомжтой биздээ 😊✨",
   },
   {
     text: "Чиний юу хамгийн их таалагддаг гэж бодож байна?",

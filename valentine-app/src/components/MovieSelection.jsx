@@ -73,7 +73,7 @@ export default function MovieSelection({ onContinue, template, selectedMovie, on
         {typeof onContinue === "function" ? (
           <div style={{ marginTop: 26 }}>
             <button className="btn btn-magic" onClick={onContinue}>
-              {data.continueButton || "Үргэлжлүүлэх 💕"}
+              {data.continueButton || "Үргэлжлүүлэх ✨"}
             </button>
           </div>
         ) : null}

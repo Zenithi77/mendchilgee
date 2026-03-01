@@ -10,10 +10,10 @@ const SUMMARY_FIELDS = [
 ]
 
 const LOVE_QUOTES = [
-  'Чамтай хамт байх мөч бүр миний амьдралын хамгийн үнэт мөчүүд 💕',
+  'Чамтай хамт байх мөч бүр онцгой ✨',
   'Хайр гэдэг чамтай хамт амьдрах мөрөөдөл 🌙',
   'Чи бол миний бүх зүйл 💝',
-  'Зүрхний цохилт бүр чиний нэрээр цохилдог ❤️',
+  'Энэ мэндчилгээ зүрхнээс ирэв ❤️',
 ]
 
 export default function FinalSummary({ choices }) {
@@ -55,7 +55,7 @@ export default function FinalSummary({ choices }) {
           Бүх зүйл бэлэн! 🎉
         </h2>
         <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)', marginBottom: 20 }}>
-          2026 оны 2-р сарын 14 • Valentine's Day
+          Мэндчилгээ • mendchilgee.site
         </p>
 
         {/* Summary */}
@@ -95,7 +95,7 @@ export default function FinalSummary({ choices }) {
 
         {/* Love Meter */}
         <div className="meter">
-          <div className="meter-label">Чамайг санаж байна</div>
+          <div className="meter-label">Сэрэлийн түвшин</div>
           <div className="meter-track">
             <div className="meter-fill" style={{ width: `${meterW}%` }} />
           </div>
@@ -109,11 +109,11 @@ export default function FinalSummary({ choices }) {
 
         {/* Signature */}
         <div className="font-vibes" style={{ fontSize: '1.6rem', color: 'var(--rose)', marginBottom: 8 }}>
-          Forever Together
+          Зүрхнээсээ
         </div>
 
         <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.2)', marginTop: 20 }}>
-          Valentine's Day 2026 • Made with ❤️
+          mendchilgee.site • Made with ❤️
         </div>
       </div>
     </div>

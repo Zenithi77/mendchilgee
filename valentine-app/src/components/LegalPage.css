@@ -4,7 +4,7 @@
 
 .legal-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #2d1f23 0%, #3a252b 50%, #4a2535 100%);
   color: #e0e0e0;
   padding: 0;
 }
@@ -24,7 +24,7 @@
 }
 
 .legal-nav-home {
-  color: #f0a0c0;
+  color: #F7DDDE;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -32,7 +32,7 @@
 }
 
 .legal-nav-home:hover {
-  color: #ff6b9d;
+  color: #FFC4D0;
 }
 
 .legal-nav-link {
@@ -43,7 +43,7 @@
 }
 
 .legal-nav-link:hover {
-  color: #f0a0c0;
+  color: #F7DDDE;
 }
 
 /* Content area */
@@ -64,7 +64,7 @@
 .legal-body h2 {
   font-size: 1.35rem;
   font-weight: 600;
-  color: #f0a0c0;
+  color: #F7DDDE;
   margin-top: 36px;
   margin-bottom: 12px;
   padding-bottom: 6px;
@@ -101,7 +101,7 @@
 }
 
 .legal-body ul li::marker {
-  color: #f0a0c0;
+  color: #F7DDDE;
 }
 
 .legal-body strong {
@@ -164,8 +164,8 @@
 }
 
 .auth-terms-checkbox:checked {
-  background: #f0a0c0;
-  border-color: #f0a0c0;
+  background: #F7DDDE;
+  border-color: #F7DDDE;
 }
 
 .auth-terms-checkbox:checked::after {
@@ -176,11 +176,11 @@
   transform: translate(-50%, -50%);
   font-size: 13px;
   font-weight: 700;
-  color: #1a0a2e;
+  color: #2d1f23;
 }
 
 .auth-terms-checkbox:focus-visible {
-  outline: 2px solid #f0a0c0;
+  outline: 2px solid #F7DDDE;
   outline-offset: 2px;
 }
 
@@ -193,14 +193,14 @@
 }
 
 .auth-terms-label a {
-  color: #f0a0c0;
+  color: #F7DDDE;
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.2s;
 }
 
 .auth-terms-label a:hover {
-  color: #ff6b9d;
+  color: #FFC4D0;
 }
 
 .auth-terms-error-msg {
@@ -229,7 +229,7 @@
 }
 
 .terms-reaccept-card {
-  background: linear-gradient(145deg, #1e1040, #16213e);
+  background: linear-gradient(145deg, #2d1f23, #3a252b);
   border: 1px solid rgba(240, 160, 192, 0.15);
   border-radius: 16px;
   padding: 32px 28px;
@@ -262,7 +262,7 @@
   padding: 12px 20px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #f0a0c0, #ff6b9d);
+  background: linear-gradient(135deg, #F7DDDE, #FFC4D0);
   color: #fff;
   font-weight: 600;
   font-size: 0.95rem;
@@ -297,7 +297,7 @@
 }
 
 .terms-reaccept-links a:hover {
-  color: #f0a0c0;
+  color: #F7DDDE;
 }
 
 /* ========================================

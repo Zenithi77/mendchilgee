@@ -7,14 +7,14 @@
 }
 
 :root {
-  --pink: #ff6b9d;
-  --hot-pink: #ff4081;
-  --purple: #c471ed;
-  --deep-purple: #7c4dff;
-  --rose: #ff9a9e;
-  --light-pink: #ffd1dc;
-  --bg-dark: #0d0015;
-  --bg-mid: #1a0025;
+  --pink: #FFC4D0;
+  --hot-pink: #F5A8B8;
+  --purple: #F7DDDE;
+  --deep-purple: #FBE8E7;
+  --rose: #FFC4D0;
+  --light-pink: #FCF5EE;
+  --bg-dark: #2d1f23;
+  --bg-mid: #3a252b;
   --glass: rgba(255, 255, 255, 0.04);
   --glass-border: rgba(255, 100, 150, 0.15);
 }

@@ -35,12 +35,12 @@ const AuthPage = ({ onAuthSuccess }) => {
           return;
         }
         if (password !== confirmPassword) {
-          setError("Passwords do not match");
+          setError("Нууц үг төхөөрөй");
           setLoading(false);
           return;
         }
         if (password.length < 6) {
-          setError("Password must be at least 6 characters");
+          setError("Нууц үг хамгийн багад 6 тэмдэгт байх ёстой");
           setLoading(false);
           return;
         }
@@ -53,25 +53,25 @@ const AuthPage = ({ onAuthSuccess }) => {
       console.error("Auth error:", err);
       switch (err.code) {
         case "auth/user-not-found":
-          setError("No account found with this email");
+          setError("Энэ и-мэйлээр бүртгэл олдсонгүй");
           break;
         case "auth/wrong-password":
-          setError("Incorrect password");
+          setError("Нууц үг буруу байна");
           break;
         case "auth/email-already-in-use":
-          setError("Email is already registered");
+          setError("Энэ и-мэйл аль хэдийн бүртгэгдсэн");
           break;
         case "auth/invalid-email":
-          setError("Invalid email address");
+          setError("И-мэйл хаяг буруу байна");
           break;
         case "auth/weak-password":
-          setError("Password is too weak");
+          setError("Нууц үг хэт сул байна");
           break;
         case "auth/invalid-credential":
-          setError("Invalid email or password");
+          setError("И-мэйл эсвэл нууц үг буруу байна");
           break;
         default:
-          setError(err.message || "Authentication failed");
+          setError(err.message || "Нэвтрэлт амжилтгүй боллоо");
       }
     } finally {
       setLoading(false);
@@ -106,23 +106,23 @@ const AuthPage = ({ onAuthSuccess }) => {
   return (
     <div className="auth-page">
       <div className="auth-background">
-        <div className="auth-heart auth-heart-1">💕</div>
-        <div className="auth-heart auth-heart-2">💗</div>
-        <div className="auth-heart auth-heart-3">💖</div>
-        <div className="auth-heart auth-heart-4">💝</div>
+        <div className="auth-heart auth-heart-1">🎉</div>
+        <div className="auth-heart auth-heart-2">✨</div>
+        <div className="auth-heart auth-heart-3">🎊</div>
+        <div className="auth-heart auth-heart-4">🌟</div>
       </div>
 
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <div className="auth-icon">💌</div>
+            <div className="auth-icon">🎉</div>
             <h1 className="auth-title">
-              {isLogin ? "Welcome Back" : "Create Account"}
+              {isLogin ? "Тавтай морилоо!" : "Бүртгүүлэх"}
             </h1>
             <p className="auth-subtitle">
               {isLogin
-                ? "Sign in to create your Valentine"
-                : "Join us to spread the love"}
+                ? "Мэндчилгээ үүсгэхийн тулд нэвтрэнэ үү"
+                : "Мэндчилгээ илгээж эхлээрэй!"}
             </p>
           </div>
 
@@ -235,7 +235,7 @@ const AuthPage = ({ onAuthSuccess }) => {
           </form>
 
           <div className="auth-divider">
-            <span>or continue with</span>
+            <span>эсвэл</span>
           </div>
 
           <div className="auth-social-buttons">

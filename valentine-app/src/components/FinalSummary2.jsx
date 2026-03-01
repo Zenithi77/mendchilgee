@@ -27,8 +27,8 @@ export default function FinalSummary2({ choices, template }) {
       ? [...mergedFields, { key: "movie", emoji: "🎬", label: "Кино" }]
       : mergedFields;
   const loveQuotes = final.quotes || [
-    "Чамтай хамт байх мөч бүр онцгой 💕",
-    "Чи бол миний бүх зүйл 💝",
+    "Чамтай хамт байх мөч бүр онцгой ✨",
+    "Энэ мэндчилгээ зүрхнээс ирэв 💝",
   ];
   const summaryFieldCount = summaryFields.length;
 
@@ -93,7 +93,7 @@ export default function FinalSummary2({ choices, template }) {
             marginBottom: 20,
           }}
         >
-          {final.subtitle || "2026 оны 2-р сарын 14 • Valentine's Day"}
+          {final.subtitle || "Мэндчилгээ • mendchilgee.site"}
         </p>
 
         {/* Summary */}
@@ -176,7 +176,7 @@ export default function FinalSummary2({ choices, template }) {
             marginBottom: 8,
           }}
         >
-          {final.signature || "Forever Together"}
+          {final.signature || "Зүрхнээсээ"}
         </div>
 
         <div
@@ -186,7 +186,7 @@ export default function FinalSummary2({ choices, template }) {
             marginTop: 20,
           }}
         >
-          {final.footer || "Valentine's Day 2026 • Made with ❤️"}
+          {final.footer || "mendchilgee.site • Made with ❤️"}
         </div>
       </div>
     </div>
