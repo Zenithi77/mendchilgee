@@ -5,7 +5,7 @@ import { getUserGifts, deleteGift } from "../services/giftService";
 import { generateHeartQR } from "../utils/heartQr";
 import { shouldShowWatermark, getRequiredTier } from "../utils/tierUtils";
 import { TIER_META } from "../config/tiers";
-import { MdMail, MdChecklist, MdPhotoCamera, MdLock, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdCelebration, MdAdd, MdFavorite, MdWaterDrop } from "react-icons/md";
+import { MdMail, MdChecklist, MdPhotoCamera, MdLock, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdAdd, MdFavorite, MdWaterDrop } from "react-icons/md";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -209,7 +209,6 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
-          <div className="gift-list-header-emoji"><MdCelebration /></div>
           <h1 className="gift-list-title font-script">Миний мэндчилгээнүүд</h1>
           <p className="gift-list-subtitle">
             {gifts.length === 0
