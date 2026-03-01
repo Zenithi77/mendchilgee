@@ -30,7 +30,7 @@
   padding: 32px 28px;
   text-align: center;
   color: #fff;
-  font-family: "Quicksand", "Poppins", sans-serif;
+  font-family: "Josefin Sans", "Cormorant Garamond", serif;
   animation: smSlideUp 0.3s ease;
 }
 
@@ -169,7 +169,7 @@
 }
 
 .share-modal-btn {
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 10px 22px;
@@ -218,7 +218,7 @@
   justify-content: center;
   background: #2d1f23;
   color: #fff;
-  font-family: "Quicksand", "Poppins", sans-serif;
+  font-family: "Josefin Sans", "Cormorant Garamond", serif;
   padding: 32px;
   text-align: center;
 }
@@ -270,7 +270,7 @@
   text-align: center;
   font-size: 1.6rem;
   font-weight: 700;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   border-radius: 14px;
   border: 2px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
@@ -310,7 +310,7 @@
   padding: 12px 36px;
   font-size: 1rem;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   border: none;
   border-radius: 50px;
   background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
@@ -387,7 +387,7 @@
   background: rgba(255, 255, 255, 0.04);
   color: #64748B;
   font-size: 0.9rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   outline: none;
   letter-spacing: 4px;
   text-align: center;
@@ -406,7 +406,7 @@
   background: rgba(255, 255, 255, 0.04);
   color: #64748B;
   font-size: 0.85rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   outline: none;
   width: 100%;
   border-color:rgba(0, 0, 0, 0.7);

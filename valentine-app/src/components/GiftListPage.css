@@ -83,7 +83,7 @@
   padding: 14px 32px;
   font-size: 1.05rem;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   color: #fff;
   background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
   border: none;
@@ -204,7 +204,7 @@
   align-items: center;
   display: inline-flex;
   gap: 6px;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   font-size: 0.78rem;
   padding: 6px 14px;
   border-radius: 20px;
@@ -262,7 +262,7 @@
 }
 
 .gift-action-delete-yes {
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   font-size: 0.72rem;
   padding: 4px 10px;
   border-radius: 12px;
@@ -385,7 +385,7 @@
 }
 
 .gift-action-delete-no {
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   font-size: 0.72rem;
   padding: 4px 10px;
   border-radius: 12px;

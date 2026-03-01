@@ -69,7 +69,7 @@
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
 }
 
 .logout-btn:hover {
@@ -1038,7 +1038,7 @@
   padding: 8px 16px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.75rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -1186,11 +1186,11 @@
 
 /* ===== TYPOGRAPHY ===== */
 .font-script {
-  font-family: "Dancing Script", cursive;
+  font-family: "Pinyon Script", cursive;
 }
 
 .font-vibes {
-  font-family: "Great Vibes", cursive;
+  font-family: "Alex Brush", cursive;
 }
 
 .text-pink {
@@ -1210,7 +1210,7 @@
 .btn {
   border: none;
   border-radius: 50px;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   font-size: 1.05rem;
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1687,7 +1687,7 @@
   padding: 10px 38px;
   border-radius: 10px;
   font-size: 1rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 8px 30px rgba(196, 114, 69, 0.4);
@@ -1706,7 +1706,7 @@
   padding: 10px 40px;
   border-radius: 10px;
   font-size: 1rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1757,7 +1757,7 @@
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
   font-size: 0.95rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.25s ease;
   position: relative;
@@ -1824,7 +1824,7 @@
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
   font-size: 0.95rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   outline: none;
   transition: border-color 0.3s;
   box-sizing: border-box;
@@ -1841,7 +1841,7 @@
   border-radius: 16px;
   margin-bottom: 16px;
   font-size: 1rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   animation: quizFbIn 0.5s ease;
 }
 .correct-fb {
@@ -1881,7 +1881,7 @@
   padding: 14px 44px;
   border-radius: 50px;
   font-size: 1.05rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 8px 28px rgba(196, 114, 69, 0.35);
@@ -1974,7 +1974,7 @@
 }
 
 .memory-caption .text {
-  font-family: "Dancing Script", cursive;
+  font-family: "Pinyon Script", cursive;
   font-size: 1.15rem;
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.5;
@@ -2037,7 +2037,7 @@
 }
 
 .step-title {
-  font-family: "Dancing Script", cursive;
+  font-family: "Pinyon Script", cursive;
   font-size: 1.7rem;
   color: var(--pink);
   margin-bottom: 24px;
@@ -2225,7 +2225,7 @@
 }
 
 .final-msg {
-  font-family: "Dancing Script", cursive;
+  font-family: "Pinyon Script", cursive;
   font-size: 1.35rem;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.9;
@@ -2655,7 +2655,7 @@
 }
 
 .ll-letter-title {
-  font-family: "Dancing Script", cursive;
+  font-family: "Pinyon Script", cursive;
   font-size: 1.8rem;
   color: #F5A8B8;
   text-align: center;
