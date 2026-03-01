@@ -1683,16 +1683,20 @@
 .yes-btn {
   position: relative;
   z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: linear-gradient(135deg, var(--pink), var(--hot-pink));
   color: #fff;
   border: none;
-  padding: 10px 38px;
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: 12px 42px;
+  border-radius: 50px;
+  font-size: 1.05rem;
   font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 30px rgba(255, 196, 208, 0.4);
+  box-shadow: 0 8px 30px rgba(255, 196, 208, 0.35);
+  letter-spacing: 0.02em;
 }
 
 .yes-btn:hover {
@@ -1702,15 +1706,16 @@
 .no-btn {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 10px 40px;
-  border-radius: 10px;
-  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 36px;
+  border-radius: 50px;
+  font-size: 0.95rem;
   font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.15s ease;
+  backdrop-filter: blur(4px);
 }
 
 /* ===== QUIZ MODE ===== */
@@ -1726,20 +1731,20 @@
 }
 
 .quiz-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   transition: all 0.3s ease;
 }
 .quiz-dot.active {
   background: var(--t-primary, var(--pink));
-  box-shadow: 0 0 8px var(--t-primary, var(--pink));
-  transform: scale(1.3);
+  box-shadow: 0 0 10px var(--t-primary, var(--pink));
+  transform: scale(1.4);
 }
 .quiz-dot.done {
   background: var(--t-primary, var(--pink));
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .quiz-options {
@@ -1752,11 +1757,11 @@
 .quiz-option {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.06);
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
   font-size: 0.95rem;
   font-family: "Cormorant Garamond", "Josefin Sans", serif;
@@ -1764,6 +1769,7 @@
   transition: all 0.25s ease;
   position: relative;
   text-align: left;
+  backdrop-filter: blur(6px);
 }
 .quiz-option:hover:not(:disabled) {
   border-color: rgba(255, 255, 255, 0.8);
@@ -1772,19 +1778,19 @@
 }
 .quiz-option.selected {
   border-color: var(--t-primary, var(--pink));
-  background: rgba(255, 196, 208, 0.15);
-  box-shadow: 0 0 15px rgba(255, 196, 208, 0.2);
+  background: rgba(255, 196, 208, 0.12);
+  box-shadow: 0 0 20px rgba(255, 196, 208, 0.15), inset 0 0 0 1px rgba(255, 196, 208, 0.1);
 }
 .quiz-option.correct {
-  border-color: #4caf50;
-  background: rgba(76, 175, 80, 0.15);
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+  border-color: #66bb6a;
+  background: rgba(76, 175, 80, 0.1);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
   animation: quizPulse 0.6s ease;
 }
 .quiz-option.wrong {
-  border-color: #F7DDDE;
-  background: rgba(255, 82, 82, 0.12);
-  opacity: 0.7;
+  border-color: rgba(255, 82, 82, 0.4);
+  background: rgba(255, 82, 82, 0.08);
+  opacity: 0.6;
 }
 .quiz-option:disabled {
   cursor: default;
@@ -1803,16 +1809,26 @@
 }
 
 .quiz-opt-emoji {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 .quiz-opt-name {
   flex: 1;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 .quiz-check {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--t-primary, var(--pink));
-  font-weight: 700;
+  display: flex;
+  align-items: center;
 }
 
 .quiz-other {
@@ -1820,45 +1836,53 @@
 }
 .quiz-other-input {
   width: 100%;
-  padding: 13px 18px;
-  border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.06);
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
   color: #fff;
   font-size: 0.95rem;
   font-family: "Cormorant Garamond", "Josefin Sans", serif;
   outline: none;
   transition: border-color 0.3s;
   box-sizing: border-box;
+  backdrop-filter: blur(6px);
 }
 .quiz-other-input:focus {
   border-color: var(--t-primary, var(--pink));
 }
 .quiz-other-input::placeholder {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
 }
 
 .quiz-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 14px 20px;
-  border-radius: 16px;
+  border-radius: 14px;
   margin-bottom: 16px;
   font-size: 1rem;
   font-family: "Cormorant Garamond", "Josefin Sans", serif;
   animation: quizFbIn 0.5s ease;
+  backdrop-filter: blur(6px);
 }
 .correct-fb {
-  background: rgba(76, 175, 80, 0.15);
-  border: 1px solid rgba(76, 175, 80, 0.3);
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.25);
   color: #a5d6a7;
 }
 .wrong-fb {
-  background: rgba(255, 152, 0, 0.15);
-  border: 1px solid rgba(255, 152, 0, 0.3);
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.25);
   color: #ffcc80;
 }
 .fb-icon {
-  font-size: 1.2rem;
-  margin-right: 6px;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 @keyframes quizFbIn {
@@ -1873,6 +1897,9 @@
 }
 
 .quiz-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: linear-gradient(
     135deg,
     var(--t-primary, var(--pink)),
@@ -1880,14 +1907,15 @@
   );
   color: #fff;
   border: none;
-  padding: 14px 44px;
+  padding: 14px 40px;
   border-radius: 50px;
   font-size: 1.05rem;
   font-family: "Cormorant Garamond", "Josefin Sans", serif;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 28px rgba(255, 196, 208, 0.35);
+  box-shadow: 0 8px 28px rgba(255, 196, 208, 0.3);
   animation: quizFbIn 0.4s ease;
+  letter-spacing: 0.02em;
 }
 .quiz-next-btn:hover {
   transform: translateY(-2px);

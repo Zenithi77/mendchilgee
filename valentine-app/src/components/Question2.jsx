@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { MdCheck, MdArrowForward, MdAutoAwesome, MdFavorite, MdCheckCircle, MdHighlightOff } from "react-icons/md";
 
 const DEFAULT_NO_MSGS = [
-  "Үгүй гэж болохгүй 🥺",
+  "Үгүй гэж болохгүй...",
 ];
 
 /* ───────────── Quiz Mode Sub-component ───────────── */
@@ -113,7 +114,7 @@ function QuizMode({ quizQuestions, character, onDone }) {
             >
               <span className="quiz-opt-emoji">{opt.emoji}</span>
               <span className="quiz-opt-name">{opt.name}</span>
-              {isMulti && isSelected && <span className="quiz-check">✓</span>}
+              {isMulti && isSelected && <span className="quiz-check"><MdCheck /></span>}
             </button>
           );
         })}
@@ -125,7 +126,7 @@ function QuizMode({ quizQuestions, character, onDone }) {
           <input
             type="text"
             className="quiz-other-input"
-            placeholder="Өөр хариулт бичих... ✏️"
+            placeholder="Өөр хариулт бичих..."
             value={otherText}
             onChange={(e) => setOtherText(e.target.value)}
           />
@@ -135,19 +136,19 @@ function QuizMode({ quizQuestions, character, onDone }) {
       {/* Result feedback for quiz */}
       {showResult === "correct" && (
         <div className="quiz-feedback correct-fb">
-          <span className="fb-icon">🎉</span> {q.correctText}
+          <span className="fb-icon"><MdCheckCircle /></span> {q.correctText}
         </div>
       )}
       {showResult === "wrong" && (
         <div className="quiz-feedback wrong-fb">
-          <span className="fb-icon">💫</span> {q.correctText || "Зөв хариулт олдлоо!"}
+          <span className="fb-icon"><MdHighlightOff /></span> {q.correctText || "Зөв хариулт олдлоо!"}
         </div>
       )}
 
       {/* Next / Done button */}
       {canProceed && (
         <button className="quiz-next-btn" onClick={goNext}>
-          {qIdx < quizQuestions.length - 1 ? "Дараах ➨" : "Үргэлжлүүлэх ✨"}
+          {qIdx < quizQuestions.length - 1 ? <>Дараах <MdArrowForward style={{verticalAlign:'middle'}} /></> : <>Үргэлжлүүлэх <MdAutoAwesome style={{verticalAlign:'middle'}} /></>}
         </button>
       )}
     </div>
@@ -167,7 +168,7 @@ export default function Question2({ onYes, template }) {
   }, [question.noButton?.messages, textVariantsEnabled]);
 
   const defaultNoText = textVariantsEnabled
-    ? question.noButton?.defaultText || "Үгүй 💔"
+    ? question.noButton?.defaultText || "Үгүй"
     : "Үгүй";
 
   const wrapRef = useRef(null);
@@ -302,7 +303,7 @@ export default function Question2({ onYes, template }) {
 
       const next = noCount + 1;
       setNoCount(next);
-      setNoText(next < noMessages.length ? noMessages[next] : "😭");
+      setNoText(next < noMessages.length ? noMessages[next] : "...");
       setYesScale((prev) => Math.min(prev + 0.1, 1.6));
     },
     [moveNoButton, noCount, noMessages, textVariantsEnabled],
@@ -389,7 +390,7 @@ export default function Question2({ onYes, template }) {
             marginBottom: 32,
           }}
         >
-          {question.text || "Чи намайг хайрладаг юу? 🥺"}
+          {question.text || "Чи намайг хайрладаг юу?"}
         </h2>
 
         <div
@@ -404,7 +405,7 @@ export default function Question2({ onYes, template }) {
             ref={yesBtnRef}
           >
             {question.yesButton?.text || "Тийм"}{" "}
-            {question.yesButton?.emoji || "❤️"}
+            {question.yesButton?.emoji || <MdFavorite style={{verticalAlign:'middle'}} />}
           </button>
           <button
             className="no-btn"
