@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdChecklist, MdMovie, MdSettings, MdAutoAwesome, MdStar } from "react-icons/md";
 import { SECTION_TYPES } from "../models/gift";
 import EmojiPicker from "./EmojiPicker";
 import {
@@ -96,7 +97,7 @@ function ImageUploader({ src, onUploaded }) {
             onClick={() => onUploaded("")}
             title="Устгах"
           >
-            ✕
+            <MdClose />
           </button>
         </div>
       ) : (
@@ -109,9 +110,9 @@ function ImageUploader({ src, onUploaded }) {
             disabled={uploading}
           />
           {uploading ? (
-            <span className="se-upload-progress">📤 Хуулж байна...</span>
+            <span className="se-upload-progress"><MdCloudUpload /> Хуулж байна...</span>
           ) : (
-            <span className="se-upload-text">📷 Зураг сонгох</span>
+            <span className="se-upload-text"><MdPhotoCamera /> Зураг сонгох</span>
           )}
         </label>
       )}
@@ -156,7 +157,7 @@ function VideoUploader({ src, onUploaded }) {
             onClick={() => onUploaded("")}
             title="Устгах"
           >
-            ✕
+            <MdClose />
           </button>
         </div>
       ) : (
@@ -169,9 +170,9 @@ function VideoUploader({ src, onUploaded }) {
             disabled={uploading}
           />
           {uploading ? (
-            <span className="se-upload-progress">📤 Хуулж байна...</span>
+            <span className="se-upload-progress"><MdCloudUpload /> Хуулж байна...</span>
           ) : (
-            <span className="se-upload-text">🎬 Бичлэг сонгох</span>
+            <span className="se-upload-text"><MdVideocam /> Бичлэг сонгох</span>
           )}
         </label>
       )}
@@ -206,13 +207,13 @@ export function WelcomeLetterEditor({
       {/* Welcome fields */}
       {welcomeSection && (
         <div className="se-group">
-          <h3 className="se-group-title">🎉 Нүүр хэсэг (Welcome)</h3>
+          <h3 className="se-group-title"><MdCelebration /> Нүүр хэсэг (Welcome)</h3>
 
           <FieldRow label="Гарчиг">
             <TextInputWithEmoji
               value={wd.title}
               onChange={(v) => updateWelcome("title", v)}
-              placeholder="Мэндчилгээ 🎉"
+              placeholder="Мэндчилгээ"
             />
           </FieldRow>
 
@@ -220,7 +221,7 @@ export function WelcomeLetterEditor({
             <TextInputWithEmoji
               value={wd.subtitle}
               onChange={(v) => updateWelcome("subtitle", v)}
-              placeholder="Тусгай мэндчилгээ ✨"
+              placeholder="Тусгай мэндчилгээ"
               multiline
             />
           </FieldRow>
@@ -238,7 +239,7 @@ export function WelcomeLetterEditor({
             <TextInputWithEmoji
               value={wd.buttonText}
               onChange={(v) => updateWelcome("buttonText", v)}
-              placeholder="Мэндчилгээ нээх 🎁"
+              placeholder="Мэндчилгээ нээх"
             />
           </FieldRow>
         </div>
@@ -247,13 +248,13 @@ export function WelcomeLetterEditor({
       {/* Love Letter fields */}
       {letterSection && (
         <div className="se-group">
-          <h3 className="se-group-title">💌 Захидал хэсэг (Love Letter)</h3>
+          <h3 className="se-group-title"><MdMail /> Захидал хэсэг (Love Letter)</h3>
 
           <FieldRow label="Гарчиг">
             <TextInputWithEmoji
               value={ld.title}
               onChange={(v) => updateLetter("title", v)}
-              placeholder="Миний зүрхний захидал 💌"
+              placeholder="Миний зүрхний захидал"
             />
           </FieldRow>
 
@@ -267,7 +268,7 @@ export function WelcomeLetterEditor({
             />
           </FieldRow>
 
-          <FieldRow label="🎵 Дуу (YouTube URL)">
+          <FieldRow label={<><MdMusicNote /> Дуу (YouTube URL)</>}>
             <input
               className="se-input"
               type="text"
@@ -284,7 +285,7 @@ export function WelcomeLetterEditor({
             />
           </FieldRow>
 
-          <FieldRow label="🎵 Дууны нэр">
+          <FieldRow label={<><MdMusicNote /> Дууны нэр</>}>
             <input
               className="se-input"
               type="text"
@@ -295,7 +296,7 @@ export function WelcomeLetterEditor({
                   title: e.target.value,
                 })
               }
-              placeholder="🎵 Romantic Music"
+              placeholder="Romantic Music"
             />
           </FieldRow>
         </div>
@@ -349,13 +350,13 @@ export function QuestionEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">💝 Асуулга хэсэг</h3>
+        <h3 className="se-group-title"><MdFavorite /> Асуулга хэсэг</h3>
 
         <FieldRow label="Асуултын текст">
           <TextInputWithEmoji
             value={data.text}
             onChange={(v) => update("text", v)}
-            placeholder="Та надад санагдах уу? 🥺✨"
+            placeholder="Та надад санагдах уу?"
           />
         </FieldRow>
 
@@ -400,7 +401,7 @@ export function QuestionEditor({ section, onUpdate }) {
                     onClick={() => removeMessage(idx)}
                     title="Устгах"
                   >
-                    ✕
+                    <MdClose />
                   </button>
                 </div>
               ))}
@@ -492,7 +493,7 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">📸 Зургийн цомог</h3>
+        <h3 className="se-group-title"><MdPhotoCamera /> Зургийн цомог</h3>
 
         <FieldRow label="Гарчиг">
           <TextInputWithEmoji
@@ -513,7 +514,7 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
                   onClick={() => removeMemory(idx)}
                   title="Устгах"
                 >
-                  ✕
+                  <MdClose />
                 </button>
               </div>
 
@@ -536,7 +537,7 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
                 <TextInputWithEmoji
                   value={mem.caption || ""}
                   onChange={(v) => editMemory(idx, "caption", v)}
-                  placeholder="Анхны мөч ✨"
+                  placeholder="Анхны мөч"
                 />
               </FieldRow>
             </div>
@@ -552,11 +553,11 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
             color: isOverStandard ? "#a855f7" : "#6b7280",
           }}
         >
-          📷 {memories.length} / {isOverStandard ? premiumMax : standardMax}{" "}
+          <MdPhotoCamera /> {memories.length} / {isOverStandard ? premiumMax : standardMax}{" "}
           зураг
           {isOverStandard && (
             <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
-              🟣 Премиум ({standardMax}-с дээш)
+              <MdStar style={{color:'#9C27B0'}} /> Премиум ({standardMax}-с дээш)
             </span>
           )}
         </div>
@@ -613,13 +614,13 @@ export function MovieSelectionEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">🎬 Кино сонголт</h3>
+        <h3 className="se-group-title"><MdMovie /> Кино сонголт</h3>
 
         <FieldRow label="Гарчиг">
           <TextInputWithEmoji
             value={data.title}
             onChange={(v) => update("title", v)}
-            placeholder="Кино сонголт 🎬"
+            placeholder="Кино сонголт"
           />
         </FieldRow>
 
@@ -627,7 +628,7 @@ export function MovieSelectionEditor({ section, onUpdate }) {
           <TextInputWithEmoji
             value={data.subtitle}
             onChange={(v) => update("subtitle", v)}
-            placeholder="Дуртай киногоо сонгоорой 💞"
+            placeholder="Дуртай киногоо сонгоорой"
             multiline
           />
         </FieldRow>
@@ -655,7 +656,7 @@ export function MovieSelectionEditor({ section, onUpdate }) {
           <TextInputWithEmoji
             value={data.continueButton}
             onChange={(v) => update("continueButton", v)}
-            placeholder="Үргэлжлүүлэх ✨"
+            placeholder="Үргэлжлүүлэх"
           />
         </FieldRow>
 
@@ -671,7 +672,7 @@ export function MovieSelectionEditor({ section, onUpdate }) {
                     onClick={() => removeMovie(idx)}
                     title="Устгах"
                   >
-                    ✕
+                    <MdClose />
                   </button>
                 </div>
 
@@ -798,7 +799,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">📝 Төлөвлөгөө</h3>
+        <h3 className="se-group-title"><MdChecklist /> Төлөвлөгөө</h3>
 
         <div className="se-steps">
           {steps.map((step, idx) => (
@@ -851,7 +852,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                     }}
                     title="Устгах"
                   >
-                    ✕
+                    <MdClose />
                   </button>
                   <span className="se-step-chevron">
                     {expandedStep === idx ? "▾" : "▸"}
@@ -1000,7 +1001,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                               onClick={() => removeOption(idx, oi)}
                               title="Устгах"
                             >
-                              ✕
+                              <MdClose />
                             </button>
                           </div>
                         ) : (
@@ -1052,7 +1053,7 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                               onClick={() => removeOption(idx, oi)}
                               title="Устгах"
                             >
-                              ✕
+                              <MdClose />
                             </button>
                           </div>
                         )}
@@ -1109,7 +1110,7 @@ export function FinalSummaryEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">🎊 Хураангуй хэсэг</h3>
+        <h3 className="se-group-title"><MdAutoAwesome /> Хураангуй хэсэг</h3>
 
         <FieldRow label="Ишлэлүүд (Quotes)">
           <div className="se-list">
@@ -1132,7 +1133,7 @@ export function FinalSummaryEditor({ section, onUpdate }) {
                   onClick={() => removeQuote(idx)}
                   title="Устгах"
                 >
-                  ✕
+                  <MdClose />
                 </button>
               </div>
             ))}
@@ -1170,7 +1171,7 @@ export function GenericEditor({ section }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">⚙️ {section.type}</h3>
+        <h3 className="se-group-title"><MdSettings /> {section.type}</h3>
         <p className="se-hint">
           Энэ хэсгийн тохиргоо одоогоор боломжгүй байна.
         </p>
@@ -1208,13 +1209,13 @@ export function MemoryVideoEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title">🎬 Видео хэсэг</h3>
+        <h3 className="se-group-title"><MdVideocam /> Видео хэсэг</h3>
 
         <FieldRow label="Гарчиг">
           <TextInputWithEmoji
             value={data.title}
             onChange={(v) => onUpdate(section.id, { ...data, title: v })}
-            placeholder="Дурсамж бичлэг 🎬"
+            placeholder="Дурсамж бичлэг"
           />
         </FieldRow>
 
@@ -1229,7 +1230,7 @@ export function MemoryVideoEditor({ section, onUpdate }) {
                   onClick={() => removeVideo(idx)}
                   title="Устгах"
                 >
-                  ✕
+                  <MdClose />
                 </button>
               </div>
 
@@ -1252,7 +1253,7 @@ export function MemoryVideoEditor({ section, onUpdate }) {
                 <TextInputWithEmoji
                   value={vid.caption || ""}
                   onChange={(v) => editVideo(idx, "caption", v)}
-                  placeholder="Хамтдаа ✨"
+                  placeholder="Хамтдаа"
                 />
               </FieldRow>
             </div>

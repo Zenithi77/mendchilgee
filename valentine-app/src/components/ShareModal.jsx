@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { MdClose, MdFavorite, MdCheck, MdContentCopy, MdDownload } from "react-icons/md";
 import { generateHeartQR } from "../utils/heartQr";
 
 /**
@@ -56,11 +57,11 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
     <div className="share-modal-overlay" onClick={onClose}>
       <div className="share-modal" onClick={(e) => e.stopPropagation()}>
         <button className="share-modal-close" onClick={onClose}>
-          ✕
+          <MdClose />
         </button>
 
         <div className="share-modal-header">
-          <span className="share-modal-emoji">💝</span>
+          <span className="share-modal-emoji"><MdFavorite /></span>
           <h2 className="share-modal-title">Мэндчилгээ хуваалцах</h2>
           <p className="share-modal-subtitle">{giftTitle}</p>
         </div>
@@ -76,7 +77,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
             />
           ) : (
             <div className="share-modal-qr-loading">
-              <span>❤️</span>
+              <span><MdFavorite /></span>
               <p>QR үүсгэж байна...</p>
             </div>
           )}
@@ -93,7 +94,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
             onClick={(e) => e.target.select()}
           />
           <button className="share-modal-link-copy" onClick={handleCopy}>
-            {copied ? "✓" : "📋"}
+            {copied ? <MdCheck /> : <MdContentCopy />}
           </button>
         </div>
 
@@ -104,7 +105,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
             onClick={handleDownloadQR}
             disabled={!qrDataUrl}
           >
-            ⬇️ QR татах
+            <MdDownload /> QR татах
           </button>
           <button
             className="share-modal-btn share-modal-btn-close"

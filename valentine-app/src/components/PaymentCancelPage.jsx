@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { MdSentimentDissatisfied, MdAutoAwesome } from "react-icons/md";
 import "./DemoPaymentPage.css";
 
 export default function PaymentCancelPage() {
@@ -7,11 +8,11 @@ export default function PaymentCancelPage() {
 
   return (
     <div className="payment-status-page">
-      <div className="status-icon">😔</div>
+      <div className="status-icon"><MdSentimentDissatisfied /></div>
       <h1>Төлбөр цуцлагдлаа</h1>
       <p>Таны төлбөр цуцлагдлаа. Ямар ч төлбөр авагдаагүй.</p>
       <p style={{ color: "#64748b", fontSize: "0.85rem" }}>
-        Таны мэндчилгээ хадгалагдсан хэвээр байна. ✨
+        Таны мэндчилгээ хадгалагдсан хэвээр байна. <MdAutoAwesome />
       </p>
       {giftId ? (
         <Link to="/">← Мэндчилгээ рүүгээ буцах</Link>

@@ -5,6 +5,8 @@ import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import Watermark from "./Watermark";
 import { shouldShowWatermark, isPaymentExpired } from "../utils/tierUtils";
+import { MdCelebration, MdSentimentDissatisfied, MdLock, MdLightbulb, MdShare, MdContentCopy, MdCheck, MdFavorite } from "react-icons/md";
+import { FaFacebookSquare, FaFacebookMessenger } from "react-icons/fa";
 import "./GiftPreviewPage.css";
 import "./ShareModal.css";
 
@@ -115,7 +117,7 @@ export default function GiftPreviewPage() {
   if (loading) {
     return (
       <div className="gift-preview-page gift-preview-loading">
-        <div className="gift-preview-spinner">🎉</div>
+        <div className="gift-preview-spinner"><MdCelebration /></div>
         <p>Ачаалж байна...</p>
       </div>
     );
@@ -124,7 +126,7 @@ export default function GiftPreviewPage() {
   if (error) {
     return (
       <div className="gift-preview-page gift-preview-error">
-        <div className="gift-preview-error-icon">😢</div>
+        <div className="gift-preview-error-icon"><MdSentimentDissatisfied /></div>
         <h2>Алдаа гарлаа</h2>
         <p>{error}</p>
         <button className="gift-preview-back-btn" onClick={() => navigate(-1)}>
@@ -190,7 +192,7 @@ export default function GiftPreviewPage() {
   if (needsPassword && !sessionUnlocked) {
     return (
       <div className="gift-preview-page pw-gate">
-        <div className="pw-gate-icon">🔒</div>
+        <div className="pw-gate-icon"><MdLock /></div>
         <h2 className="pw-gate-title">Нууц код шаардлагатай</h2>
         <p className="pw-gate-subtitle">
           Энэ бэлгийг үзэхэд 4 оронтой нууц код оруулна уу
@@ -198,7 +200,7 @@ export default function GiftPreviewPage() {
 
         {gift.passwordHint && (
           <p className="pw-gate-hint">
-            💡 <span>{gift.passwordHint}</span>
+            <MdLightbulb /> <span>{gift.passwordHint}</span>
           </p>
         )}
 
@@ -219,14 +221,14 @@ export default function GiftPreviewPage() {
           ))}
         </div>
 
-        {pwError && <p className="pw-gate-error">Нууц код буруу байна 😢</p>}
+        {pwError && <p className="pw-gate-error">Нууц код буруу байна <MdSentimentDissatisfied /></p>}
 
         <button
           className="pw-gate-btn"
           disabled={pwDigits.some((d) => !d)}
           onClick={checkPassword}
         >
-          Нээх 💝
+          Нээх <MdFavorite />
         </button>
       </div>
     );
@@ -317,19 +319,19 @@ export default function GiftPreviewPage() {
             onClick={() => setShowShareBar(!showShareBar)}
             title="Хуваалцах"
           >
-            📤
+            <MdShare />
           </button>
 
           {showShareBar && (
             <div className="gift-preview-share-bar">
               <button className="share-btn share-btn-fb" onClick={handleShareFacebook}>
-                📘 Facebook
+                <FaFacebookSquare /> Facebook
               </button>
               <button className="share-btn share-btn-msg" onClick={handleShareMessenger}>
-                💬 Messenger
+                <FaFacebookMessenger /> Messenger
               </button>
               <button className="share-btn share-btn-copy" onClick={handleCopyLink}>
-                {copied ? "✅ Хуулагдсан!" : "📋 Линк хуулах"}
+                {copied ? <><MdCheck /> Хуулагдсан!</> : <><MdContentCopy /> Линк хуулах</>}
               </button>
             </div>
           )}

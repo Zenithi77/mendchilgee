@@ -4,6 +4,7 @@ import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import { saveGiftResponse } from "../services/giftResponseService";
 import HeartRain from "./HeartRain";
 import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
+import { MdPause, MdPlayArrow } from "react-icons/md";
 
 /** Build initial choices state from the stepQuestions section data. */
 function buildInitialChoices(gift) {
@@ -271,7 +272,7 @@ export default function GiftRenderer({
               toggleMusic();
             }}
           >
-            {musicPlaying ? "⏸" : "▶️"}
+            {musicPlaying ? <MdPause /> : <MdPlayArrow />}
           </button>
         </div>
       )}

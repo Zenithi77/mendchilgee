@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CATEGORIES } from "../templateConfigs";
+import { MdCelebration, MdAutoAwesome, MdCheck, MdArrowForward } from "react-icons/md";
 
 export default function CategorySelector({ onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
@@ -15,9 +16,9 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
       <div className="category-container">
         {/* Header */}
         <div className="cat-header">
-          <div className="cat-header-emoji">🎉</div>
+          <div className="cat-header-emoji"><MdCelebration /></div>
           <h1 className="font-script cat-header-title">Мэндчилгээ</h1>
-          <p className="cat-header-sub">Баярын төрлөө сонгоорой 💫</p>
+          <p className="cat-header-sub">Баярын төрлөө сонгоорой <MdAutoAwesome /></p>
         </div>
 
         {/* Builder entry point */}
@@ -28,7 +29,7 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
               onClick={onOpenBuilder}
               style={{ fontSize: "0.95rem" }}
             >
-              ✨ Өөрөө бүтээх — Мэндчилгээ Builder
+              <MdAutoAwesome /> Өөрөө бүтээх — Мэндчилгээ Builder
             </button>
           </div>
         )}
@@ -76,7 +77,7 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
                 className="cat-card-action"
                 style={{ background: cat.gradient }}
               >
-                {selected === cat.id ? "✓ Сонгогдсон" : "Сонгох →"}
+                {selected === cat.id ? <><MdCheck /> Сонгогдсон</> : <>Сонгох <MdArrowForward /></>}
               </div>
             </div>
           ))}

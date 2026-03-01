@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { giftToTemplate, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import GiftRenderer from "./GiftRenderer";
+import { MdCardGiftcard, MdVisibility, MdClose } from "react-icons/md";
 import "./PreviewModal.css";
 
 /**
@@ -34,10 +35,10 @@ export default function PreviewModal({
         {/* Header */}
         <div className="preview-modal-header">
           <span className="preview-modal-title">
-            {mode === "full" ? "🎁 Бүрэн урьдчилсан харагдац" : "👁️ Preview"}
+            {mode === "full" ? <><MdCardGiftcard /> Бүрэн урьдчилсан харагдац</> : <><MdVisibility /> Preview</>}
           </span>
           <button className="preview-modal-close" onClick={onClose}>
-            ✕
+            <MdClose />
           </button>
         </div>
 

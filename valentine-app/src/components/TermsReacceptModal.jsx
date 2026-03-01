@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { MdWarning } from "react-icons/md";
 import "./LegalPage.css";
 
 const TermsReacceptModal = () => {
@@ -52,7 +53,7 @@ const TermsReacceptModal = () => {
           </label>
         </div>
 
-        {error && <p className="auth-terms-error-msg">⚠ {error}</p>}
+        {error && <p className="auth-terms-error-msg"><MdWarning /> {error}</p>}
 
         <button
           className="terms-reaccept-btn"

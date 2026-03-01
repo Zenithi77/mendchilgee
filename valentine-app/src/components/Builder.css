@@ -198,7 +198,7 @@
 /* ── Preview button ── */
 
 .builder-btn-preview {
-  background: linear-gradient(135deg, #FFC4D0, #F5A8B8);
+  background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
   color: #fff;
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 }
@@ -650,7 +650,7 @@
 }
 
 .builder-slide-card.active .builder-slide-card-label {
-  background: linear-gradient(135deg, #FFC4D0, #F5A8B8);
+  background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
   color: #fff;
   border-color: #FFC4D0;
 }
@@ -1077,7 +1077,7 @@
 
 /* ── Summary ── */
 .slide-pv-summary {
-  background: linear-gradient(170deg, #FFC4D0 0%, #F5A8B8 50%, #F5A8B8 100%);
+  background: linear-gradient(170deg, #FFC4D0 0%, #F7DDDE 50%, #F7DDDE 100%);
 }
 .slide-pv-summary::before {
   content: "🎉 ✨ 🌟";
@@ -1452,50 +1452,59 @@
     display: none !important;
   }
 
-  /* ── Show Phone Preview Panel ── */
+  /* ═══ TAB-BASED MOBILE LAYOUT ═══ */
+  /* Phone preview panel — hidden by default, full-screen when active */
   .builder-phone-preview-panel {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
-    order: -1;
-    flex: 0 0 52%;
-    max-height: 52%;
-    padding: 6px 12px 2px;
-    gap: 4px;
-    background: linear-gradient(170deg, #f8f0eb 0%, #fbe8e7 100%);
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+    padding: 12px 16px 68px;
+    gap: 8px;
+    background: linear-gradient(170deg, #1a1216 0%, #2d1f23 50%, #1a1216 100%);
+    z-index: 10;
     overflow: hidden;
   }
 
-  /* ── iPhone Mockup Frame ── */
+  .builder-phone-preview-panel.active {
+    display: flex;
+  }
+
+  /* ── iPhone 15 Pro Max Mockup Frame ── */
   .builder-phone-frame {
     display: flex;
     flex-direction: column;
     position: relative;
-    width: 100%;
-    max-width: 240px;
-    flex: 1;
-    min-height: 0;
+    /* Width-driven: 80% of viewport width, capped; aspect-ratio gives height */
+    width: 80vw;
+    max-width: 340px;
+    height: auto;
+    max-height: calc(100% - 36px);
+    aspect-ratio: 9 / 19.5; /* iPhone 15 Pro Max ~9:19.5 */
     border: 3px solid #1d1d1f;
-    border-radius: 36px;
+    border-radius: 44px;
     background: #000;
-    padding: 26px 3px 18px;
+    padding: 12px 4px 12px;
     box-shadow:
       inset 0 0 0 1px #333,
-      0 8px 30px rgba(0, 0, 0, 0.18),
-      0 2px 8px rgba(0, 0, 0, 0.1);
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.15);
     overflow: hidden;
+    flex-shrink: 1;
   }
 
   .builder-phone-notch {
     display: block;
     position: absolute;
-    top: 7px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 72px;
-    height: 18px;
+    width: 28%;
+    height: 24px;
     background: #1d1d1f;
-    border-radius: 10px;
+    border-radius: 14px;
     z-index: 3;
   }
 
@@ -1503,11 +1512,11 @@
   .builder-phone-notch::after {
     content: '';
     position: absolute;
-    right: 14px;
+    right: 18%;
     top: 50%;
     transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: #0a0a0a;
     border: 1.5px solid #222;
@@ -1519,14 +1528,14 @@
     bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 90px;
+    width: 32%;
     height: 4px;
     background: #555;
     border-radius: 3px;
     z-index: 3;
   }
 
-  /* Iframe inside phone — render at real mobile size, scale down */
+  /* Iframe inside phone — render at iPhone 15 Pro Max logical size, scale down */
   .builder-phone-screen {
     display: block;
     position: relative;
@@ -1534,7 +1543,7 @@
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    border-radius: 28px;
+    border-radius: 38px;
     background: #fff;
   }
 
@@ -1542,8 +1551,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 390px;
-    height: 844px; /* overridden dynamically via JS */
+    width: 430px;
+    height: 932px; /* overridden dynamically via JS */
     border: none;
     display: block;
     transform-origin: top left;
@@ -1555,12 +1564,12 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 14px;
-    border: 1px solid #F7DDDE;
+    padding: 6px 18px;
+    border: 1px solid rgba(255, 196, 208, 0.3);
     border-radius: 20px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #94a3b8;
-    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: #cbb8ae;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -1569,12 +1578,12 @@
   }
 
   .builder-phone-reload-btn:hover {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.1);
     color: #FFC4D0;
     border-color: #FFC4D0;
   }
 
-  /* ── Bottom: Editor panel ── */
+  /* ── Editor panel — full height when in edit tab ── */
   .builder-sidebar {
     width: 100%;
     order: 1;
@@ -1582,19 +1591,19 @@
     min-height: 0;
     max-height: none;
     border-right: none;
-    border-top: 2px solid #F7DDDE;
+    border-top: none;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .builder-sidebar-inner {
-    padding: 10px 12px;
-    gap: 8px;
-    padding-bottom: 72px;
+    padding: 10px 14px;
+    gap: 10px;
+    padding-bottom: 80px;
   }
 
   .builder-sidebar-footer {
-    padding-bottom: 72px;
+    padding-bottom: 80px;
   }
 
   .builder-sidebar:not(.open) .builder-sidebar-topbar {
@@ -1604,7 +1613,7 @@
   /* Compact add/save buttons on mobile */
   .builder-add-btn {
     padding: 10px;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     border-radius: 12px;
   }
 
@@ -1613,30 +1622,30 @@
   }
 
   .builder-active-section-header {
-    padding: 8px 10px;
+    padding: 10px 12px;
     border-radius: 12px;
   }
 
   .builder-active-section-name {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .builder-active-section-counter {
-    font-size: 0.68rem;
-    padding: 2px 6px;
+    font-size: 0.7rem;
+    padding: 2px 8px;
   }
 
   .builder-action-btn {
-    width: 26px;
-    height: 26px;
-    font-size: 0.75rem;
-    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    border-radius: 8px;
   }
 
-  /* Section editor compact */
+  /* Section editor — bigger on mobile now */
   .builder-section-editor-wrap {
-    padding: 12px;
-    border-radius: 12px;
+    padding: 14px;
+    border-radius: 14px;
   }
 
   /* ── Mobile bottom action bar ── */
@@ -1649,11 +1658,11 @@
     z-index: 100;
     background: #fff;
     border-top: 1px solid #e2e6eb;
-    padding: 4px 8px;
+    padding: 4px 6px;
     padding-bottom: max(4px, env(safe-area-inset-bottom));
     gap: 2px;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
   }
 
@@ -1672,7 +1681,7 @@
     border-radius: 8px;
     transition: all 0.15s ease;
     font-family: inherit;
-    min-width: 48px;
+    min-width: 44px;
   }
 
   .builder-mobile-bar-btn span:first-child {
@@ -1693,11 +1702,11 @@
     background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
     color: #fff;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
     padding: 0;
-    margin: -10px 4px 0;
+    margin: -8px 2px 0;
     box-shadow: 0 4px 16px rgba(255, 196, 208, 0.3);
     flex-direction: row;
     justify-content: center;
@@ -1711,6 +1720,42 @@
 
   .builder-mobile-bar-add:active {
     transform: scale(0.92);
+  }
+
+  /* Tab toggle button — always on the right */
+  .builder-mobile-bar-tab-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 6px 14px;
+    border: 2px solid #FFC4D0;
+    background: transparent;
+    color: #FFC4D0;
+    font-size: 0.62rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    min-width: 56px;
+    margin-left: auto;
+  }
+
+  .builder-mobile-bar-tab-toggle span:first-child {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .builder-mobile-bar-tab-toggle.preview-active {
+    background: linear-gradient(135deg, #FFC4D0, #F7DDDE);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 12px rgba(255, 196, 208, 0.3);
+  }
+
+  .builder-mobile-bar-tab-toggle:active {
+    transform: scale(0.94);
   }
 
   /* Hide preview button in header on mobile */
@@ -1744,20 +1789,18 @@
     padding: 0 12px;
   }
 
-  /* Phone frame slightly smaller on tiny screens */
+  /* Phone frame on tiny screens */
   .builder-phone-frame {
-    max-width: 200px;
-    border-radius: 30px;
-    padding: 22px 3px 16px;
-    border-width: 2.5px;
+    width: 75vw;
+    max-width: 280px;
+    border-radius: 38px;
   }
   .builder-phone-notch {
-    width: 58px;
-    height: 15px;
-    top: 5px;
+    height: 20px;
+    top: 8px;
   }
   .builder-phone-screen {
-    border-radius: 22px;
+    border-radius: 32px;
   }
 }
 

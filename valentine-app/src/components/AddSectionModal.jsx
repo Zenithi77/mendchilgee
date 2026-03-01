@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { getAvailableSectionTypes } from "../sections/sectionRegistry";
 import { FEATURE_REGISTRY } from "../config/featureRegistry";
 import { TIER_META, TIERS } from "../config/tiers";
+import { MdAutoAwesome, MdClose } from "react-icons/md";
 import "./AddSectionModal.css";
 
 /**
@@ -25,14 +26,14 @@ export default function AddSectionModal({ open, onClose, onSelect }) {
           <div>
             <h2 className="asm-title">
               Хуудас нэмэх
-              <span className="asm-title-sparkle">✨</span>
+              <span className="asm-title-sparkle"><MdAutoAwesome /></span>
             </h2>
             <p className="asm-subtitle">
               Өөрийн түүхээ өгүүлэх шинэ хэсэг нэмээрэй
             </p>
           </div>
           <button className="asm-close" onClick={onClose}>
-            ✕
+            <MdClose />
           </button>
         </div>
 

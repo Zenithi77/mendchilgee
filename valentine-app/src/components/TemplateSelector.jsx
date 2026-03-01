@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getTemplatesByCategory, CATEGORIES } from "../templateConfigs";
+import { MdAutoAwesome, MdCheck, MdArrowForward } from "react-icons/md";
 
 const CATEGORY_NAMES = Object.fromEntries(
   CATEGORIES.map((c) => [c.id, `${c.emoji} ${c.label}`])
@@ -21,11 +22,11 @@ export default function TemplateSelector({ onSelect, category }) {
       <div className="selector-container">
         {/* Header */}
         <div className="selector-header">
-          <div className="selector-icon">🎉</div>
+          <div className="selector-icon"><MdAutoAwesome /></div>
           <h1 className="font-script selector-title">
             {CATEGORY_NAMES[category] || "Мэндчилгээ"}
           </h1>
-          <p className="selector-subtitle">Загвараа сонгоорой ✨</p>
+          <p className="selector-subtitle">Загвараа сонгоорой <MdAutoAwesome /></p>
         </div>
 
         {/* Template Cards */}
@@ -79,14 +80,14 @@ export default function TemplateSelector({ onSelect, category }) {
 
               {/* Select indicator */}
               <div className="template-select-btn">
-                {selected === tmpl.id ? "Сонгогдсон ✓" : "Сонгох →"}
+                {selected === tmpl.id ? <>Сонгогдсон <MdCheck /></> : <>Сонгох <MdArrowForward /></>}
               </div>
             </div>
           ))}
         </div>
 
         <p className="selector-footer">
-          Загвараа сонгосны дараа асуулт, зураг нэмэх боломжтой ✨
+          Загвараа сонгосны дараа асуулт, зураг нэмэх боломжтой <MdAutoAwesome />
         </p>
       </div>
     </div>

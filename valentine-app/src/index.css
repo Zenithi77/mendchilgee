@@ -8,15 +8,15 @@
 
 :root {
   --pink: #FFC4D0;
-  --hot-pink: #F5A8B8;
+  --hot-pink: #FF85A2;
   --purple: #F7DDDE;
-  --deep-purple: #FBE8E7;
-  --rose: #FFC4D0;
+  --deep-purple: #E8A0B4;
+  --rose: #FFD0D9;
   --light-pink: #FCF5EE;
-  --bg-dark: #2d1f23;
-  --bg-mid: #3a252b;
-  --glass: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(255, 100, 150, 0.15);
+  --bg-dark: #1a0e12;
+  --bg-mid: #2d1a20;
+  --glass: rgba(255, 196, 208, 0.10);
+  --glass-border: rgba(255, 133, 162, 0.30);
 }
 
 html {
@@ -34,4 +34,4 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,107,157,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(255,196,208,0.3); border-radius: 3px; }

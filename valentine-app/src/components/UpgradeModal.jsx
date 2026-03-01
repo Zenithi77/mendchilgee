@@ -9,6 +9,7 @@ import {
   TIER_DISPLAY_PRICE,
 } from "../config/tiers";
 import { getRequiredTier, getUpgradeReasons } from "../utils/tierUtils";
+import { MdAutoAwesome } from "react-icons/md";
 import "./UpgradeModal.css";
 
 const FUNCTIONS_BASE =
@@ -83,7 +84,7 @@ export default function UpgradeModal({ open, onClose, gift, giftId }) {
       <div className="upgrade-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="upgrade-modal-header">
-          <div className="upgrade-modal-icon">✨</div>
+          <div className="upgrade-modal-icon"><MdAutoAwesome /></div>
           <h2 className="upgrade-modal-title">Watermark арилгах</h2>
           <p className="upgrade-modal-subtitle">
             Таны мэндчилгээнд дараах feature-ууд ашиглагдсан тул upgrade шаардлагатай

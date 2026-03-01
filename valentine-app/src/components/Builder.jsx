@@ -20,7 +20,7 @@ import {
 } from "../utils/tierUtils";
 import { IoClose, IoColorPalette, IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdSave, MdRefresh, MdVisibility, MdEdit, MdWarning, MdAutoAwesome, MdCheck, MdClose, MdDescription, MdPlaylistAdd, MdHourglassEmpty, MdCelebration, MdMail, MdPhotoCamera, MdMovie, MdVideocam, MdChecklist } from "react-icons/md";
 import {
   IoMdPhonePortrait,
   IoIosTabletLandscape,
@@ -133,6 +133,9 @@ export default function Builder() {
   const slideTrackRef = useRef(null);
   const [pendingFocusSectionId, setPendingFocusSectionId] = useState(null);
 
+  // ── Mobile tab mode ──
+  const [mobileTab, setMobileTab] = useState('edit'); // 'preview' | 'edit'
+
   // ── Phone iframe scale ──
   const phoneScreenRef = useRef(null);
   const [iframeScale, setIframeScale] = useState(0.58);
@@ -145,7 +148,7 @@ export default function Builder() {
       for (const entry of entries) {
         const w = entry.contentRect.width;
         const h = entry.contentRect.height;
-        const s = w / 390;
+        const s = w / 430; // iPhone 15 Pro Max logical width
         setIframeScale(s);
         setIframeHeight(Math.ceil(h / s));
       }
@@ -416,7 +419,7 @@ export default function Builder() {
 
   const getSectionIcon = (section) => {
     const reg = SECTION_REGISTRY[section.type];
-    return reg ? reg.icon : "📄";
+    return reg ? reg.icon : <MdDescription />;
   };
 
   const renderEditor = () => {
@@ -502,7 +505,7 @@ export default function Builder() {
   const renderSlidePreview = (section) => {
     const { type, data } = section;
     const reg = SECTION_REGISTRY[type];
-    const icon = reg?.icon || "📄";
+    const icon = reg?.icon || <MdDescription />;
     const label = reg?.labelMn || reg?.label || type;
 
     switch (type) {
@@ -521,7 +524,7 @@ export default function Builder() {
       case SECTION_TYPES.LOVE_LETTER:
         return (
           <div className="slide-pv slide-pv-letter">
-            <div className="slide-pv-letter-icon">💌</div>
+            <div className="slide-pv-letter-icon"><MdMail /></div>
             <div className="slide-pv-letter-text">
               {(data?.content || "Захидлын агуулга...").slice(0, 150)}
               {(data?.content || "").length > 150 ? "..." : ""}
@@ -559,7 +562,7 @@ export default function Builder() {
               </div>
             ) : (
               <div className="slide-pv-gallery-empty">
-                <span>📸</span>
+                <span><MdPhotoCamera /></span>
                 <span>{data?.headerTitle || "Зургийн цомог"}</span>
               </div>
             )}
@@ -578,7 +581,7 @@ export default function Builder() {
                   {m.posterUrl ? (
                     <img src={m.posterUrl} alt={m.title} />
                   ) : (
-                    <span>🎬</span>
+                    <span><MdMovie /></span>
                   )}
                 </div>
               ))}
@@ -590,7 +593,7 @@ export default function Builder() {
       case SECTION_TYPES.MEMORY_VIDEO:
         return (
           <div className="slide-pv slide-pv-video">
-            <div className="slide-pv-video-icon">🎬</div>
+            <div className="slide-pv-video-icon"><MdVideocam /></div>
             <div className="slide-pv-video-label">{label}</div>
             {data?.url && (
               <div className="slide-pv-video-url">{data.url.slice(0, 40)}...</div>
@@ -601,7 +604,7 @@ export default function Builder() {
       case SECTION_TYPES.STEP_QUESTIONS:
         return (
           <div className="slide-pv slide-pv-steps">
-            <div className="slide-pv-steps-icon">📝</div>
+            <div className="slide-pv-steps-icon"><MdChecklist /></div>
             <div className="slide-pv-steps-label">{label}</div>
             {data?.steps && (
               <div className="slide-pv-steps-list">
@@ -645,7 +648,7 @@ export default function Builder() {
         }}
       >
         <div style={{ textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>🎉</div>
+          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}><MdCelebration /></div>
           <p>Уншиж байна...</p>
         </div>
       </div>
@@ -723,11 +726,11 @@ export default function Builder() {
 
           {saveStatus === "saved" && (
             <span className="builder-save-badge builder-save-ok">
-              ✓ Хадгалсан
+              <MdCheck /> Хадгалсан
             </span>
           )}
           {saveStatus === "error" && (
-            <span className="builder-save-badge builder-save-err">✕ Алдаа</span>
+            <span className="builder-save-badge builder-save-err"><MdClose /> Алдаа</span>
           )}
 
           {/* ── Upgrade / Remove Watermark button ── */}
@@ -736,7 +739,7 @@ export default function Builder() {
               className="builder-btn builder-btn-upgrade"
               onClick={() => setShowUpgradeModal(true)}
             >
-              <span>✨ Watermark арилгах</span>
+              <span><MdAutoAwesome /> Watermark арилгах</span>
             </button>
           )}
         </div>
@@ -855,7 +858,7 @@ export default function Builder() {
                   disabled={saving || gift.sections.length === 0}
                   type="button"
                 >
-                  <span>{saving ? "Хадгалж байна..." : "💾 Хадгалах"}</span>
+                  <span>{saving ? "Хадгалж байна..." : <><MdSave /> Хадгалах</>}</span>
                 </button>
 
                 {/* Active section header badge */}
@@ -926,7 +929,7 @@ export default function Builder() {
                   </div>
                 ) : gift.sections.length === 0 ? (
                   <div className="builder-section-empty">
-                    <span className="builder-section-empty-icon">📋</span>
+                    <span className="builder-section-empty-icon"><MdPlaylistAdd /></span>
                     <p>Section нэмэгдээгүй байна</p>
                     <p className="builder-section-empty-hint">
                       Дээрх товч дарж section нэмнэ үү
@@ -940,19 +943,19 @@ export default function Builder() {
 
         </aside>
 
-        {/* ═══ MOBILE: Phone Preview with real iframe ═══ */}
+        {/* ═══ MOBILE: Full-screen Phone Preview (shown when mobileTab === 'preview') ═══ */}
         {gift.id && (
-          <div className="builder-phone-preview-panel">
+          <div className={`builder-phone-preview-panel ${mobileTab === 'preview' ? 'active' : ''}`}>
             <div className="builder-phone-frame">
               <div className="builder-phone-notch" />
               <div className="builder-phone-screen" ref={phoneScreenRef}>
                 <iframe
                   key={previewReloadKey}
                   className="builder-phone-iframe"
-                  src={`/${gift.id}`}
+                  src={`/${gift.id}${selectedSectionId ? `#section-${selectedSectionId}` : ''}`}
                   title="Урьдчилан харах"
                   sandbox="allow-scripts allow-same-origin allow-popups"
-                  style={{ transform: `scale(${iframeScale})`, height: `${iframeHeight}px` }}
+                  style={{ transform: `scale(${iframeScale})`, width: '430px', height: `${iframeHeight}px` }}
                 />
               </div>
               <div className="builder-phone-home-bar" />
@@ -963,7 +966,7 @@ export default function Builder() {
               onClick={() => setPreviewReloadKey((k) => k + 1)}
               title="Шинэчлэх"
             >
-              🔄 Шинэчлэх
+              <MdRefresh /> Шинэчлэх
             </button>
           </div>
         )}
@@ -1006,7 +1009,7 @@ export default function Builder() {
                       onClick={() => goToSlide(idx)}
                     >
                       <div className="builder-slide-card-label">
-                        <span>{reg?.icon || "📄"}</span>
+                        <span>{reg?.icon || <MdDescription />}</span>
                         <span>{reg?.labelMn || reg?.label || section.type}</span>
                         {tierDot && (
                           <span
@@ -1052,41 +1055,80 @@ export default function Builder() {
           )}
         </main>
 
-        {/* ✅ Mobile bottom action bar */}
+        {/* ✅ Mobile bottom action bar — tab-based */}
         <div className="builder-mobile-bar">
+          {mobileTab === 'edit' ? (
+            <>
+              <button
+                type="button"
+                className="builder-mobile-bar-btn"
+                onClick={() => goToSlide(activeSlideIndex - 1)}
+                disabled={activeSlideIndex <= 0}
+              >
+                <span>◀</span>
+                <span>Өмнөх</span>
+              </button>
+              <button
+                type="button"
+                className="builder-mobile-bar-btn builder-mobile-bar-add"
+                onClick={() => setShowAddModal(true)}
+              >
+                <span className="builder-mobile-bar-plus">＋</span>
+              </button>
+              <button
+                type="button"
+                className="builder-mobile-bar-btn"
+                onClick={handleSave}
+                disabled={saving || gift.sections.length === 0}
+              >
+                <span>{saving ? <MdHourglassEmpty /> : <MdSave />}</span>
+                <span>{saving ? "..." : "Хадгалах"}</span>
+              </button>
+              <button
+                type="button"
+                className="builder-mobile-bar-btn"
+                onClick={() => goToSlide(activeSlideIndex + 1)}
+                disabled={activeSlideIndex >= gift.sections.length - 1}
+              >
+                <span>▶</span>
+                <span>Дараах</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="builder-mobile-bar-btn"
+                onClick={() => setPreviewReloadKey((k) => k + 1)}
+              >
+                <span><MdRefresh /></span>
+                <span>Шинэчлэх</span>
+              </button>
+              <button
+                type="button"
+                className="builder-mobile-bar-btn"
+                onClick={openFullPreview}
+              >
+                <span>↗</span>
+                <span>Бүтэн харах</span>
+              </button>
+            </>
+          )}
+
+          {/* ── Tab toggle (always visible) ── */}
           <button
             type="button"
-            className="builder-mobile-bar-btn"
-            onClick={() => goToSlide(activeSlideIndex - 1)}
-            disabled={activeSlideIndex <= 0}
+            className={`builder-mobile-bar-tab-toggle ${mobileTab === 'preview' ? 'preview-active' : 'edit-active'}`}
+            onClick={() => {
+              setMobileTab(prev => {
+                const next = prev === 'edit' ? 'preview' : 'edit';
+                if (next === 'preview') setPreviewReloadKey(k => k + 1);
+                return next;
+              });
+            }}
           >
-            <span>◀</span>
-            <span>Өмнөх</span>
-          </button>
-          <button
-            type="button"
-            className="builder-mobile-bar-btn builder-mobile-bar-add"
-            onClick={() => setShowAddModal(true)}
-          >
-            <span className="builder-mobile-bar-plus">＋</span>
-          </button>
-          <button
-            type="button"
-            className="builder-mobile-bar-btn"
-            onClick={handleSave}
-            disabled={saving || gift.sections.length === 0}
-          >
-            <span>{saving ? "⏳" : "💾"}</span>
-            <span>{saving ? "..." : "Хадгалах"}</span>
-          </button>
-          <button
-            type="button"
-            className="builder-mobile-bar-btn"
-            onClick={() => goToSlide(activeSlideIndex + 1)}
-            disabled={activeSlideIndex >= gift.sections.length - 1}
-          >
-            <span>▶</span>
-            <span>Дараах</span>
+            <span>{mobileTab === 'edit' ? <MdVisibility /> : <MdEdit />}</span>
+            <span>{mobileTab === 'edit' ? 'Харах' : 'Засах'}</span>
           </button>
         </div>
 
@@ -1095,7 +1137,7 @@ export default function Builder() {
           <>
             <div className="builder-unsaved-overlay" />
             <div className="builder-unsaved-modal">
-              <div className="builder-unsaved-icon">⚠️</div>
+              <div className="builder-unsaved-icon"><MdWarning /></div>
               <h3 className="builder-unsaved-title">
                 Хадгалаагүй өөрчлөлт байна
               </h3>
@@ -1109,7 +1151,7 @@ export default function Builder() {
                   onClick={saveAndCloseEditor}
                   disabled={saving}
                 >
-                  {saving ? "Хадгалж байна..." : "💾 Хадгалах"}
+                  {saving ? "Хадгалж байна..." : <><MdSave /> Хадгалах</>}
                 </button>
                 <button
                   type="button"

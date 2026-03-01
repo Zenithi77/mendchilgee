@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { TIER_META, TIER_DURATION_DAYS } from "../config/tiers";
+import { MdHelp, MdCelebration, MdAutoAwesome, MdSearch, MdPayment } from "react-icons/md";
 import "./DemoPaymentPage.css";
 
 const FUNCTIONS_BASE =
@@ -60,7 +61,7 @@ export default function PaymentSuccessPage() {
   if (status === "no_ref") {
     return (
       <div className="payment-status-page">
-        <div className="status-icon">❓</div>
+        <div className="status-icon"><MdHelp /></div>
         <h1>No reference provided</h1>
         <Link to="/">← Нүүр хуудас руу буцах</Link>
       </div>
@@ -74,7 +75,7 @@ export default function PaymentSuccessPage() {
 
     return (
       <div className="payment-status-page">
-        <div className="status-icon">🎉</div>
+        <div className="status-icon"><MdCelebration /></div>
         <h1>Төлбөр амжилттай!</h1>
         <p>
           Таны мэндчилгээ{" "}
@@ -87,7 +88,7 @@ export default function PaymentSuccessPage() {
           Идэвхтэй хугацаа: <strong>{durationDays} хоног</strong>
         </p>
         <p style={{ color: "#64748b", fontSize: "0.85rem" }}>
-          Watermark арилсан байна. Мэндчилгээгээ хуваалцаарай! ✨
+          Watermark арилсан байна. Мэндчилгээгээ хуваалцаарай! <MdAutoAwesome />
         </p>
         {giftId ? (
           <Link to={`/${giftId}`}>← Мэндчилгээг харах</Link>
@@ -101,7 +102,7 @@ export default function PaymentSuccessPage() {
   if (status === "not_found") {
     return (
       <div className="payment-status-page">
-        <div className="status-icon">🔍</div>
+        <div className="status-icon"><MdSearch /></div>
         <h1>Төлбөр олдсонгүй</h1>
         <p>Энэ төлбөрийг олж чадсангүй. Тусламжтай холбогдоно уу.</p>
         <Link to="/">← Нүүр хуудас руу буцах</Link>
@@ -122,7 +123,7 @@ export default function PaymentSuccessPage() {
 
   return (
     <div className="payment-status-page">
-      <div className="status-icon">💳</div>
+      <div className="status-icon"><MdPayment /></div>
       <h1>Төлбөр шалгаж байна…</h1>
       <div className="spinner" />
       <p>Оролдлого {attempts} — түр хүлээнэ үү</p>

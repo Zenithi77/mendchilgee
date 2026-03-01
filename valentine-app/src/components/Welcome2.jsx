@@ -1,26 +1,6 @@
-import { useState, useEffect } from "react";
-
 export default function Welcome2({ startDate, onOpen, template }) {
-  const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
-
-  useEffect(() => {
-    const tick = () => {
-      const diff = Date.now() - startDate.getTime();
-      setTime({
-        d: Math.floor(diff / 86400000),
-        h: Math.floor((diff % 86400000) / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      });
-    };
-    tick();
-    const iv = setInterval(tick, 1000);
-    return () => clearInterval(iv);
-  }, [startDate]);
-
   const welcome = template?.welcome || {};
   const character = welcome.character || {};
-  const timer = welcome.timer || {};
 
   return (
     <div className="page page-enter">
@@ -69,9 +49,9 @@ export default function Welcome2({ startDate, onOpen, template }) {
           className="font-script"
           style={{
             fontSize: "2.4rem",
-            color: "var(--t-primary, var(--pink))",
+            color: "#FF85A2",
             marginBottom: 8,
-            textShadow: "0 0 40px rgba(255,107,157,0.3)",
+            textShadow: "0 0 40px rgba(255,133,162,0.5)",
           }}
         >
           {welcome.title || "Мэндчилгээ 🎉"}
@@ -79,7 +59,7 @@ export default function Welcome2({ startDate, onOpen, template }) {
         <p
           style={{
             fontSize: "0.92rem",
-            color: "rgba(255,255,255,0.6)",
+            color: "#FFC4D0",
             marginBottom: 28,
             lineHeight: 1.7,
             whiteSpace: "pre-line",
@@ -88,32 +68,6 @@ export default function Welcome2({ startDate, onOpen, template }) {
           {welcome.subtitle ||
             "Танд зориулсан \nтусгай мэндчилгээ ✨"}
         </p>
-
-        {/* Timer */}
-        <div className="welcome-timer-box">
-          <div
-            style={{
-              fontSize: "0.75rem",
-              color: "rgba(255,255,255,0.4)",
-              marginBottom: 8,
-            }}
-          >
-            {timer.title || "Цаг хугацаа"}
-          </div>
-          <div className="timer-grid">
-            {[
-              [time.d, timer.labels?.days || "Өдөр"],
-              [time.h, timer.labels?.hours || "Цаг"],
-              [time.m, timer.labels?.minutes || "Минут"],
-              [time.s, timer.labels?.seconds || "Секунд"],
-            ].map(([val, label]) => (
-              <div className="timer-box" key={label}>
-                <div className="timer-num">{val}</div>
-                <div className="timer-label">{label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         <button className="btn btn-love" onClick={onOpen}>
           {welcome.buttonText || "Мэндчилгээ нээх 🎁"}

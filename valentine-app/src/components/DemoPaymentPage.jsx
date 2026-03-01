@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { MdAutoAwesome, MdCheck } from "react-icons/md";
 import "./DemoPaymentPage.css";
 
 const FUNCTIONS_BASE =
@@ -67,7 +68,7 @@ export default function DemoPaymentPage() {
   return (
     <div className="demo-payment-page">
       <div className="payment-header">
-        <h1>✨ Төлөвлөгөө сонгох</h1>
+        <h1><MdAutoAwesome /> Төлөвлөгөө сонгох</h1>
         <p>Хайртай хүмүүстээ онцгой мэндчилгээ илгээрэй</p>
       </div>
 
@@ -86,7 +87,7 @@ export default function DemoPaymentPage() {
             <div className="plan-price">{plan.price}</div>
             <ul className="plan-features">
               {plan.features.map((f, i) => (
-                <li key={i}>✓ {f}</li>
+                <li key={i}><MdCheck /> {f}</li>
               ))}
             </ul>
             <button

@@ -5,6 +5,7 @@ import { getUserGifts, deleteGift } from "../services/giftService";
 import { generateHeartQR } from "../utils/heartQr";
 import { shouldShowWatermark, getRequiredTier } from "../utils/tierUtils";
 import { TIER_META } from "../config/tiers";
+import { MdMail, MdChecklist, MdPhotoCamera, MdLock, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdCelebration, MdAdd, MdFavorite, MdWaterDrop } from "react-icons/md";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -123,14 +124,14 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       const letterSec = gift.sections?.find((s) => s.type === "loveLetter");
       if (letterSec?.data?.title) {
         pills.push({
-          emoji: "💌",
+          emoji: <MdMail />,
           label: "Захидал",
           value: letterSec.data.title,
         });
       }
       if (stepSec?.data?.steps?.length) {
         pills.push({
-          emoji: "📝",
+          emoji: <MdChecklist />,
           label: "Алхамууд",
           value: `${stepSec.data.steps.length} алхам`,
         });
@@ -140,7 +141,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         const withImg = gallerySec.data.memories.filter((m) => m.src).length;
         if (withImg > 0)
           pills.push({
-            emoji: "📸",
+            emoji: <MdPhotoCamera />,
             label: "Зураг",
             value: `${withImg} зураг`,
           });
@@ -149,7 +150,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
 
     // Password status
     if (gift.password) {
-      pills.push({ emoji: "🔒", label: "Нууц үг", value: "тохируулсан" });
+      pills.push({ emoji: <MdLock />, label: "Нууц үг", value: "тохируулсан" });
     }
 
     return pills;
@@ -196,7 +197,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     return (
       <div className="gift-list-page">
         <div className="gift-list-loading">
-          <div className="gift-list-loading-icon">🎉</div>
+          <div className="gift-list-loading-icon"><MdCelebration /></div>
           <p>Ачаалж байна...</p>
         </div>
       </div>
@@ -208,19 +209,19 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
-          <div className="gift-list-header-emoji">🎉</div>
+          <div className="gift-list-header-emoji"><MdCelebration /></div>
           <h1 className="gift-list-title font-script">Миний мэндчилгээнүүд</h1>
           <p className="gift-list-subtitle">
             {gifts.length === 0
-              ? "Та одоогоор мэндчилгээ үүсгээгүй байна. Шинээр үүсгэе! 💫"
-              : `Танд нийт ${gifts.length} мэндчилгээ байна 📌`}
+              ? <>Та одоогоор мэндчилгээ үүсгээгүй байна. Шинээр үүсгэе! <MdAutoAwesome /></>
+              : `Танд нийт ${gifts.length} мэндчилгээ байна`}
           </p>
         </div>
 
         {/* Create New Button */}
         <div className="gift-list-actions">
           <button className="btn btn-create-gift" onClick={onCreateNew}>
-            <span className="btn-create-icon">✨</span>
+            <span className="btn-create-icon"><MdAutoAwesome /></span>
             Шинэ мэндчилгээ үүсгэх
           </button>
         </div>
@@ -264,7 +265,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                   })()}
                   {shouldShowWatermark(gift) && (
                     <span className="gift-card-badge gift-card-badge-watermark">
-                      💧 Watermark
+                      <MdWaterDrop /> Watermark
                     </span>
                   )}
                 </div>
@@ -288,19 +289,19 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                     className="gift-action-btn gift-action-edit"
                     onClick={() => onEditGift(gift)}
                   >
-                    ✏️ Edit
+                    <MdEdit /> Edit
                   </button>
                   <button
                     className="gift-action-btn gift-action-preview"
                     onClick={() => handlePreview(gift.id)}
                   >
-                    👁️ Preview
+                    <MdVisibility /> Preview
                   </button>
                   <button
                     className="gift-action-btn gift-action-responses"
                     onClick={() => navigate(`/responses/${gift.id}`)}
                   >
-                    📬 Responses
+                    <MdSend /> Responses
                   </button>
                   <button
                     className="gift-action-btn gift-action-share"
@@ -331,7 +332,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                       className="gift-action-btn gift-action-delete"
                       onClick={() => setConfirmDeleteId(gift.id)}
                     >
-                      🗑️
+                      <MdDelete />
                     </button>
                   )}
                 </div>
@@ -349,14 +350,14 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                         aria-label="Close"
                         title="Close"
                       >
-                        ✕
+                        <MdClose />
                       </button>
                     </div>
 
                     <div className="gift-share-panel-qr">
                       {sharePanel.loading ? (
                         <div className="gift-share-panel-loading">
-                          <span>💝</span>
+                          <span><MdFavorite /></span>
                           <p>QR үүсгэж байна...</p>
                         </div>
                       ) : sharePanel.qr ? (
@@ -391,13 +392,13 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         {/* Empty State */}
         {gifts.length === 0 && (
           <div className="gift-list-empty">
-            <div className="gift-list-empty-icon">�</div>
+            <div className="gift-list-empty-icon"><MdMail /></div>
             <p className="gift-list-empty-text">
               Онцгой мэндчилгээ үүсгээд хайртай хүмүүстээ линкээр
               илгээгээрэй!
             </p>
             <button className="btn btn-create-gift" onClick={onCreateNew}>
-              <span className="btn-create-icon">✨</span>
+              <span className="btn-create-icon"><MdAutoAwesome /></span>
               Эхлүүлэх
             </button>
           </div>

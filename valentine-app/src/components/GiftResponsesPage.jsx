@@ -4,6 +4,7 @@ import { getGift } from "../services/giftService";
 import { getGiftResponse } from "../services/giftResponseService";
 import { giftToTemplate } from "../models/gift";
 import FinalSummary2 from "./FinalSummary2";
+import { MdMail, MdSentimentDissatisfied, MdMailOutline } from "react-icons/md";
 import "./GiftPreviewPage.css";
 
 export default function GiftResponsesPage() {
@@ -75,7 +76,7 @@ export default function GiftResponsesPage() {
   if (loading) {
     return (
       <div className="gift-preview-page gift-preview-loading">
-        <div className="gift-preview-spinner">💌</div>
+        <div className="gift-preview-spinner"><MdMail /></div>
         <p>Хариу ачаалж байна...</p>
       </div>
     );
@@ -84,7 +85,7 @@ export default function GiftResponsesPage() {
   if (error) {
     return (
       <div className="gift-preview-page gift-preview-error">
-        <div className="gift-preview-error-icon">😢</div>
+        <div className="gift-preview-error-icon"><MdSentimentDissatisfied /></div>
         <h2>Алдаа гарлаа</h2>
         <p>{error}</p>
         <button className="gift-preview-back-btn" onClick={() => navigate(-1)}>
@@ -97,7 +98,7 @@ export default function GiftResponsesPage() {
   if (!response?.choices) {
     return (
       <div className="gift-preview-page gift-preview-error">
-        <div className="gift-preview-error-icon">📭</div>
+        <div className="gift-preview-error-icon"><MdMailOutline /></div>
         <h2>Хариу алга байна</h2>
         <p>Энэ мэндчилгээнд одоогоор хариу ирээгүй байна.</p>
         <button className="gift-preview-back-btn" onClick={() => navigate(-1)}>

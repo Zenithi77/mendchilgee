@@ -6,6 +6,7 @@ import {
 } from "../services/authService";
 import { saveTermsAgreement } from "../services/firestoreService";
 import { TERMS_VERSION } from "../legal/terms";
+import { MdCelebration, MdWarning } from "react-icons/md";
 import "./AuthPage.css";
 import "./LegalPage.css";
 
@@ -115,7 +116,7 @@ const AuthPage = ({ onAuthSuccess }) => {
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
-            <div className="auth-icon">🎉</div>
+            <div className="auth-icon"><MdCelebration /></div>
             <h1 className="auth-title">
               {isLogin ? "Тавтай морилоо!" : "Бүртгүүлэх"}
             </h1>
@@ -211,7 +212,7 @@ const AuthPage = ({ onAuthSuccess }) => {
                 </div>
                 {termsError && (
                   <p className="auth-terms-error-msg">
-                    ⚠ Үйлчилгээний нөхцөл зөвшөөрөх шаардлагатай
+                    <MdWarning /> Үйлчилгээний нөхцөл зөвшөөрөх шаардлагатай
                   </p>
                 )}
               </>
