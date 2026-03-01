@@ -29,7 +29,6 @@ import {
 
 import {
   WelcomeLetterEditor,
-  QuestionEditor,
   MovieSelectionEditor,
   MemoryGalleryEditor,
   StepQuestionsEditor,
@@ -447,14 +446,6 @@ export default function Builder() {
       );
     }
 
-    if (type === SECTION_TYPES.QUESTION)
-      return (
-        <QuestionEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-
     if (type === SECTION_TYPES.MOVIE_SELECTION)
       return (
         <MovieSelectionEditor
@@ -529,19 +520,6 @@ export default function Builder() {
               {(data?.content || "Захидлын агуулга...").slice(0, 150)}
               {(data?.content || "").length > 150 ? "..." : ""}
             </div>
-          </div>
-        );
-
-      case SECTION_TYPES.QUESTION:
-        return (
-          <div className="slide-pv slide-pv-question">
-            <div className="slide-pv-question-icon">{icon}</div>
-            <div className="slide-pv-question-text">
-              {data?.text || "Асуулга хэсэг"}
-            </div>
-            {data?.yesButton && (
-              <div className="slide-pv-mock-btn">{data.yesButton.text} {data.yesButton.emoji}</div>
-            )}
           </div>
         );
 

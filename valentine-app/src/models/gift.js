@@ -79,15 +79,6 @@ export function templateToGift(template) {
     });
   }
 
-  // Question
-  if (template.question) {
-    sections.push({
-      id: generateSectionId(),
-      type: SECTION_TYPES.QUESTION,
-      data: { ...template.question },
-    });
-  }
-
   // Movie selection
   if (template.movieSelection) {
     sections.push({

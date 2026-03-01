@@ -8,7 +8,6 @@
   ─ customizer:      Optional customizer type
   ─ welcome:         Welcome page (character, title, timer, button)
   ─ loveLetter:      Message / Greeting letter overlay
-  ─ question:        Interactive question (yes/no)
   ─ memoryGallery:   Photo gallery section
   ─ stepQuestions:    Step-by-step interactive questions
   ─ finalSummary:    Final summary / closing page
@@ -172,35 +171,6 @@ const WELCOME_HEART = {
   accents: ["💕", "✨", "💖", "💗"],
 };
 
-// ─── Question character presets ───
-const QUESTION_FLOWER = {
-  type: "emoji",
-  wrapClass: "question-char cat-question",
-  bodyEmoji: "🌸",
-  bodyClass: "cat-q-body",
-  accentContainerClass: "cat-q-items",
-  accentItemClass: "cq-item",
-  accents: ["🌷", "💐", "✨"],
-  pulseRingClass: "pulse-ring pulse-ring-pink",
-};
-
-const QUESTION_STAR = {
-  type: "emoji",
-  wrapClass: "question-char moon-question",
-  bodyEmoji: "⭐",
-  bodyClass: "moon-q-body",
-  accentContainerClass: "moon-q-stars",
-  accentItemClass: "mq-star",
-  accents: ["🎖️", "💫", "✨"],
-  pulseRingClass: "pulse-ring pulse-ring-blue",
-};
-
-const QUESTION_BEAR = {
-  type: "bear",
-  loveEmoji: "💗",
-  pulseRingClass: "pulse-ring",
-};
-
 // ═══════════════════════════════════════════════════════════════
 // CATEGORIES
 // ═══════════════════════════════════════════════════════════════
@@ -307,12 +277,7 @@ const MARCH8_TEMPLATES = [
       content:
         "Таны инээмсэглэл дэлхийг гэрэлтүүлдэг.\nТаны сайхан сэтгэл минд дулаахан байдлыг бэлэглэдэг.\nЭнэ өдрөөр тандаа хамгийн сайн сайхныг хүсье! 🌷",
     },
-    question: {
-      character: QUESTION_FLOWER,
-      text: "Энэ баяраар хамт цай уух уу? ☕💐",
-      yesButton: { text: "Тийм", emoji: "🌸" },
-      noButton: { ...DEFAULT_NO_BUTTON },
-    },
+    question: null,
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerTitle: "Бидний дурсамжууд 📸",
@@ -421,20 +386,7 @@ const MARCH8_TEMPLATES = [
       content:
         "Та бол миний амьдралын хамгийн чухал хүн.\nТаны хайр, халамж надад хамгийн том бэлэг.\nБаярын мэнд хүргэе, хайрт ээж минь! 🌺",
     },
-    question: {
-      character: QUESTION_BEAR,
-      text: "Ээж минь, та надад хамгийн шилдэг ээж гэдгийг мэдэх үү? 🥰",
-      yesButton: { text: "Мэднэ", emoji: "💝" },
-      noButton: {
-        defaultText: "Мэдэхгүй 😢",
-        messages: [
-          "Та хамгийн шилдэг! 🌸",
-          "Та л хамгийн шилдэг ээж! 💝",
-          "Надад итгээрэй! 🥰",
-          "Тийм гэж хэлээрэй! 🌺",
-        ],
-      },
-    },
+    question: null,
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerTitle: "Бидний дурсамжууд 💝",
@@ -504,15 +456,7 @@ const MARCH8_TEMPLATES = [
       content:
         "Чи бол хамгийн гоё, хамгийн хүчтэй, хамгийн гайхалтай хүн.\nЧиний байгаа цаг бүр миний хувьд үнэ цэнэтэй.\n3-р сарын 8-ны баяраар чамд хамгийн сайн сайхныг хүсье! 💐",
     },
-    question: {
-      character: null,
-      text: "Чи гайхалтай хүн гэдгээ мэдэх үү? 🌸✨",
-      yesButton: { text: "Мэднэ", emoji: "✨" },
-      noButton: {
-        defaultText: "Мэдэхгүй",
-        messages: ["Чи гайхалтай! ✨", "Итгээрэй! 🌸", "100% үнэн! 💐"],
-      },
-    },
+    question: null,
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       memories: [
@@ -588,15 +532,7 @@ const SOLDIERS_DAY_TEMPLATES = [
       content:
         "Эх орноо хамгаалсан эрэлхэг зоригт таньд баярлалаа.\nТаны зориг, тэвчээр бол бидний бахархал.\nЦэргийн баяраар мэндчилгээ дэвшүүлье! 🎖️",
     },
-    question: {
-      character: QUESTION_STAR,
-      text: "Та бол жинхэнэ баатар гэдгийг мэдэх үү? ⭐🎖️",
-      yesButton: { text: "Мэднэ", emoji: "⭐" },
-      noButton: {
-        defaultText: "Мэдэхгүй",
-        messages: ["Та баатар! 🎖️", "Үнэн шүү! ⭐", "Бахархдаг! 💪"],
-      },
-    },
+    question: null,
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerIcon: "⭐",
@@ -692,15 +628,7 @@ const SOLDIERS_DAY_TEMPLATES = [
       content:
         "Та бол эх орны найдвар, ард түмний бахархал.\nТаны зориг, тэвчээр бол жинхэнэ баатарлаг зан чанар.\nЦэргийн баярын мэнд хүргэе! 🇲🇳",
     },
-    question: {
-      character: QUESTION_STAR,
-      text: "Монгол эрчүүд бол хамгийн эрэлхэг гэж бодох уу? 💪🇲🇳",
-      yesButton: { text: "Тийм", emoji: "💪" },
-      noButton: {
-        defaultText: "Мэдэхгүй",
-        messages: ["100% эрэлхэг! 💪", "Монгол эр! 🇲🇳", "Баатар шүү! 🛡️"],
-      },
-    },
+    question: null,
     memoryGallery: null,
     stepQuestions: null,
     finalSummary: {
@@ -775,15 +703,7 @@ const BIRTHDAY_TEMPLATES = [
       content:
         "Энэ онцгой өдрөөр чамд хамгийн сайн сайхныг хүсье!\nАмьдралын замд аз жаргал, эрүүл мэнд, амжилт дагуулахын ерөөе!\nТөрсөн өдрийн баярын мэнд! 🎂✨",
     },
-    question: {
-      character: null,
-      text: "Төрсөн өдрөө баярлаж байна уу? 🎉🎂",
-      yesButton: { text: "Тийм!", emoji: "🎉" },
-      noButton: {
-        defaultText: "Тийм биш",
-        messages: ["Баярла! 🎉", "Өнөөдөр чиний өдөр! 🎂", "Баяр хөөр! ✨"],
-      },
-    },
+    question: null,
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerIcon: "🎂",
@@ -968,12 +888,7 @@ const VALENTINE_TEMPLATES = [
       content:
         "Чи бол миний амьдралын хамгийн гоо зүйл.\nЧиний инээмсэглэл намайг аз жаргалтай болгодог.\nHappy Valentine's Day, хайр минь! ❤️",
     },
-    question: {
-      character: QUESTION_BEAR,
-      text: "Энэ Valentine's Day-д хамт өнгөрүүлэх үү? 🥺💕",
-      yesButton: { text: "Тийм", emoji: "❤️" },
-      noButton: { ...DEFAULT_NO_BUTTON },
-    },
+    question: null,
     memoryGallery: {
       ...DEFAULT_GALLERY_UI,
       headerTitle: "Бидний дурсамжууд 💕",
@@ -1076,12 +991,7 @@ const VALENTINE_TEMPLATES = [
       content:
         "Чи бол миний хамгийн хайртай хүн.\nЧамтай хамт байх бүр л аз жаргалтай.\nI love you! 🧸💗",
     },
-    question: {
-      character: QUESTION_BEAR,
-      text: "Чи намайг хайрладаг уу? 🥺💗",
-      yesButton: { text: "Хайрладаг", emoji: "💗" },
-      noButton: { ...DEFAULT_NO_BUTTON },
-    },
+    question: null,
     memoryGallery: null,
     stepQuestions: null,
     finalSummary: {

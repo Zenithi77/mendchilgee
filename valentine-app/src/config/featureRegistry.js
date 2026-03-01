@@ -45,18 +45,6 @@ export const FEATURE_REGISTRY = {
     icon: "💌",
   },
 
-  [SECTION_TYPES.QUESTION]: {
-    label: "Question",
-    labelMn: "Асуулга хэсэг",
-    requiredTier: TIERS.FREE,
-    editable: {
-      [TIERS.FREE]: false,
-      [TIERS.STANDARD]: true,
-      [TIERS.PREMIUM]: true,
-    },
-    icon: "💝",
-  },
-
   [SECTION_TYPES.MOVIE_SELECTION]: {
     label: "Movie Selection",
     labelMn: "Кино сонголт",

@@ -49,13 +49,6 @@ const SECTION_DEFAULTS = {
     content: "Энд хайрын захидлаа бичнэ үү...",
   },
 
-  [SECTION_TYPES.QUESTION]: {
-    character: null,
-    text: "Чи намайг хайрладаг юу? 🥺💕",
-    yesButton: { ...DEFAULT_YES_BUTTON },
-    noButton: { ...DEFAULT_NO_BUTTON },
-  },
-
   [SECTION_TYPES.MOVIE_SELECTION]: {
     title: "Кино сонголт 🎬",
     subtitle: "Дуртай киногоо сонгоод ticketing нээгээрэй 💞",

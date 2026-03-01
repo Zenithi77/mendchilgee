@@ -9,7 +9,6 @@
 
 import Welcome2 from "../components/Welcome2";
 import LoveLetter from "../components/LoveLetter";
-import Question2 from "../components/Question2";
 import MovieSelection from "../components/MovieSelection";
 import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
@@ -20,7 +19,6 @@ import { SECTION_TYPES } from "../models/gift";
 import {
   MdCelebration,
   MdMail,
-  MdFavorite,
   MdPhotoCamera,
   MdChecklist,
   MdAutoAwesome,
@@ -47,15 +45,6 @@ export const SECTION_REGISTRY = {
     icon: <MdMail />,
     iconBg: "#fefce8",
     iconColor: "#eab308",
-  },
-  [SECTION_TYPES.QUESTION]: {
-    component: Question2,
-    label: "Question",
-    labelMn: "Асуулга хэсэг",
-    descMn: "Бие биенээ хэр сайн мэдэх вэ? Сонирхолтой асуултууд",
-    icon: <MdFavorite />,
-    iconBg: "#f3e8ff",
-    iconColor: "#9d81ba",
   },
   [SECTION_TYPES.MOVIE_SELECTION]: {
     component: MovieSelection,
