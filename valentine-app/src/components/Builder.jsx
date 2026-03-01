@@ -647,9 +647,9 @@ export default function Builder() {
           justifyContent: "center",
         }}
       >
-        <div style={{ textAlign: "center", color: "#fff" }}>
-          <div style={{ fontSize: "2rem", marginBottom: "1rem" }}><MdCelebration /></div>
-          <p>Уншиж байна...</p>
+        <div style={{ textAlign: "center" }}>
+          <div className="loader-ring" style={{ margin: '0 auto 1rem' }} />
+          <span className="loader-text">Уншиж байна</span>
         </div>
       </div>
     );

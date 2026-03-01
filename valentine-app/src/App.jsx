@@ -16,7 +16,7 @@ import TermsPage from "./components/TermsPage";
 import PrivacyPage from "./components/PrivacyPage";
 import TermsReacceptModal from "./components/TermsReacceptModal";
 import FloatingHearts from "./components/FloatingHearts";
-import { MdCelebration, MdPerson } from "react-icons/md";
+import { MdPerson } from "react-icons/md";
 import "./App.css";
 
 // Mendchilgee.site — Дижитал мэндчилгээний платформ
@@ -69,9 +69,9 @@ function AuthGuard({ children }) {
   if (loading) {
     return (
       <div className="app">
-        <div className="auth-loading">
-          <div className="auth-loading-spinner"><MdCelebration /></div>
-          <p>Ачааллаж байна...</p>
+        <div className="loader-wrap">
+          <div className="loader-ring" />
+          <span className="loader-text">Ачааллаж байна</span>
         </div>
       </div>
     );
@@ -166,9 +166,9 @@ function MainApp() {
   if (loading) {
     return (
       <div className="app">
-        <div className="auth-loading">
-          <div className="auth-loading-spinner"><MdCelebration /></div>
-          <p>Ачаалж байна...</p>
+        <div className="loader-wrap">
+          <div className="loader-ring" />
+          <span className="loader-text">Ачааллаж байна</span>
         </div>
       </div>
     );

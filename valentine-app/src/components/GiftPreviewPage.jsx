@@ -5,7 +5,7 @@ import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import Watermark from "./Watermark";
 import { shouldShowWatermark, isPaymentExpired } from "../utils/tierUtils";
-import { MdCelebration, MdSentimentDissatisfied, MdLock, MdLightbulb, MdShare, MdContentCopy, MdCheck, MdFavorite } from "react-icons/md";
+import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdShare, MdContentCopy, MdCheck, MdFavorite } from "react-icons/md";
 import { FaFacebookSquare, FaFacebookMessenger } from "react-icons/fa";
 import "./GiftPreviewPage.css";
 import "./ShareModal.css";
@@ -117,8 +117,8 @@ export default function GiftPreviewPage() {
   if (loading) {
     return (
       <div className="gift-preview-page gift-preview-loading">
-        <div className="gift-preview-spinner"><MdCelebration /></div>
-        <p>Ачаалж байна...</p>
+        <div className="loader-ring" />
+        <span className="loader-text">Ачаалж байна</span>
       </div>
     );
   }

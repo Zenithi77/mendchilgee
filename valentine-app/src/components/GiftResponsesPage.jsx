@@ -4,7 +4,7 @@ import { getGift } from "../services/giftService";
 import { getGiftResponse } from "../services/giftResponseService";
 import { giftToTemplate } from "../models/gift";
 import FinalSummary2 from "./FinalSummary2";
-import { MdMail, MdSentimentDissatisfied, MdMailOutline } from "react-icons/md";
+import { MdSentimentDissatisfied, MdMailOutline } from "react-icons/md";
 import "./GiftPreviewPage.css";
 
 export default function GiftResponsesPage() {
@@ -76,8 +76,8 @@ export default function GiftResponsesPage() {
   if (loading) {
     return (
       <div className="gift-preview-page gift-preview-loading">
-        <div className="gift-preview-spinner"><MdMail /></div>
-        <p>Хариу ачаалж байна...</p>
+        <div className="loader-ring" />
+        <span className="loader-text">Хариу ачаалж байна</span>
       </div>
     );
   }

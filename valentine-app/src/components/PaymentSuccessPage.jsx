@@ -125,7 +125,7 @@ export default function PaymentSuccessPage() {
     <div className="payment-status-page">
       <div className="status-icon"><MdPayment /></div>
       <h1>Төлбөр шалгаж байна…</h1>
-      <div className="spinner" />
+      <div className="loader-ring" style={{ width: 48, height: 48 }} />
       <p>Оролдлого {attempts} — түр хүлээнэ үү</p>
     </div>
   );

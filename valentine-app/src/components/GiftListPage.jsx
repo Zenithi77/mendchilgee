@@ -197,8 +197,8 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     return (
       <div className="gift-list-page">
         <div className="gift-list-loading">
-          <div className="gift-list-loading-icon"><MdCelebration /></div>
-          <p>Ачаалж байна...</p>
+          <div className="loader-ring" />
+          <span className="loader-text">Ачаалж байна</span>
         </div>
       </div>
     );
