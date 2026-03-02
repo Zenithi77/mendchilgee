@@ -605,7 +605,7 @@ export default function Builder() {
         </div>
       </header>
 
-      <div className="builder-body">
+      <div className={`builder-body ${mobileTab === 'preview' ? 'mobile-preview-active' : ''}`}>
         {/* ✅ Sidebar overlay (mobile/tablet - only for style panel) */}
         {sidebarOpen && (
           <div

@@ -1084,6 +1084,11 @@
     display: none !important;
   }
 
+  /* ── Hide editor when preview tab is active ── */
+  .builder-body.mobile-preview-active .builder-sidebar {
+    display: none !important;
+  }
+
   /* ═══ TAB-BASED MOBILE LAYOUT ═══ */
   /* Preview panel — fixed overlay between header and bottom bar */
   .builder-phone-preview-panel {
