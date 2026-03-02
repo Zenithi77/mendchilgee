@@ -3,7 +3,7 @@ import { getTemplatesByCategory, CATEGORIES } from "../templateConfigs";
 import { MdAutoAwesome, MdCheck, MdArrowForward } from "react-icons/md";
 
 const CATEGORY_NAMES = Object.fromEntries(
-  CATEGORIES.map((c) => [c.id, `${c.emoji} ${c.label}`])
+  CATEGORIES.map((c) => [c.id, `${c.emoji} ${c.name}`])
 );
 
 export default function TemplateSelector({ onSelect, category }) {

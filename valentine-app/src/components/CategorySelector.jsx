@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CATEGORIES } from "../templateConfigs";
-import { MdCelebration, MdAutoAwesome, MdCheck, MdArrowForward } from "react-icons/md";
+import { MdAutoAwesome, MdCheck, MdArrowForward } from "react-icons/md";
 
 export default function CategorySelector({ onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);
@@ -16,7 +16,6 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
       <div className="category-container">
         {/* Header */}
         <div className="cat-header">
-          <div className="cat-header-emoji"><MdCelebration /></div>
           <h1 className="font-script cat-header-title">Мэндчилгээ</h1>
           <p className="cat-header-sub">Баярын төрлөө сонгоорой <MdAutoAwesome /></p>
         </div>
