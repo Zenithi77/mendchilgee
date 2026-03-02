@@ -192,6 +192,7 @@ export default function GiftRenderer({
             memories={template.memoryGallery?.memories || []}
             onContinue={goNext}
             template={template}
+            musicPlaying={musicPlaying}
           />
         );
 

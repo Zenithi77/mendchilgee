@@ -1,98 +1,85 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-export default function MemoryGallery2({ memories, onContinue, template }) {
+const BAR_COUNT = 40;
+
+export default function MemoryGallery2({
+  memories,
+  onContinue,
+  template,
+  musicPlaying,
+}) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const gallery = template?.memoryGallery || {};
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchDelta, setTouchDelta] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const trackRef = useRef(null);
   const total = memories.length;
+  const autoRef = useRef(null);
+  const [touchStartX, setTouchStartX] = useState(null);
 
-  const goToSlide = useCallback(
+  /* ── Auto-advance photos when music is playing ── */
+  useEffect(() => {
+    if (musicPlaying && total > 1) {
+      autoRef.current = setInterval(
+        () => setCurrentSlide((p) => (p + 1) % total),
+        5000,
+      );
+    } else if (autoRef.current) {
+      clearInterval(autoRef.current);
+    }
+    return () => {
+      if (autoRef.current) clearInterval(autoRef.current);
+    };
+  }, [musicPlaying, total]);
+
+  const goTo = useCallback(
     (idx) => {
-      setCurrentSlide(Math.max(0, Math.min(idx, total - 1)));
-      setTouchDelta(0);
+      const next = ((idx % total) + total) % total;
+      setCurrentSlide(next);
+      /* reset auto timer on manual navigation */
+      if (autoRef.current) clearInterval(autoRef.current);
+      if (musicPlaying && total > 1) {
+        autoRef.current = setInterval(
+          () => setCurrentSlide((p) => (p + 1) % total),
+          5000,
+        );
+      }
     },
-    [total],
+    [total, musicPlaying],
   );
 
-  const handleTouchStart = (e) => {
-    setTouchStart(e.touches[0].clientX);
-    setIsDragging(true);
+  /* ── Touch swipe ── */
+  const onTouchStart = (e) => setTouchStartX(e.touches[0].clientX);
+  const onTouchEnd = (e) => {
+    if (touchStartX === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) goTo(currentSlide + (diff < 0 ? 1 : -1));
+    setTouchStartX(null);
   };
 
-  const handleTouchMove = (e) => {
-    if (touchStart === null) return;
-    const delta = e.touches[0].clientX - touchStart;
-    setTouchDelta(delta);
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    if (Math.abs(touchDelta) > 60) {
-      if (touchDelta < 0 && currentSlide < total - 1) {
-        goToSlide(currentSlide + 1);
-      } else if (touchDelta > 0 && currentSlide > 0) {
-        goToSlide(currentSlide - 1);
-      } else {
-        setTouchDelta(0);
-      }
-    } else {
-      setTouchDelta(0);
-    }
-    setTouchStart(null);
-  };
-
-  // Mouse drag support for desktop
-  const handleMouseDown = (e) => {
-    setTouchStart(e.clientX);
-    setIsDragging(true);
-  };
-
-  const handleMouseMove = (e) => {
-    if (touchStart === null || !isDragging) return;
-    const delta = e.clientX - touchStart;
-    setTouchDelta(delta);
-  };
-
-  const handleMouseUp = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    if (Math.abs(touchDelta) > 60) {
-      if (touchDelta < 0 && currentSlide < total - 1) {
-        goToSlide(currentSlide + 1);
-      } else if (touchDelta > 0 && currentSlide > 0) {
-        goToSlide(currentSlide - 1);
-      } else {
-        setTouchDelta(0);
-      }
-    } else {
-      setTouchDelta(0);
-    }
-    setTouchStart(null);
-  };
-
-  // Keyboard navigation
+  /* ── Keyboard ── */
   useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === "ArrowLeft") goToSlide(currentSlide - 1);
-      if (e.key === "ArrowRight") goToSlide(currentSlide + 1);
+    const h = (e) => {
+      if (e.key === "ArrowLeft") goTo(currentSlide - 1);
+      if (e.key === "ArrowRight") goTo(currentSlide + 1);
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [currentSlide, goToSlide]);
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [currentSlide, goTo]);
 
-  const translateX =
-    -(currentSlide * 100) + (touchDelta / (window.innerWidth || 400)) * 100;
+  /* ── Waveform bar properties (generated once) ── */
+  const bars = useRef(
+    Array.from({ length: BAR_COUNT }, () => ({
+      delay: (Math.random() * 1.4).toFixed(2),
+      speed: (0.35 + Math.random() * 0.8).toFixed(2),
+      maxH: Math.round(10 + Math.random() * 38),
+    })),
+  ).current;
 
   return (
     <div className="page page-enter">
-      <div className="swipe-gallery-container">
-        {/* Header */}
-        <div className="gallery-header-2">
+      <div className="music-box-gallery">
+        {/* ── header ── */}
+        <div className="music-box-header">
           <div
-            className="gallery-header-icon"
+            className="music-box-header-icon"
             style={{
               animation:
                 gallery.headerIconAnimation || "bearLove 1.5s ease infinite",
@@ -100,123 +87,121 @@ export default function MemoryGallery2({ memories, onContinue, template }) {
           >
             {gallery.headerIcon || "💝"}
           </div>
-          <h2 className="font-script gallery-header-title">
+          <h2 className="font-script music-box-title">
             {gallery.headerTitle || "Бидний дурсамжууд"}
           </h2>
-          {/* <p className="gallery-header-hint">
-            ← Зүүн, баруун тийш шударна уу →
-          </p> */}
         </div>
 
-        {/* Swipe area */}
+        {/* ── photo frame ── */}
         <div
-          className="swipe-viewport"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          className={`music-box-frame${musicPlaying ? " playing" : ""}`}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
-          <div
-            className="swipe-track"
-            ref={trackRef}
-            style={{
-              transform: `translateX(${translateX}%)`,
-              transition: isDragging
-                ? "none"
-                : "transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
-            }}
-          >
-            {memories.map((mem, i) => (
-              <div className="swipe-slide" key={i}>
-                <div
-                  className={`swipe-card${i === currentSlide ? " active" : ""}`}
-                >
-                  <div className="swipe-card-img">
-                    {mem.src ? (
-                      mem.type === "video" ? (
-                        <video src={mem.src} controls playsInline loop muted />
-                      ) : (
-                        <img
-                          src={mem.src}
-                          alt={mem.caption}
-                          loading="lazy"
-                          draggable={false}
-                        />
-                      )
-                    ) : (
-                      <div className="swipe-placeholder">
-                        <div className="swipe-placeholder-icon">
-                          {mem.placeholder}
-                        </div>
-                        <div className="swipe-placeholder-hint">
-                          {gallery.placeholderHint || "Зургаа энд нэмнэ үү"}
-                        </div>
-                      </div>
-                    )}
+          {/* stacked photos — crossfade */}
+          <div className="music-box-photos">
+            {memories.map((m, i) => (
+              <div
+                key={i}
+                className={`music-box-slide${i === currentSlide ? " active" : ""}`}
+              >
+                {m.src ? (
+                  m.type === "video" ? (
+                    <video src={m.src} controls playsInline loop muted />
+                  ) : (
+                    <img
+                      src={m.src}
+                      alt={m.caption}
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  )
+                ) : (
+                  <div className="music-box-placeholder">
+                    <span className="music-box-ph-icon">{m.placeholder}</span>
+                    <span className="music-box-ph-hint">
+                      {gallery.placeholderHint || "Зургаа энд нэмнэ үү"}
+                    </span>
                   </div>
-                  <div className="swipe-card-info">
-                    <div className="swipe-card-date">{mem.date}</div>
-                    <div className="swipe-card-caption font-script">
-                      {mem.caption}
-                    </div>
-                  </div>
+                )}
+                {/* caption gradient overlay */}
+                <div className="music-box-overlay">
+                  {m.date && <span className="music-box-date">{m.date}</span>}
+                  {m.caption && (
+                    <span className="music-box-caption font-script">
+                      {m.caption}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
           </div>
+
+          {/* now-playing badge */}
+          {musicPlaying && (
+            <div className="music-box-badge">
+              <span className="music-box-disc">💿</span>
+              <span>Тоглуулж байна</span>
+            </div>
+          )}
+
+          {/* counter */}
+          <div className="music-box-counter">
+            {currentSlide + 1} / {total}
+          </div>
         </div>
 
-        {/* Dots */}
-        <div className="swipe-dots">
-          {memories.map((_, i) => (
-            <button
+        {/* ── waveform visualiser ── */}
+        <div
+          className={`music-box-waveform${musicPlaying ? " playing" : ""}`}
+        >
+          {bars.map((b, i) => (
+            <span
               key={i}
-              className={`swipe-dot${i === currentSlide ? " active" : ""}`}
-              onClick={() => goToSlide(i)}
+              className="wb"
+              style={{
+                "--d": `${b.delay}s`,
+                "--s": `${b.speed}s`,
+                "--h": `${b.maxH}px`,
+              }}
             />
           ))}
         </div>
 
-        {/* Nav arrows */}
-        <div className="swipe-arrows">
+        {/* ── dots ── */}
+        <div className="music-box-dots">
+          {memories.map((_, i) => (
+            <button
+              key={i}
+              className={`music-box-dot${i === currentSlide ? " active" : ""}`}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
+
+        {/* ── arrows ── */}
+        <div className="music-box-arrows">
           <button
-            className="swipe-arrow left"
-            onClick={() => goToSlide(currentSlide - 1)}
-            disabled={currentSlide === 0}
+            className="music-box-arrow"
+            onClick={() => goTo(currentSlide - 1)}
           >
             ‹
           </button>
           <button
-            className="swipe-arrow right"
-            onClick={() => goToSlide(currentSlide + 1)}
-            disabled={currentSlide === total - 1}
+            className="music-box-arrow"
+            onClick={() => goTo(currentSlide + 1)}
           >
             ›
           </button>
         </div>
 
-        {/* Counter */}
-        <div className="swipe-counter">
-          {currentSlide + 1} / {total}
-        </div>
-
-        {/* Continue */}
-        <div className="gallery-continue-2">
-          <p
-            className="font-script"
-            style={{
-              fontSize: "1.2rem",
-              color: "rgba(255,255,255,0.5)",
-              marginBottom: 20,
-            }}
-          >
+        {/* ── footer ── */}
+        <div className="music-box-footer">
+          <p className="font-script music-box-footer-text">
             {gallery.footerText || "Бидний дурсамж бүхэн үнэ цэнэтэй... ✨"}
           </p>
           <button className="btn btn-magic" onClick={onContinue}>
-            {gallery.continueButton || "Болзоо төлөвлөх 👩‍❤️‍👨"}
+            {gallery.continueButton || "Үргэлжлүүлэх 💕"}
           </button>
         </div>
       </div>
