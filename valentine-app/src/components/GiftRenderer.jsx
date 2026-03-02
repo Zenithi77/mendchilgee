@@ -82,9 +82,31 @@ export default function GiftRenderer({
   }, [musicPlaying]);
 
   // Called by LoveLetter when letter is opened.
-  // Directly calls play() on the YT player so the browser
-  // sees it as part of the synchronous user-gesture call stack.
+  // Unlocks iOS audio and directly calls play() on the YT player
+  // so that the browser sees it as part of the synchronous
+  // user-gesture call stack.
   const startMusic = useCallback(() => {
+    // ── iOS audio unlock: play a silent buffer so the OS marks
+    //    this page as "user initiated audio" ──
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        const buf = ctx.createBuffer(1, 1, 22050);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.connect(ctx.destination);
+        src.start(0);
+      }
+    } catch {}
+    // Also unlock via a tiny silent <audio> element
+    try {
+      const a = document.createElement("audio");
+      a.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+      a.volume = 0.01;
+      a.play().catch(() => {});
+    } catch {}
+
     setMusicStarted(true);
     setMusicPlaying(true);
     ytPlayerRef.current?.play();

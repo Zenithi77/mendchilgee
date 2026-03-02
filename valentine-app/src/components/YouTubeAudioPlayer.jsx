@@ -109,8 +109,8 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
 
           playerRef.current = new window.YT.Player(el, {
             videoId,
-            height: "0",
-            width: "0",
+            height: "1",
+            width: "1",
             playerVars: {
               autoplay: wantPlayRef.current ? 1 : 0,
               controls: 0,
