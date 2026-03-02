@@ -4,10 +4,8 @@ import { getGift, incrementViewCount } from "../services/giftService";
 import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import { isPaymentExpired } from "../utils/tierUtils";
-import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdShare, MdContentCopy, MdCheck, MdFavorite } from "react-icons/md";
-import { FaFacebookSquare, FaFacebookMessenger } from "react-icons/fa";
+import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdFavorite } from "react-icons/md";
 import "./GiftPreviewPage.css";
-import "./ShareModal.css";
 
 /**
  * GiftPreviewPage — standalone page that loads a gift from Firestore
@@ -21,8 +19,7 @@ export default function GiftPreviewPage() {
   const [gift, setGift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showShareBar, setShowShareBar] = useState(false);
-  const [copied, setCopied] = useState(false);
+
 
   /* ── password gate state ── */
   const [unlocked, setUnlocked] = useState(false);
@@ -253,41 +250,6 @@ export default function GiftPreviewPage() {
     initialIndex = 0;
   }
 
-  // Check if we're inside the builder's iframe preview.
-  const isInIframe = window.self !== window.top;
-
-  const shareUrl = `${window.location.origin}/${giftId}`;
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // fallback
-      const input = document.createElement("input");
-      input.value = shareUrl;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand("copy");
-      document.body.removeChild(input);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const handleShareFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, "_blank");
-  };
-
-  const handleShareMessenger = () => {
-    window.open(`fb-messenger://share/?link=${encodeURIComponent(shareUrl)}`, "_blank");
-    // Fallback for desktop
-    setTimeout(() => {
-      window.open(`https://www.facebook.com/dialog/send?link=${encodeURIComponent(shareUrl)}&app_id=0&redirect_uri=${encodeURIComponent(shareUrl)}`, "_blank");
-    }, 500);
-  };
-
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
       <GiftRenderer
@@ -299,40 +261,7 @@ export default function GiftPreviewPage() {
         persistResponses={true}
       />
 
-      {/* Floating back-to-home & share buttons */}
-      {!isInIframe && (
-        <>
-          <button
-            className="gift-preview-back-floating"
-            onClick={() => navigate("/")}
-            title="Нүүр хуудас руу буцах"
-          >
-            ← Нүүр
-          </button>
 
-          <button
-            className="gift-preview-share-fab"
-            onClick={() => setShowShareBar(!showShareBar)}
-            title="Хуваалцах"
-          >
-            <MdShare />
-          </button>
-
-          {showShareBar && (
-            <div className="gift-preview-share-bar">
-              <button className="share-btn share-btn-fb" onClick={handleShareFacebook}>
-                <FaFacebookSquare /> Facebook
-              </button>
-              <button className="share-btn share-btn-msg" onClick={handleShareMessenger}>
-                <FaFacebookMessenger /> Messenger
-              </button>
-              <button className="share-btn share-btn-copy" onClick={handleCopyLink}>
-                {copied ? <><MdCheck /> Хуулагдсан!</> : <><MdContentCopy /> Линк хуулах</>}
-              </button>
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 }
