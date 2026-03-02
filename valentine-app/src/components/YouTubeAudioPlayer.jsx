@@ -4,13 +4,11 @@ import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 /**
  * YouTubeAudioPlayer — plays / pauses YouTube audio.
  *
- * Supports optional trimming:
- *   startTime  — seconds into the track to begin playback
- *   clipDuration — how many seconds to play (0 = unlimited)
+ * iOS-safe: uses YouTube-native loop + start/end playerVars
+ * instead of JS setTimeout-based looping (which iOS blocks
+ * because playVideo() calls outside user gestures are rejected).
  *
- * Exposes play() / pause() via ref so callers can trigger
- * playback synchronously inside a user-gesture call stack
- * (required by mobile browsers for audio autoplay).
+ * Volume is explicitly set to 100 on every play action.
  */
 const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   url,
@@ -22,7 +20,6 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   const playerRef = useRef(null);
   const videoIdRef = useRef(null);
   const wantPlayRef = useRef(playing);
-  const clipTimerRef = useRef(null);
   const startTimeRef = useRef(startTime);
   const clipDurRef = useRef(clipDuration);
 
@@ -35,46 +32,20 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   /* ── imperative handle for direct play/pause from parent ── */
   useImperativeHandle(ref, () => ({
     play: () => {
-      if (playerRef.current) {
-        seekAndPlay(playerRef.current);
-      }
+      const p = playerRef.current;
+      if (!p) return;
+      try {
+        p.setVolume(100);
+        if (startTimeRef.current > 0) p.seekTo(startTimeRef.current, true);
+        p.playVideo();
+      } catch {}
     },
     pause: () => {
       if (playerRef.current) {
         try { playerRef.current.pauseVideo(); } catch {}
-        clearClipTimer();
       }
     },
   }));
-
-  /* ── helpers ── */
-  const seekAndPlay = (player) => {
-    try {
-      if (startTimeRef.current > 0) player.seekTo(startTimeRef.current, true);
-      player.playVideo();
-    } catch {}
-    scheduleClipEnd();
-  };
-
-  const scheduleClipEnd = () => {
-    clearClipTimer();
-    const dur = clipDurRef.current;
-    if (dur > 0) {
-      clipTimerRef.current = setTimeout(() => {
-        // Loop: seek back to start and play again
-        if (playerRef.current && wantPlayRef.current) {
-          seekAndPlay(playerRef.current);
-        }
-      }, dur * 1000);
-    }
-  };
-
-  const clearClipTimer = () => {
-    if (clipTimerRef.current) {
-      clearTimeout(clipTimerRef.current);
-      clipTimerRef.current = null;
-    }
-  };
 
   // Create / update player
   useEffect(() => {
@@ -85,23 +56,30 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
       .then(() => {
         if (destroyed) return;
 
+        // Same video — just toggle play state
         if (playerRef.current && videoIdRef.current === videoId) {
           try {
-            if (wantPlayRef.current) seekAndPlay(playerRef.current);
-            else {
+            if (wantPlayRef.current) {
+              playerRef.current.setVolume(100);
+              playerRef.current.playVideo();
+            } else {
               playerRef.current.pauseVideo();
-              clearClipTimer();
             }
           } catch {}
           return;
         }
 
+        // Destroy old player
         if (playerRef.current) {
           try { playerRef.current.destroy(); } catch {}
           playerRef.current = null;
         }
 
         videoIdRef.current = videoId;
+
+        const st = Math.floor(startTimeRef.current) || 0;
+        const dur = clipDurRef.current;
+        const endTime = dur > 0 ? st + dur : undefined;
 
         try {
           const el = document.createElement("div");
@@ -117,11 +95,36 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
               rel: 0,
               modestbranding: 1,
               playsinline: 1,
-              start: Math.floor(startTimeRef.current) || undefined,
+              start: st || undefined,
+              end: endTime,
+              loop: 1,
+              playlist: videoId,
             },
             events: {
               onReady: (e) => {
-                if (wantPlayRef.current) seekAndPlay(e.target);
+                e.target.setVolume(100);
+                if (wantPlayRef.current) {
+                  if (st > 0) e.target.seekTo(st, true);
+                  e.target.playVideo();
+                }
+              },
+              onStateChange: (e) => {
+                // When video ends (state 0) and we still want music,
+                // seek back to clip start. This keeps the audio session
+                // alive on iOS without needing a new user gesture.
+                if (e.data === 0 && wantPlayRef.current) {
+                  try {
+                    e.target.seekTo(st, true);
+                    e.target.playVideo();
+                  } catch {}
+                }
+                // If YouTube somehow paused (state 2) but we want play
+                if (e.data === 2 && wantPlayRef.current) {
+                  try {
+                    e.target.setVolume(100);
+                    e.target.playVideo();
+                  } catch {}
+                }
               },
               onError: () => {
                 console.warn("YouTube player error for video:", videoId);
@@ -145,10 +148,15 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
     try {
       const state = playerRef.current.getPlayerState?.();
       if (playing) {
-        if (state !== 1) seekAndPlay(playerRef.current);
+        playerRef.current.setVolume(100);
+        if (state !== 1) {
+          if (startTimeRef.current > 0) {
+            playerRef.current.seekTo(startTimeRef.current, true);
+          }
+          playerRef.current.playVideo();
+        }
       } else {
         if (state === 1) playerRef.current.pauseVideo();
-        clearClipTimer();
       }
     } catch {}
   }, [playing]);
@@ -156,7 +164,6 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   // Cleanup
   useEffect(() => {
     return () => {
-      clearClipTimer();
       if (playerRef.current) {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;
