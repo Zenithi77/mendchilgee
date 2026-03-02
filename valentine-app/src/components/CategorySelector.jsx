@@ -20,19 +20,6 @@ export default function CategorySelector({ onSelect, onOpenBuilder }) {
           <p className="cat-header-sub">Баярын төрлөө сонгоорой <MdAutoAwesome /></p>
         </div>
 
-        {/* Builder entry point */}
-        {onOpenBuilder && (
-          <div style={{ textAlign: "center", marginBottom: 28 }}>
-            <button
-              className="btn btn-love"
-              onClick={onOpenBuilder}
-              style={{ fontSize: "0.95rem" }}
-            >
-              <MdAutoAwesome /> Өөрөө бүтээх — Мэндчилгээ Builder
-            </button>
-          </div>
-        )}
-
         {/* Category Cards */}
         <div className="cat-grid">
           {CATEGORIES.map((cat, idx) => (
