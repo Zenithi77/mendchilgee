@@ -147,6 +147,27 @@ export default function Builder() {
   const [desktopIframeScale, setDesktopIframeScale] = useState(1);
   const [desktopIframeHeight, setDesktopIframeHeight] = useState(900);
 
+  // ── Phone iframe scale (mobile preview) ──
+  const phoneScreenRef = useRef(null);
+  const [iframeScale, setIframeScale] = useState(0.58);
+  const [iframeHeight, setIframeHeight] = useState(844);
+
+  useEffect(() => {
+    const el = phoneScreenRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const w = entry.contentRect.width;
+        const h = entry.contentRect.height;
+        const s = w / 430;
+        setIframeScale(s);
+        setIframeHeight(Math.ceil(h / s));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [gift?.id]);
+
   // Desktop preview iframe scaling
   useEffect(() => {
     const el = desktopScreenRef.current;
@@ -786,16 +807,23 @@ export default function Builder() {
 
         </aside>
 
-        {/* ═══ MOBILE: Full-screen Preview (shown when mobileTab === 'preview') ═══ */}
+        {/* ═══ MOBILE: Phone Mockup Preview (shown when mobileTab === 'preview') ═══ */}
         {gift.id && (
           <div className={`builder-phone-preview-panel ${mobileTab === 'preview' ? 'active' : ''}`}>
-            <iframe
-              key={previewReloadKey}
-              className="builder-mobile-preview-iframe"
-              src={`/${gift.id}${selectedSectionId ? `#section-${selectedSectionId}` : ''}`}
-              title="Урьдчилан харах"
-              sandbox="allow-scripts allow-same-origin allow-popups"
-            />
+            <div className="builder-phone-frame">
+              <div className="builder-phone-notch" />
+              <div className="builder-phone-screen" ref={phoneScreenRef}>
+                <iframe
+                  key={previewReloadKey}
+                  className="builder-phone-iframe"
+                  src={`/${gift.id}${selectedSectionId ? `#section-${selectedSectionId}` : ''}`}
+                  title="Урьдчилан харах"
+                  sandbox="allow-scripts allow-same-origin allow-popups"
+                  style={{ transform: `scale(${iframeScale})`, width: '430px', height: `${iframeHeight}px` }}
+                />
+              </div>
+              <div className="builder-phone-home-bar" />
+            </div>
           </div>
         )}
 
