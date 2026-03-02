@@ -56,6 +56,7 @@ export default function GiftRenderer({
   const [musicStarted, setMusicStarted] = useState(false);
   const [musicElapsed, setMusicElapsed] = useState(0);
   const musicTimerRef = useRef(null);
+  const ytPlayerRef = useRef(null);
 
   // Reconstruct template-like object so existing components work unchanged
   const template = useMemo(() => giftToTemplate(gift), [gift]);
@@ -80,10 +81,13 @@ export default function GiftRenderer({
     };
   }, [musicPlaying]);
 
-  // Called by LoveLetter when letter is opened
+  // Called by LoveLetter when letter is opened.
+  // Directly calls play() on the YT player so the browser
+  // sees it as part of the synchronous user-gesture call stack.
   const startMusic = useCallback(() => {
     setMusicStarted(true);
     setMusicPlaying(true);
+    ytPlayerRef.current?.play();
   }, []);
 
   const toggleMusic = useCallback(() => {
@@ -238,6 +242,7 @@ export default function GiftRenderer({
       {/* Hidden YouTube audio iframe */}
       {musicConfig?.url && (
         <YouTubeAudioPlayer
+          ref={ytPlayerRef}
           url={musicConfig.url}
           playing={musicPlaying}
           startTime={musicConfig.startTime || 0}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 
 /**
@@ -7,13 +7,17 @@ import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
  * Supports optional trimming:
  *   startTime  — seconds into the track to begin playback
  *   clipDuration — how many seconds to play (0 = unlimited)
+ *
+ * Exposes play() / pause() via ref so callers can trigger
+ * playback synchronously inside a user-gesture call stack
+ * (required by mobile browsers for audio autoplay).
  */
-export default function YouTubeAudioPlayer({
+const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   url,
   playing,
   startTime = 0,
   clipDuration = 0,
-}) {
+}, ref) {
   const containerRef = useRef(null);
   const playerRef = useRef(null);
   const videoIdRef = useRef(null);
@@ -27,6 +31,21 @@ export default function YouTubeAudioPlayer({
   clipDurRef.current = clipDuration;
 
   const videoId = parseYouTubeId(url);
+
+  /* ── imperative handle for direct play/pause from parent ── */
+  useImperativeHandle(ref, () => ({
+    play: () => {
+      if (playerRef.current) {
+        seekAndPlay(playerRef.current);
+      }
+    },
+    pause: () => {
+      if (playerRef.current) {
+        try { playerRef.current.pauseVideo(); } catch {}
+        clearClipTimer();
+      }
+    },
+  }));
 
   /* ── helpers ── */
   const seekAndPlay = (player) => {
@@ -146,4 +165,6 @@ export default function YouTubeAudioPlayer({
   }, []);
 
   return <div ref={containerRef} className="yt-audio-iframe" />;
-}
+});
+
+export default YouTubeAudioPlayer;
