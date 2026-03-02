@@ -4,11 +4,12 @@ import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 /**
  * YouTubeAudioPlayer — plays / pauses YouTube audio.
  *
- * iOS-safe: uses YouTube-native loop + start/end playerVars
- * instead of JS setTimeout-based looping (which iOS blocks
- * because playVideo() calls outside user gestures are rejected).
- *
- * Volume is explicitly set to 100 on every play action.
+ * iOS-safe design:
+ *  - NO `end` playerVar (causes iOS to stop + block restart)
+ *  - NO JS-based playVideo() calls outside user gestures
+ *  - YouTube-native `loop: 1` + `playlist: videoId` for looping
+ *  - 200×200 iframe positioned offscreen (not 1×1 — iOS throttles tiny iframes)
+ *  - setVolume(100) for desktop (no-op on iOS, volume is hardware-only)
  */
 const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   url,
@@ -21,11 +22,9 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   const videoIdRef = useRef(null);
   const wantPlayRef = useRef(playing);
   const startTimeRef = useRef(startTime);
-  const clipDurRef = useRef(clipDuration);
 
   wantPlayRef.current = playing;
   startTimeRef.current = startTime;
-  clipDurRef.current = clipDuration;
 
   const videoId = parseYouTubeId(url);
 
@@ -36,6 +35,7 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
       if (!p) return;
       try {
         p.setVolume(100);
+        p.unMute();
         if (startTimeRef.current > 0) p.seekTo(startTimeRef.current, true);
         p.playVideo();
       } catch {}
@@ -61,6 +61,7 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
           try {
             if (wantPlayRef.current) {
               playerRef.current.setVolume(100);
+              playerRef.current.unMute();
               playerRef.current.playVideo();
             } else {
               playerRef.current.pauseVideo();
@@ -78,8 +79,6 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
         videoIdRef.current = videoId;
 
         const st = Math.floor(startTimeRef.current) || 0;
-        const dur = clipDurRef.current;
-        const endTime = dur > 0 ? st + dur : undefined;
 
         try {
           const el = document.createElement("div");
@@ -87,44 +86,27 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
 
           playerRef.current = new window.YT.Player(el, {
             videoId,
-            height: "1",
-            width: "1",
+            height: "200",
+            width: "200",
             playerVars: {
-              autoplay: wantPlayRef.current ? 1 : 0,
+              autoplay: 0,
               controls: 0,
+              disablekb: 1,
+              fs: 0,
               rel: 0,
               modestbranding: 1,
               playsinline: 1,
               start: st || undefined,
-              end: endTime,
               loop: 1,
               playlist: videoId,
             },
             events: {
               onReady: (e) => {
                 e.target.setVolume(100);
-                if (wantPlayRef.current) {
-                  if (st > 0) e.target.seekTo(st, true);
-                  e.target.playVideo();
-                }
-              },
-              onStateChange: (e) => {
-                // When video ends (state 0) and we still want music,
-                // seek back to clip start. This keeps the audio session
-                // alive on iOS without needing a new user gesture.
-                if (e.data === 0 && wantPlayRef.current) {
-                  try {
-                    e.target.seekTo(st, true);
-                    e.target.playVideo();
-                  } catch {}
-                }
-                // If YouTube somehow paused (state 2) but we want play
-                if (e.data === 2 && wantPlayRef.current) {
-                  try {
-                    e.target.setVolume(100);
-                    e.target.playVideo();
-                  } catch {}
-                }
+                e.target.unMute();
+                // Do NOT auto-play here — only the imperative .play()
+                // called from user gesture (envelope click) should start.
+                // This prevents iOS from blocking audio.
               },
               onError: () => {
                 console.warn("YouTube player error for video:", videoId);
@@ -149,6 +131,7 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
       const state = playerRef.current.getPlayerState?.();
       if (playing) {
         playerRef.current.setVolume(100);
+        playerRef.current.unMute();
         if (state !== 1) {
           if (startTimeRef.current > 0) {
             playerRef.current.seekTo(startTimeRef.current, true);

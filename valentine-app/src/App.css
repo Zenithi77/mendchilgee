@@ -4021,14 +4021,14 @@
 
 .yt-audio-iframe {
   position: fixed;
-  width: 1px;
-  height: 1px;
-  opacity: 0.01;
+  width: 200px;
+  height: 200px;
+  bottom: -300px;
+  right: -300px;
+  opacity: 1;
   pointer-events: none;
-  bottom: 0;
-  right: 0;
   border: 0;
-  z-index: -1;
+  z-index: -9999;
   overflow: hidden;
 }
 
