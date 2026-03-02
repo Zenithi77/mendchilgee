@@ -130,15 +130,6 @@ export function templateToGift(template) {
     });
   }
 
-  // Final summary
-  if (template.finalSummary) {
-    sections.push({
-      id: generateSectionId(),
-      type: SECTION_TYPES.FINAL_SUMMARY,
-      data: { ...template.finalSummary },
-    });
-  }
-
   return {
     id: null,
     templateId: template.id,

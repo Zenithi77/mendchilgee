@@ -487,33 +487,33 @@
 /* ── Mobile responsive ── */
 @media (max-width: 480px) {
   .sq-glass {
-    padding: 24px 16px;
+    padding: 30px 20px;
   }
 
   .sq-question {
-    font-size: 1.3rem;
+    font-size: 1.52rem;
   }
 
   .sq-options {
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 11px;
   }
 
   .sq-option {
-    padding: 12px 8px;
-    min-height: 70px;
+    padding: 15px 11px;
+    min-height: 80px;
   }
 
   .sq-opt-emoji {
-    font-size: 1.3rem;
+    font-size: 1.52rem;
   }
 
   .sq-reveal-text {
-    font-size: 1.5rem;
+    font-size: 1.73rem;
   }
 
   .sq-mystery-box {
-    width: 100px;
-    height: 120px;
+    width: 116px;
+    height: 139px;
   }
 }

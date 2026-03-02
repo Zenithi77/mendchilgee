@@ -132,24 +132,24 @@
 /* Mobile adjustments */
 @media (max-width: 480px) {
   .watermark-banner {
-    padding: 24px 12px 16px !important;
+    padding: 26px 14px 18px !important;
   }
 
   .watermark-banner-text {
-    font-size: 11px !important;
+    font-size: 13px !important;
   }
 
   .watermark-pattern-text {
-    font-size: 26px !important;
+    font-size: 30px !important;
   }
 
   .watermark-corner {
-    top: 8px !important;
-    right: 8px !important;
-    padding: 4px 8px !important;
+    top: 9px !important;
+    right: 9px !important;
+    padding: 5px 9px !important;
   }
 
   .watermark-corner-text {
-    font-size: 9px !important;
+    font-size: 11px !important;
   }
 }

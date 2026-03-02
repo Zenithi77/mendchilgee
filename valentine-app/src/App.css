@@ -2350,14 +2350,14 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
   .glass {
-    border-radius: 26px;
+    border-radius: 28px;
   }
   .step-card,
   .final-card {
-    padding: 32px 22px;
+    padding: 38px 28px;
   }
   .step-options {
-    gap: 8px;
+    gap: 11px;
   }
   .step-options.single {
   grid-template-columns: 1fr; /* Бүтэн өргөнөөр сунгана */
@@ -2365,7 +2365,7 @@
   /* justify-items: center; */
   }
   .step-title {
-    font-size: 1.4rem;
+    font-size: 1.63rem;
   }
 }
 

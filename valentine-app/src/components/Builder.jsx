@@ -9,7 +9,6 @@ import { useAuth } from "../contexts/AuthContext";
 
 import AddSectionModal from "./AddSectionModal";
 import UpgradeModal from "./UpgradeModal";
-import { VIEWPORT_PRESETS } from "./GiftPreview";
 import { TEMPLATES } from "../templateConfigs";
 import { TIER_META } from "../config/tiers";
 import { FEATURE_REGISTRY } from "../config/featureRegistry";
@@ -18,7 +17,7 @@ import {
   needsUpgrade,
   getRemainingDays,
 } from "../utils/tierUtils";
-import { IoClose, IoColorPalette, IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { IoClose, IoColorPalette } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
 import { MdDelete, MdSave, MdRefresh, MdVisibility, MdEdit, MdWarning, MdAutoAwesome, MdCheck, MdClose, MdDescription, MdPlaylistAdd, MdHourglassEmpty, MdCelebration, MdMail, MdPhotoCamera, MdMovie, MdVideocam, MdChecklist } from "react-icons/md";
 import {
@@ -32,7 +31,6 @@ import {
   MovieSelectionEditor,
   MemoryGalleryEditor,
   StepQuestionsEditor,
-  FinalSummaryEditor,
   MemoryVideoEditor,
   GenericEditor,
 } from "./SectionEditors";
@@ -81,6 +79,10 @@ export default function Builder() {
         : createEmptyGift();
     if (g && !g.theme?.className) g.theme = { ...DEFAULT_BUILDER_THEME };
     if (g && !g.effects?.floatingHearts) g.effects = { ...DEFAULT_EFFECTS };
+    // Filter out deprecated finalSummary sections
+    if (g?.sections) {
+      g.sections = g.sections.filter(s => s.type !== SECTION_TYPES.FINAL_SUMMARY);
+    }
     return g;
   });
 
@@ -104,6 +106,10 @@ export default function Builder() {
           if (!data.theme?.className) data.theme = { ...DEFAULT_BUILDER_THEME };
           if (!data.effects?.floatingHearts)
             data.effects = { ...DEFAULT_EFFECTS };
+          // Filter out deprecated finalSummary sections
+          if (data.sections) {
+            data.sections = data.sections.filter(s => s.type !== SECTION_TYPES.FINAL_SUMMARY);
+          }
           setGift(data);
           if (data.sections?.length > 0)
             setSelectedSectionId(data.sections[0].id);
@@ -129,11 +135,17 @@ export default function Builder() {
 
   // ── Slide-based navigation ──
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
-  const slideTrackRef = useRef(null);
   const [pendingFocusSectionId, setPendingFocusSectionId] = useState(null);
 
   // ── Mobile tab mode ──
   const [mobileTab, setMobileTab] = useState('edit'); // 'preview' | 'edit'
+
+  // ── Desktop preview mode ──
+  const [desktopPreviewMode, setDesktopPreviewMode] = useState('desktop'); // 'desktop' | 'mobile'
+  const [desktopPreviewReloadKey, setDesktopPreviewReloadKey] = useState(0);
+  const desktopScreenRef = useRef(null);
+  const [desktopIframeScale, setDesktopIframeScale] = useState(1);
+  const [desktopIframeHeight, setDesktopIframeHeight] = useState(900);
 
   // ── Phone iframe scale ──
   const phoneScreenRef = useRef(null);
@@ -155,6 +167,24 @@ export default function Builder() {
     ro.observe(el);
     return () => ro.disconnect();
   }, [gift?.id]);
+
+  // Desktop preview iframe scaling
+  useEffect(() => {
+    const el = desktopScreenRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const w = entry.contentRect.width;
+        const h = entry.contentRect.height;
+        const renderWidth = desktopPreviewMode === 'mobile' ? 430 : 1200;
+        const s = w / renderWidth;
+        setDesktopIframeScale(s);
+        setDesktopIframeHeight(Math.ceil(h / s));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [gift?.id, desktopPreviewMode]);
 
   // Sync selectedSectionId from activeSlideIndex
   useEffect(() => {
@@ -192,15 +222,6 @@ export default function Builder() {
       }
     },
     [gift?.sections?.length],
-  );
-
-  const prevSlide = useCallback(
-    () => goToSlide(activeSlideIndex - 1),
-    [activeSlideIndex, goToSlide],
-  );
-  const nextSlide = useCallback(
-    () => goToSlide(activeSlideIndex + 1),
-    [activeSlideIndex, goToSlide],
   );
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -470,14 +491,6 @@ export default function Builder() {
         />
       );
 
-    if (type === SECTION_TYPES.FINAL_SUMMARY)
-      return (
-        <FinalSummaryEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-
     if (type === SECTION_TYPES.MEMORY_VIDEO)
       return (
         <MemoryVideoEditor
@@ -490,128 +503,6 @@ export default function Builder() {
       return <GenericEditor section={selectedSection} />;
 
     return <GenericEditor section={selectedSection} />;
-  };
-
-  // ── Slide preview card renderer ──
-  const renderSlidePreview = (section) => {
-    const { type, data } = section;
-    const reg = SECTION_REGISTRY[type];
-    const icon = reg?.icon || <MdDescription />;
-    const label = reg?.labelMn || reg?.label || type;
-
-    switch (type) {
-      case SECTION_TYPES.WELCOME:
-        return (
-          <div className="slide-pv slide-pv-welcome">
-            <div className="slide-pv-emoji">{data?.character?.bodyEmoji || data?.character?.envelopeEmojis?.heart || "💝"}</div>
-            <h3 className="slide-pv-title">{data?.title || "Мэндчилгээ"}</h3>
-            <p className="slide-pv-sub">{data?.subtitle || ""}</p>
-            {data?.buttonText && (
-              <div className="slide-pv-mock-btn">{data.buttonText}</div>
-            )}
-          </div>
-        );
-
-      case SECTION_TYPES.LOVE_LETTER:
-        return (
-          <div className="slide-pv slide-pv-letter">
-            <div className="slide-pv-letter-icon"><MdMail /></div>
-            <div className="slide-pv-letter-text">
-              {(data?.content || "Захидлын агуулга...").slice(0, 150)}
-              {(data?.content || "").length > 150 ? "..." : ""}
-            </div>
-          </div>
-        );
-
-      case SECTION_TYPES.MEMORY_GALLERY: {
-        const photos = data?.memories?.filter((m) => m.src) || [];
-        return (
-          <div className="slide-pv slide-pv-gallery">
-            {photos.length > 0 ? (
-              <div className="slide-pv-photos">
-                {photos.slice(0, 4).map((m, i) => (
-                  <div key={i} className="slide-pv-photo">
-                    <img src={m.src} alt="" />
-                  </div>
-                ))}
-                {photos.length > 4 && (
-                  <div className="slide-pv-photo-more">+{photos.length - 4}</div>
-                )}
-              </div>
-            ) : (
-              <div className="slide-pv-gallery-empty">
-                <span><MdPhotoCamera /></span>
-                <span>{data?.headerTitle || "Зургийн цомог"}</span>
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      case SECTION_TYPES.MOVIE_SELECTION: {
-        const movies = data?.movies || [];
-        return (
-          <div className="slide-pv slide-pv-movies">
-            <div className="slide-pv-movies-title">{data?.title || "Кино сонголт"}</div>
-            <div className="slide-pv-movies-grid">
-              {movies.slice(0, 3).map((m, i) => (
-                <div key={i} className="slide-pv-movie">
-                  {m.posterUrl ? (
-                    <img src={m.posterUrl} alt={m.title} />
-                  ) : (
-                    <span><MdMovie /></span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      }
-
-      case SECTION_TYPES.MEMORY_VIDEO:
-        return (
-          <div className="slide-pv slide-pv-video">
-            <div className="slide-pv-video-icon"><MdVideocam /></div>
-            <div className="slide-pv-video-label">{label}</div>
-            {data?.url && (
-              <div className="slide-pv-video-url">{data.url.slice(0, 40)}...</div>
-            )}
-          </div>
-        );
-
-      case SECTION_TYPES.STEP_QUESTIONS:
-        return (
-          <div className="slide-pv slide-pv-steps">
-            <div className="slide-pv-steps-icon"><MdChecklist /></div>
-            <div className="slide-pv-steps-label">{label}</div>
-            {data?.steps && (
-              <div className="slide-pv-steps-list">
-                {data.steps.slice(0, 3).map((s, i) => (
-                  <div key={i} className="slide-pv-step-item">
-                    {s.emoji} {s.title}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-      case SECTION_TYPES.FINAL_SUMMARY:
-        return (
-          <div className="slide-pv slide-pv-summary">
-            <div className="slide-pv-summary-icon">{data?.headerEmoji || "🎊"}</div>
-            <div className="slide-pv-summary-label">{data?.title || label}</div>
-          </div>
-        );
-
-      default:
-        return (
-          <div className="slide-pv slide-pv-generic">
-            <div className="slide-pv-generic-icon">{icon}</div>
-            <div className="slide-pv-generic-label">{label}</div>
-          </div>
-        );
-    }
   };
 
   // Show loading state while fetching gift from Firestore
@@ -669,7 +560,7 @@ export default function Builder() {
             aria-label="Open style"
             title="Загвар"
           >
-            <IoColorPalette />
+            <IoIosSettings />
           </button>
 
           {/* ── Tier badge in header ── */}
@@ -711,15 +602,6 @@ export default function Builder() {
             <span className="builder-save-badge builder-save-err"><MdClose /> Алдаа</span>
           )}
 
-          {/* ── Upgrade / Remove Watermark button ── */}
-          {showUpgradeBtn && (
-            <button
-              className="builder-btn builder-btn-upgrade"
-              onClick={() => setShowUpgradeModal(true)}
-            >
-              <span><MdAutoAwesome /> Watermark арилгах</span>
-            </button>
-          )}
         </div>
       </header>
 
@@ -830,15 +712,6 @@ export default function Builder() {
                   Хуудас нэмэх
                 </button>
 
-                <button
-                  className="builder-add-btn builder-add-btn-save"
-                  onClick={handleSave}
-                  disabled={saving || gift.sections.length === 0}
-                  type="button"
-                >
-                  <span>{saving ? "Хадгалж байна..." : <><MdSave /> Хадгалах</>}</span>
-                </button>
-
                 {/* Active section header badge */}
                 {selectedSection && (
                   <div className="builder-active-section-header">
@@ -914,6 +787,19 @@ export default function Builder() {
                     </p>
                   </div>
                 ) : null}
+
+                {/* ── Full Preview Button ── */}
+                {gift.sections.length > 0 && (
+                  <button
+                    className="builder-full-preview-btn"
+                    onClick={openFullPreview}
+                    disabled={saving || gift.sections.length === 0}
+                    type="button"
+                  >
+                    <MdVisibility style={{ fontSize: '1.3rem' }} />
+                    Бүтэн урьдчилж харах
+                  </button>
+                )}
               </>
             )}
           </div>
@@ -949,86 +835,68 @@ export default function Builder() {
           </div>
         )}
 
-        {/* ═══ RIGHT PANEL: Slide Carousel (desktop) ═══ */}
+        {/* ═══ RIGHT PANEL: Real Preview (desktop) ═══ */}
         <main className="builder-main builder-slides-main">
-          <div className="builder-slides-container">
-            {/* Navigation arrow left */}
+          {/* Desktop/Mobile toggle */}
+          <div className="builder-desktop-preview-toggle">
             <button
               type="button"
-              className="builder-slide-arrow builder-slide-arrow-left"
-              onClick={prevSlide}
-              disabled={activeSlideIndex <= 0}
+              className={`builder-dpt-btn ${desktopPreviewMode === 'desktop' ? 'active' : ''}`}
+              onClick={() => { setDesktopPreviewMode('desktop'); setDesktopPreviewReloadKey(k => k + 1); }}
             >
-              <IoChevronBack />
+              <IoMdDesktop /> Desktop
             </button>
-
-            {/* Slides track */}
-            <div className="builder-slides-viewport">
-              <div
-                className="builder-slides-track"
-                ref={slideTrackRef}
-                style={{
-                  transform: `translateX(-${activeSlideIndex * 100}%)`,
-                }}
-              >
-                {gift.sections.map((section, idx) => {
-                  const isActive = idx === activeSlideIndex;
-                  const reg = SECTION_REGISTRY[section.type];
-                  const feat = FEATURE_REGISTRY[section.type];
-                  const tierDot =
-                    feat && feat.requiredTier !== "free"
-                      ? TIER_META[feat.requiredTier]
-                      : null;
-
-                  return (
-                    <div
-                      key={section.id}
-                      className={`builder-slide-card ${isActive ? "active" : ""}`}
-                      onClick={() => goToSlide(idx)}
-                    >
-                      <div className="builder-slide-card-label">
-                        <span>{reg?.icon || <MdDescription />}</span>
-                        <span>{reg?.labelMn || reg?.label || section.type}</span>
-                        {tierDot && (
-                          <span
-                            className="builder-section-tier-dot"
-                            style={{ color: tierDot.color }}
-                          >
-                            {tierDot.badge}
-                          </span>
-                        )}
-                      </div>
-                      <div className="builder-slide-card-body">
-                        {renderSlidePreview(section)}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Navigation arrow right */}
             <button
               type="button"
-              className="builder-slide-arrow builder-slide-arrow-right"
-              onClick={nextSlide}
-              disabled={activeSlideIndex >= gift.sections.length - 1}
+              className={`builder-dpt-btn ${desktopPreviewMode === 'mobile' ? 'active' : ''}`}
+              onClick={() => { setDesktopPreviewMode('mobile'); setDesktopPreviewReloadKey(k => k + 1); }}
             >
-              <IoChevronForward />
+              <IoMdPhonePortrait /> Mobile
+            </button>
+            <button
+              type="button"
+              className="builder-dpt-btn builder-dpt-reload"
+              onClick={() => setDesktopPreviewReloadKey(k => k + 1)}
+              title="Шинэчлэх"
+            >
+              <MdRefresh />
             </button>
           </div>
 
-          {/* Slide dots indicator */}
-          {gift.sections.length > 1 && (
-            <div className="builder-slide-dots">
-              {gift.sections.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`builder-slide-dot ${idx === activeSlideIndex ? "active" : ""}`}
-                  onClick={() => goToSlide(idx)}
-                />
-              ))}
+          {/* Real iframe preview */}
+          {gift.id ? (
+            <div className={`builder-desktop-preview-wrap ${desktopPreviewMode === 'mobile' ? 'mobile-mode' : 'desktop-mode'}`}>
+              {desktopPreviewMode === 'mobile' ? (
+                <div className="builder-desktop-phone-frame">
+                  <div className="builder-desktop-phone-notch" />
+                  <div className="builder-desktop-phone-screen" ref={desktopScreenRef}>
+                    <iframe
+                      key={`desktop-preview-${desktopPreviewReloadKey}`}
+                      className="builder-desktop-iframe"
+                      src={`/${gift.id}`}
+                      title="Mobile Preview"
+                      sandbox="allow-scripts allow-same-origin allow-popups"
+                      style={{ transform: `scale(${desktopIframeScale})`, width: '430px', height: `${desktopIframeHeight}px` }}
+                    />
+                  </div>
+                  <div className="builder-desktop-phone-home-bar" />
+                </div>
+              ) : (
+                <div className="builder-desktop-screen" ref={desktopScreenRef}>
+                  <iframe
+                    key={`desktop-preview-${desktopPreviewReloadKey}`}
+                    className="builder-desktop-iframe"
+                    src={`/${gift.id}`}
+                    title="Desktop Preview"
+                    sandbox="allow-scripts allow-same-origin allow-popups"
+                    style={{ transform: `scale(${desktopIframeScale})`, width: '1200px', height: `${desktopIframeHeight}px` }}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="builder-preview-placeholder">
+              Хадгалсны дараа урьдчилж харах боломжтой
             </div>
           )}
         </main>

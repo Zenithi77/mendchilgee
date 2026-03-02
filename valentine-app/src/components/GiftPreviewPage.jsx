@@ -3,8 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getGift, incrementViewCount } from "../services/giftService";
 import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
-import Watermark from "./Watermark";
-import { shouldShowWatermark, isPaymentExpired } from "../utils/tierUtils";
+import { isPaymentExpired } from "../utils/tierUtils";
 import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdShare, MdContentCopy, MdCheck, MdFavorite } from "react-icons/md";
 import { FaFacebookSquare, FaFacebookMessenger } from "react-icons/fa";
 import "./GiftPreviewPage.css";
@@ -254,10 +253,8 @@ export default function GiftPreviewPage() {
     initialIndex = 0;
   }
 
-  // Check if watermark should be shown — only on the public view, not inside
-  // the builder's iframe preview.
+  // Check if we're inside the builder's iframe preview.
   const isInIframe = window.self !== window.top;
-  const showWatermark = false;
 
   const shareUrl = `${window.location.origin}/${giftId}`;
 
@@ -301,7 +298,6 @@ export default function GiftPreviewPage() {
         giftId={giftId}
         persistResponses={true}
       />
-      <Watermark visible={showWatermark} giftId={giftId} />
 
       {/* Floating back-to-home & share buttons */}
       {!isInIframe && (

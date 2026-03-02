@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdChecklist, MdMovie, MdSettings, MdAutoAwesome, MdStar } from "react-icons/md";
 import { SECTION_TYPES } from "../models/gift";
-import EmojiPicker from "./EmojiPicker";
 import {
   uploadMemoryPhoto,
   uploadMemoryVideo,
@@ -14,11 +13,6 @@ import "./SectionEditors.css";
 // ═══════════════════════════════════════════════════════════════
 // Shared helpers
 // ═══════════════════════════════════════════════════════════════
-
-/** Insert emoji at cursor position of a text input/textarea identified by refId */
-function insertEmojiAtCursor(value, emoji) {
-  return (value || "") + emoji;
-}
 
 function FieldRow({ label, children }) {
   return (
@@ -36,10 +30,6 @@ function TextInputWithEmoji({
   multiline = false,
   rows = 4,
 }) {
-  const handleEmoji = (emoji) => {
-    onChange(insertEmojiAtCursor(value, emoji));
-  };
-
   return (
     <div className="se-input-with-emoji">
       {multiline ? (
@@ -59,7 +49,6 @@ function TextInputWithEmoji({
           placeholder={placeholder}
         />
       )}
-      <EmojiPicker onSelect={handleEmoji} />
     </div>
   );
 }
@@ -391,9 +380,6 @@ export function QuestionEditor({ section, onUpdate }) {
                       value={msg}
                       onChange={(e) => editMessage(idx, e.target.value)}
                     />
-                    <EmojiPicker
-                      onSelect={(emoji) => editMessage(idx, msg + emoji)}
-                    />
                   </div>
                   <button
                     type="button"
@@ -415,9 +401,6 @@ export function QuestionEditor({ section, onUpdate }) {
                     onChange={(e) => setNewMsg(e.target.value)}
                     placeholder="Шинэ текст нэмэх..."
                     onKeyDown={(e) => e.key === "Enter" && addMessage()}
-                  />
-                  <EmojiPicker
-                    onSelect={(emoji) => setNewMsg((p) => p + emoji)}
                   />
                 </div>
                 <button
@@ -871,9 +854,6 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                         value={step.emoji || ""}
                         onChange={(e) => editStep(idx, "emoji", e.target.value)}
                       />
-                      <EmojiPicker
-                        onSelect={(emoji) => editStep(idx, "emoji", emoji)}
-                      />
                     </div>
                   </FieldRow>
 
@@ -936,9 +916,11 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                               className="se-input-with-emoji"
                               style={{ width: "60px" }}
                             >
-                              <EmojiPicker
-                                onSelect={(emoji) => {
-                                  // Replace emoji prefix in label
+                              <input
+                                className="se-input se-input-short"
+                                type="text"
+                                value={(opt.label || "").match(/^\S+/)?.[0] || ""}
+                                onChange={(e) => {
                                   const timePart = (opt.label || "").replace(
                                     /^\S+\s*/,
                                     "",
@@ -947,13 +929,10 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                                     idx,
                                     oi,
                                     "label",
-                                    `${emoji} ${timePart}`,
+                                    `${e.target.value} ${timePart}`,
                                   );
                                 }}
-                                triggerLabel={
-                                  (opt.label || "").match(/^(\S+)\s/)?.[1] ||
-                                  "🕐"
-                                }
+                                style={{ width: "36px", textAlign: "center" }}
                               />
                             </div>
                             <select
@@ -1019,12 +998,6 @@ export function StepQuestionsEditor({ section, onUpdate }) {
                                   editOption(idx, oi, "emoji", e.target.value)
                                 }
                                 style={{ width: "36px", textAlign: "center" }}
-                              />
-                              <EmojiPicker
-                                onSelect={(emoji) =>
-                                  editOption(idx, oi, "emoji", emoji)
-                                }
-                                triggerLabel={opt.emoji || "😊"}
                               />
                             </div>
                             <input
@@ -1123,9 +1096,6 @@ export function FinalSummaryEditor({ section, onUpdate }) {
                     value={q}
                     onChange={(e) => editQuote(idx, e.target.value)}
                   />
-                  <EmojiPicker
-                    onSelect={(emoji) => editQuote(idx, q + emoji)}
-                  />
                 </div>
                 <button
                   type="button"
@@ -1147,9 +1117,6 @@ export function FinalSummaryEditor({ section, onUpdate }) {
                   onChange={(e) => setNewQuote(e.target.value)}
                   placeholder="Шинэ ишлэл нэмэх..."
                   onKeyDown={(e) => e.key === "Enter" && addQuote()}
-                />
-                <EmojiPicker
-                  onSelect={(emoji) => setNewQuote((p) => p + emoji)}
                 />
               </div>
               <button type="button" className="se-add-btn" onClick={addQuote}>

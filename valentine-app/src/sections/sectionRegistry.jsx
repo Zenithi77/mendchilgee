@@ -13,7 +13,6 @@ import MovieSelection from "../components/MovieSelection";
 import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
 import StepQuestions2 from "../components/StepQuestions2";
-import FinalSummary2 from "../components/FinalSummary2";
 import SpecialQuestions from "../components/SpecialQuestions";
 import { SECTION_TYPES } from "../models/gift";
 import {
@@ -81,15 +80,6 @@ export const SECTION_REGISTRY = {
     icon: <MdChecklist />,
     iconBg: "#ecfdf5",
     iconColor: "#22c55e",
-  },
-  [SECTION_TYPES.FINAL_SUMMARY]: {
-    component: FinalSummary2,
-    label: "Final Summary",
-    labelMn: "Хураангуй хэсэг",
-    descMn: "Бүх сонголтуудаа нэг дороос харж, хайрын түүхээ дуусгаарай",
-    icon: <MdAutoAwesome />,
-    iconBg: "#fef2f2",
-    iconColor: "#f87171",
   },
   [SECTION_TYPES.SPECIAL_QUESTIONS]: {
     component: SpecialQuestions,

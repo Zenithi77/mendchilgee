@@ -424,23 +424,23 @@
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   .gift-list-page {
-    padding: 24px 12px 60px;
+    padding: 28px 14px 64px;
   }
 
   .gift-list-title {
-    font-size: 2rem;
+    font-size: 2.3rem;
   }
 
   .gift-card {
-    padding: 16px;
+    padding: 20px;
   }
 
   .gift-card-actions {
-    gap: 6px;
+    gap: 9px;
   }
 
   .gift-action-btn {
-    padding: 5px 10px;
-    font-size: 0.72rem;
+    padding: 7px 13px;
+    font-size: 0.82rem;
   }
 }
