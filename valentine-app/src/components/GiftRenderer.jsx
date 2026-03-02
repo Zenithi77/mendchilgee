@@ -158,12 +158,7 @@ export default function GiftRenderer({
         return (
           <Component
             startDate={startDate}
-            onOpen={() => {
-              /* Start music on the very first user tap (Welcome "open" button)
-                 so that mobile browsers allow audio playback. */
-              if (musicConfig?.url && !musicStarted) startMusic();
-              goNext();
-            }}
+            onOpen={goNext}
             template={template}
             category={category}
           />

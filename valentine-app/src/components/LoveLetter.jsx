@@ -14,12 +14,14 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
     }
   }, [phase]);
 
-  // Start music when letter phase begins (lifted to GiftRenderer)
-  useEffect(() => {
-    if (phase === "letter" && letter?.music?.url) {
+  const handleOpenEnvelope = () => {
+    // Start music immediately inside the click handler (user gesture)
+    // so mobile browsers allow audio playback.
+    if (letter?.music?.url) {
       onMusicStart?.();
     }
-  }, [phase, letter?.music?.url, onMusicStart]);
+    setPhase("opening");
+  };
 
   const handleClose = () => {
     // Music continues playing — managed by GiftRenderer
@@ -45,7 +47,7 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
         onClick={(e) => e.stopPropagation()}
       >
         {phase === "envelope" && (
-          <div className="ll-envelope" onClick={() => setPhase("opening")}>
+          <div className="ll-envelope" onClick={handleOpenEnvelope}>
             <div className="ll-envelope-body">
               <div className="ll-envelope-flap" />
               <div className="ll-envelope-front">
