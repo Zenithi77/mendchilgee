@@ -1,4 +1,30 @@
-function parseYouTubeId(input) {
+// ── YT IFrame API loader (singleton) ──
+let _ytApiReady = false;
+let _ytApiPromise = null;
+
+export function ensureYTApi() {
+  if (_ytApiReady) return Promise.resolve();
+  if (_ytApiPromise) return _ytApiPromise;
+  _ytApiPromise = new Promise((resolve) => {
+    if (window.YT && window.YT.Player) {
+      _ytApiReady = true;
+      resolve();
+      return;
+    }
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      _ytApiReady = true;
+      if (prev) prev();
+      resolve();
+    };
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  });
+  return _ytApiPromise;
+}
+
+export function parseYouTubeId(input) {
   if (!input) return null
   const value = String(input).trim()
 

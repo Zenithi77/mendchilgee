@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdChecklist, MdMovie, MdSettings, MdAutoAwesome, MdStar } from "react-icons/md";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdChecklist, MdMovie, MdSettings, MdAutoAwesome, MdStar, MdPlayArrow, MdPause } from "react-icons/md";
 import { SECTION_TYPES } from "../models/gift";
 import {
   uploadMemoryPhoto,
@@ -8,6 +8,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { getSectionLimits } from "../config/featureRegistry";
 import { TIERS, TIER_META } from "../config/tiers";
+import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 import "./SectionEditors.css";
 
 // ═══════════════════════════════════════════════════════════════
@@ -48,6 +49,163 @@ function TextInputWithEmoji({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
         />
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Music Trimmer — pick a 30s clip from a YouTube track
+// ═══════════════════════════════════════════════════════════════
+
+const CLIP_DURATION = 30; // seconds
+
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2, "0")}`;
+}
+
+function MusicTrimmer({ music, onChange }) {
+  const [totalDur, setTotalDur] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const playerRef = useRef(null);
+  const boxRef = useRef(null);
+  const clipTimerRef = useRef(null);
+  const videoId = parseYouTubeId(music?.url);
+  const startTime = music?.startTime || 0;
+
+  // Create a hidden player to detect total duration
+  useEffect(() => {
+    if (!videoId) { setTotalDur(0); return; }
+    setLoading(true);
+    let destroyed = false;
+
+    ensureYTApi().then(() => {
+      if (destroyed) return;
+
+      // Destroy previous player
+      if (playerRef.current) {
+        try { playerRef.current.destroy(); } catch {}
+        playerRef.current = null;
+      }
+
+      const el = document.createElement("div");
+      boxRef.current?.appendChild(el);
+
+      playerRef.current = new window.YT.Player(el, {
+        videoId,
+        height: "0",
+        width: "0",
+        playerVars: { autoplay: 0, controls: 0 },
+        events: {
+          onReady: (e) => {
+            if (destroyed) return;
+            const d = e.target.getDuration();
+            setTotalDur(d || 0);
+            setLoading(false);
+          },
+          onError: () => {
+            setLoading(false);
+          },
+        },
+      });
+    });
+
+    return () => {
+      destroyed = true;
+      if (playerRef.current) {
+        try { playerRef.current.destroy(); } catch {}
+        playerRef.current = null;
+      }
+    };
+  }, [videoId]);
+
+  const maxStart = Math.max(0, Math.floor(totalDur - CLIP_DURATION));
+
+  const togglePreview = () => {
+    if (!playerRef.current) return;
+    if (previewing) {
+      playerRef.current.pauseVideo();
+      if (clipTimerRef.current) clearTimeout(clipTimerRef.current);
+      setPreviewing(false);
+    } else {
+      playerRef.current.seekTo(startTime, true);
+      playerRef.current.playVideo();
+      clipTimerRef.current = setTimeout(() => {
+        playerRef.current?.pauseVideo();
+        setPreviewing(false);
+      }, CLIP_DURATION * 1000);
+      setPreviewing(true);
+    }
+  };
+
+  // Cleanup timer
+  useEffect(() => () => {
+    if (clipTimerRef.current) clearTimeout(clipTimerRef.current);
+  }, []);
+
+  if (!videoId) return null;
+
+  return (
+    <div className="music-trimmer">
+      <div ref={boxRef} style={{ display: "none" }} />
+
+      {loading && (
+        <div className="trim-loading">
+          <span className="trim-spinner" /> Дууг ачаалж байна...
+        </div>
+      )}
+
+      {totalDur > 0 && (
+        <>
+          <div className="trim-info">
+            <span className="trim-tag">✂️ {CLIP_DURATION}с хэсэг сонгох</span>
+            <span className="trim-range">
+              {fmtTime(startTime)} — {fmtTime(startTime + CLIP_DURATION)}
+            </span>
+          </div>
+
+          <div className="trim-slider-wrap">
+            {/* Filled portion indicator */}
+            <div
+              className="trim-slider-fill"
+              style={{
+                left: `${(startTime / totalDur) * 100}%`,
+                width: `${(CLIP_DURATION / totalDur) * 100}%`,
+              }}
+            />
+            <input
+              type="range"
+              className="trim-slider"
+              min={0}
+              max={maxStart}
+              step={1}
+              value={startTime}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                onChange({
+                  ...music,
+                  startTime: v,
+                  clipDuration: CLIP_DURATION,
+                });
+              }}
+            />
+            <div className="trim-labels">
+              <span>0:00</span>
+              <span>{fmtTime(totalDur)}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="trim-preview-btn"
+            onClick={togglePreview}
+          >
+            {previewing ? <><MdPause /> Зогсоох</> : <><MdPlayArrow /> Сонсох</>}
+          </button>
+        </>
       )}
     </div>
   );
@@ -288,6 +446,14 @@ export function WelcomeLetterEditor({
               placeholder="Romantic Music"
             />
           </FieldRow>
+
+          {/* Music trimmer */}
+          {ld.music?.url && (
+            <MusicTrimmer
+              music={ld.music}
+              onChange={(updated) => updateLetter("music", updated)}
+            />
+          )}
         </div>
       )}
     </div>

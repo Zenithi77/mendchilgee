@@ -237,7 +237,12 @@ export default function GiftRenderer({
 
       {/* Hidden YouTube audio iframe */}
       {musicConfig?.url && (
-        <YouTubeAudioPlayer url={musicConfig.url} playing={musicPlaying} />
+        <YouTubeAudioPlayer
+          url={musicConfig.url}
+          playing={musicPlaying}
+          startTime={musicConfig.startTime || 0}
+          clipDuration={musicConfig.clipDuration || 0}
+        />
       )}
 
       {/* Persistent bottom music bar */}
@@ -259,7 +264,7 @@ export default function GiftRenderer({
                 <div
                   className="pmb-progress-fill"
                   style={{
-                    width: `${Math.min((musicElapsed / (musicConfig.duration || 240)) * 100, 100)}%`,
+                    width: `${Math.min((musicElapsed / (musicConfig.clipDuration || musicConfig.duration || 240)) * 100, 100)}%`,
                   }}
                 />
               </div>
