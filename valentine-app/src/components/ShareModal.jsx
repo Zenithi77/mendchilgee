@@ -1,9 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { MdClose, MdFavorite, MdCheck, MdContentCopy, MdDownload } from "react-icons/md";
-import { generateHeartQR } from "../utils/heartQr";
+import { MdClose, MdFavorite, MdCheck, MdContentCopy, MdDownload, MdPrint } from "react-icons/md";
+import { generateShapedQR } from "../utils/heartQr";
+
+const SHAPES = [
+  { key: "square",  label: "Дөрвөлжин", icon: "▢" },
+  { key: "heart",   label: "Зүрх",      icon: "♥" },
+  { key: "star",    label: "Од",        icon: "★" },
+  { key: "flower",  label: "Цэцэг",    icon: "✿" },
+];
 
 /**
- * ShareModal — Shows a heart-shaped QR code + share link for a gift.
+ * ShareModal — Shows a QR code (with selectable shape frame) + share link.
  *
  * Props:
  *  - open: boolean
@@ -14,27 +21,30 @@ import { generateHeartQR } from "../utils/heartQr";
 export default function ShareModal({ open, onClose, giftId, giftTitle }) {
   const [qrDataUrl, setQrDataUrl] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [shape, setShape] = useState("heart");
+  const [generating, setGenerating] = useState(false);
   const canvasRef = useRef(null);
 
   const shareUrl = `${window.location.origin}/${giftId}`;
 
+  // Regenerate QR whenever open / shape / giftId changes
   useEffect(() => {
     if (!open || !giftId) return;
     let cancelled = false;
     setQrDataUrl(null);
+    setGenerating(true);
 
-    generateHeartQR(shareUrl, { size: 480, color: "#e60023" })
+    generateShapedQR(shareUrl, { size: 600, color: "#e60023", shape })
       .then((url) => {
-        if (!cancelled) setQrDataUrl(url);
+        if (!cancelled) { setQrDataUrl(url); setGenerating(false); }
       })
       .catch((err) => {
         console.error("QR generation failed:", err);
+        if (!cancelled) setGenerating(false);
       });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [open, giftId, shareUrl]);
+    return () => { cancelled = true; };
+  }, [open, giftId, shareUrl, shape]);
 
   if (!open) return null;
 
@@ -49,8 +59,24 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
     if (!qrDataUrl) return;
     const a = document.createElement("a");
     a.href = qrDataUrl;
-    a.download = `mendchilgee-qr.png`;
+    a.download = `mendchilgee-qr-${shape}.png`;
     a.click();
+  };
+
+  const handlePrint = () => {
+    if (!qrDataUrl) return;
+    const w = window.open("", "_blank", "width=500,height=600");
+    if (!w) return;
+    w.document.write(`<!DOCTYPE html><html><head><title>QR - ${giftTitle || "Мэндчилгээ"}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:Georgia,serif;color:#333;text-align:center;padding:24px}
+img{max-width:320px;max-height:320px;margin-bottom:16px}
+h3{font-size:1.1rem;margin-bottom:6px}
+p{font-size:0.82rem;color:#888;word-break:break-all}
+@media print{body{padding:0}img{max-width:280px}}</style></head>
+<body><img src="${qrDataUrl}" alt="QR"/><h3>${giftTitle || "Мэндчилгээ"}</h3><p>${shareUrl}</p>
+<script>window.onload=function(){setTimeout(function(){window.print()},350)}<\/script></body></html>`);
+    w.document.close();
   };
 
   return (
@@ -66,12 +92,27 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
           <p className="share-modal-subtitle">{giftTitle}</p>
         </div>
 
+        {/* Shape selector */}
+        <div className="share-shape-selector">
+          {SHAPES.map((s) => (
+            <button
+              key={s.key}
+              className={`share-shape-btn ${shape === s.key ? "share-shape-active" : ""}`}
+              onClick={() => setShape(s.key)}
+              title={s.label}
+            >
+              <span className="share-shape-icon">{s.icon}</span>
+              <span className="share-shape-label">{s.label}</span>
+            </button>
+          ))}
+        </div>
+
         {/* QR Code */}
         <div className="share-modal-qr">
-          {qrDataUrl ? (
+          {qrDataUrl && !generating ? (
             <img
               src={qrDataUrl}
-              alt="Heart QR Code"
+              alt="QR Code"
               className="share-modal-qr-img"
               ref={canvasRef}
             />
@@ -106,6 +147,13 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
             disabled={!qrDataUrl}
           >
             <MdDownload /> QR татах
+          </button>
+          <button
+            className="share-modal-btn share-modal-btn-print"
+            onClick={handlePrint}
+            disabled={!qrDataUrl}
+          >
+            <MdPrint /> Хэвлэх
           </button>
           <button
             className="share-modal-btn share-modal-btn-close"

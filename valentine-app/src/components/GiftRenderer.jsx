@@ -226,6 +226,9 @@ export default function GiftRenderer({
       case SECTION_TYPES.MEMORY_VIDEO:
         return <Component data={currentSection.data} onContinue={goNext} />;
 
+      case SECTION_TYPES.FUN_QUESTIONS:
+        return <Component data={currentSection.data} onContinue={goNext} />;
+
       case SECTION_TYPES.SPECIAL_QUESTIONS:
         return <Component data={currentSection.data} onContinue={goNext} />;
 

@@ -107,6 +107,8 @@ function SingleSectionPreview({ section, template, category, startDate }) {
           template={template}
         />
       );
+    case SECTION_TYPES.FUN_QUESTIONS:
+      return <Component data={currentSection.data} onContinue={noop} />;
     case SECTION_TYPES.FINAL_SUMMARY:
       return <Component choices={{}} template={template} category={category} />;
     default:

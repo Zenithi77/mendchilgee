@@ -91,6 +91,18 @@ export const FEATURE_REGISTRY = {
     icon: "🎬",
   },
 
+  [SECTION_TYPES.FUN_QUESTIONS]: {
+    label: "Fun Questions",
+    labelMn: "Хөгжилтэй асуулт",
+    requiredTier: TIERS.FREE,
+    editable: {
+      [TIERS.FREE]: true,
+      [TIERS.STANDARD]: true,
+      [TIERS.PREMIUM]: true,
+    },
+    icon: "💬",
+  },
+
   [SECTION_TYPES.FINAL_SUMMARY]: {
     label: "Final Summary",
     labelMn: "Хураангуй хэсэг",

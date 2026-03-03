@@ -89,8 +89,8 @@
 /* QR Code */
 .share-modal-qr {
   margin: 0 auto 12px;
-  width: 240px;
-  height: 240px;
+  width: 260px;
+  height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +101,71 @@
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 4px 24px rgba(230, 0, 35, 0.25));
+  transition: opacity 0.25s ease;
+}
+
+/* ── Shape Selector ── */
+.share-shape-selector {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.share-shape-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  min-width: 60px;
+}
+
+.share-shape-btn:hover {
+  border-color: rgba(255, 196, 208, 0.3);
+  background: rgba(255, 196, 208, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.share-shape-active {
+  border-color: rgba(255, 196, 208, 0.5) !important;
+  background: rgba(255, 196, 208, 0.1) !important;
+  color: #FFC4D0 !important;
+  box-shadow: 0 0 12px rgba(255, 196, 208, 0.15);
+}
+
+.share-shape-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.share-shape-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ── Print button ── */
+.share-modal-btn-print {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.share-modal-btn-print:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.share-modal-btn-print:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .share-modal-qr-loading {

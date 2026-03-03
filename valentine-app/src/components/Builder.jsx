@@ -31,6 +31,7 @@ import {
   MovieSelectionEditor,
   MemoryGalleryEditor,
   MemoryVideoEditor,
+  FunQuestionsEditor,
   GenericEditor,
 } from "./SectionEditors";
 
@@ -485,6 +486,14 @@ export default function Builder() {
     if (type === SECTION_TYPES.MEMORY_VIDEO)
       return (
         <MemoryVideoEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
+
+    if (type === SECTION_TYPES.FUN_QUESTIONS)
+      return (
+        <FunQuestionsEditor
           section={selectedSection}
           onUpdate={updateSectionData}
         />

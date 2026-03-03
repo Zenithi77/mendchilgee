@@ -32,6 +32,7 @@ export const SECTION_TYPES = {
   MOVIE_SELECTION: "movieSelection",
   MEMORY_GALLERY: "memoryGallery",
   MEMORY_VIDEO: "memoryVideo",
+  FUN_QUESTIONS: "funQuestions",
   FINAL_SUMMARY: "finalSummary",
   SPECIAL_QUESTIONS: "specialQuestions",
 };

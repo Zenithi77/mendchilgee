@@ -12,6 +12,7 @@ import LoveLetter from "../components/LoveLetter";
 import MovieSelection from "../components/MovieSelection";
 import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
+import FunQuestions from "../components/FunQuestions";
 import SpecialQuestions from "../components/SpecialQuestions";
 import { SECTION_TYPES } from "../models/gift";
 import {
@@ -22,6 +23,7 @@ import {
   MdLightbulb,
   MdMovie,
   MdVideocam,
+  MdQuestionAnswer,
 } from "react-icons/md";
 
 export const SECTION_REGISTRY = {
@@ -69,6 +71,15 @@ export const SECTION_REGISTRY = {
     icon: <MdVideocam />,
     iconBg: "#fef3c7",
     iconColor: "#d97706",
+  },
+  [SECTION_TYPES.FUN_QUESTIONS]: {
+    component: FunQuestions,
+    label: "Fun Questions",
+    labelMn: "Хөгжилтэй асуулт",
+    descMn: "Хайртай хүндээ зориулсан хөгжилтэй асуултууд",
+    icon: <MdQuestionAnswer />,
+    iconBg: "#ede9fe",
+    iconColor: "#7c3aed",
   },
   [SECTION_TYPES.SPECIAL_QUESTIONS]: {
     component: SpecialQuestions,

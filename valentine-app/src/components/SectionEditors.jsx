@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdMovie, MdSettings, MdAutoAwesome, MdStar, MdPlayArrow, MdPause } from "react-icons/md";
+import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdMovie, MdSettings, MdAutoAwesome, MdStar, MdPlayArrow, MdPause, MdQuestionAnswer } from "react-icons/md";
 import { SECTION_TYPES } from "../models/gift";
 import {
   uploadMemoryPhoto,
@@ -861,8 +861,312 @@ export function MovieSelectionEditor({ section, onUpdate }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// FINAL SUMMARY EDITOR (StepQuestionsEditor removed)
+// FUN QUESTIONS EDITOR
 // ═══════════════════════════════════════════════════════════════
+
+const QUESTION_TYPES = [
+  { value: "choice", label: "Сонголт 🎯", desc: "Олон сонголтоос нэгийг" },
+  { value: "text", label: "Текст ✍️", desc: "Чөлөөт хариулт бичих" },
+  { value: "emoji_rate", label: "Emoji үнэлгээ 😍", desc: "Emoji-аар үнэлэх" },
+  { value: "yesno", label: "Тийм / Үгүй ✅", desc: "Хоёроос сонгох" },
+];
+
+const DEFAULT_EMOJI_SCALE = ["😐", "🙂", "😊", "🥰", "😍"];
+
+export function FunQuestionsEditor({ section, onUpdate }) {
+  const data = section?.data || {};
+  const questions = data.questions || [];
+  const [expandedQ, setExpandedQ] = useState(null);
+
+  const update = (key, value) => {
+    onUpdate(section.id, { ...data, [key]: value });
+  };
+
+  const updateQuestions = (updated) => {
+    update("questions", updated);
+  };
+
+  const addQuestion = (type = "choice") => {
+    const id = `q_${Date.now()}`;
+    let newQ = { id, type, emoji: "💬", question: "" };
+    if (type === "choice") {
+      newQ.options = [
+        { emoji: "😊", text: "" },
+        { emoji: "💖", text: "" },
+      ];
+    } else if (type === "text") {
+      newQ.placeholder = "Бичнэ үү...";
+    } else if (type === "emoji_rate") {
+      newQ.scale = [...DEFAULT_EMOJI_SCALE];
+    }
+    updateQuestions([...questions, newQ]);
+    setExpandedQ(questions.length);
+  };
+
+  const removeQuestion = (idx) => {
+    updateQuestions(questions.filter((_, i) => i !== idx));
+    if (expandedQ === idx) setExpandedQ(null);
+  };
+
+  const editQuestion = (idx, key, value) => {
+    const updated = [...questions];
+    updated[idx] = { ...updated[idx], [key]: value };
+    updateQuestions(updated);
+  };
+
+  const moveQuestion = (idx, dir) => {
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= questions.length) return;
+    const updated = [...questions];
+    [updated[idx], updated[newIdx]] = [updated[newIdx], updated[idx]];
+    updateQuestions(updated);
+    setExpandedQ(newIdx);
+  };
+
+  // Options within a choice question
+  const addOption = (qIdx) => {
+    const q = questions[qIdx];
+    const opts = [...(q.options || []), { emoji: "⭐", text: "" }];
+    editQuestion(qIdx, "options", opts);
+  };
+
+  const removeOption = (qIdx, oIdx) => {
+    const q = questions[qIdx];
+    editQuestion(qIdx, "options", q.options.filter((_, i) => i !== oIdx));
+  };
+
+  const editOption = (qIdx, oIdx, key, value) => {
+    const q = questions[qIdx];
+    const opts = [...q.options];
+    opts[oIdx] = { ...opts[oIdx], [key]: value };
+    editQuestion(qIdx, "options", opts);
+  };
+
+  // Emoji scale editor
+  const editScale = (qIdx, sIdx, value) => {
+    const q = questions[qIdx];
+    const scale = [...(q.scale || DEFAULT_EMOJI_SCALE)];
+    scale[sIdx] = value;
+    editQuestion(qIdx, "scale", scale);
+  };
+
+  return (
+    <div className="se-editor">
+      <div className="se-group">
+        <h3 className="se-group-title"><MdQuestionAnswer /> Асуултууд</h3>
+
+        <FieldRow label="Гарчиг">
+          <TextInputWithEmoji
+            value={data.title || ""}
+            onChange={(v) => update("title", v)}
+            placeholder="Хөгжилтэй асуултууд 💬"
+          />
+        </FieldRow>
+
+        <FieldRow label="Дэд гарчиг">
+          <TextInputWithEmoji
+            value={data.subtitle || ""}
+            onChange={(v) => update("subtitle", v)}
+            placeholder="Надад хариулаач 🥰"
+          />
+        </FieldRow>
+
+        <FieldRow label="Товчны текст">
+          <TextInputWithEmoji
+            value={data.continueButton || ""}
+            onChange={(v) => update("continueButton", v)}
+            placeholder="Үргэлжлүүлэх 💕"
+          />
+        </FieldRow>
+      </div>
+
+      <div className="se-group">
+        <h3 className="se-group-title">📝 Асуултын жагсаалт</h3>
+
+        <div className="se-steps">
+          {questions.map((q, idx) => (
+            <div key={q.id || idx} className="se-step">
+              {/* Question header */}
+              <div
+                className="se-step-header"
+                onClick={() => setExpandedQ(expandedQ === idx ? null : idx)}
+              >
+                <div className="se-step-header-left">
+                  <span className="se-step-emoji">{q.emoji || "💬"}</span>
+                  <span className="se-step-title">
+                    {q.question || "Шинэ асуулт"}
+                  </span>
+                  <span className="se-step-badge">
+                    {QUESTION_TYPES.find((t) => t.value === q.type)?.label || q.type}
+                  </span>
+                </div>
+                <div className="se-step-header-right">
+                  <button
+                    type="button"
+                    className="se-action-btn"
+                    onClick={(e) => { e.stopPropagation(); moveQuestion(idx, -1); }}
+                    disabled={idx === 0}
+                    title="Дээш"
+                  >↑</button>
+                  <button
+                    type="button"
+                    className="se-action-btn"
+                    onClick={(e) => { e.stopPropagation(); moveQuestion(idx, 1); }}
+                    disabled={idx === questions.length - 1}
+                    title="Доош"
+                  >↓</button>
+                  <button
+                    type="button"
+                    className="se-action-btn se-action-delete"
+                    onClick={(e) => { e.stopPropagation(); removeQuestion(idx); }}
+                    title="Устгах"
+                  ><MdClose /></button>
+                  <span className="se-step-chevron">
+                    {expandedQ === idx ? "▾" : "▸"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Expanded body */}
+              {expandedQ === idx && (
+                <div className="se-step-body">
+                  <FieldRow label="Төрөл">
+                    <select
+                      className="se-input"
+                      value={q.type}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        const updated = { ...q, type: newType };
+                        if (newType === "choice" && !updated.options) {
+                          updated.options = [{ emoji: "😊", text: "" }, { emoji: "💖", text: "" }];
+                        }
+                        if (newType === "emoji_rate" && !updated.scale) {
+                          updated.scale = [...DEFAULT_EMOJI_SCALE];
+                        }
+                        if (newType === "text" && !updated.placeholder) {
+                          updated.placeholder = "Бичнэ үү...";
+                        }
+                        const all = [...questions];
+                        all[idx] = updated;
+                        updateQuestions(all);
+                      }}
+                    >
+                      {QUESTION_TYPES.map((t) => (
+                        <option key={t.value} value={t.value}>{t.label} — {t.desc}</option>
+                      ))}
+                    </select>
+                  </FieldRow>
+
+                  <FieldRow label="Emoji">
+                    <input
+                      className="se-input se-input-short"
+                      type="text"
+                      value={q.emoji || ""}
+                      onChange={(e) => editQuestion(idx, "emoji", e.target.value)}
+                      style={{ width: 50, textAlign: "center" }}
+                    />
+                  </FieldRow>
+
+                  <FieldRow label="Асуулт">
+                    <TextInputWithEmoji
+                      value={q.question || ""}
+                      onChange={(v) => editQuestion(idx, "question", v)}
+                      placeholder="Асуултаа бичнэ үү..."
+                    />
+                  </FieldRow>
+
+                  {/* Choice options */}
+                  {q.type === "choice" && (
+                    <div className="se-options-section">
+                      <div className="se-options-header">
+                        <span className="se-label">Сонголтууд</span>
+                        <button
+                          type="button"
+                          className="se-add-btn-sm"
+                          onClick={() => addOption(idx)}
+                        >＋ Нэмэх</button>
+                      </div>
+                      {(q.options || []).map((opt, oi) => (
+                        <div key={oi} className="se-option-card">
+                          <div className="se-option-row">
+                            <input
+                              className="se-input se-input-short"
+                              type="text"
+                              value={opt.emoji || ""}
+                              onChange={(e) => editOption(idx, oi, "emoji", e.target.value)}
+                              style={{ width: 42, textAlign: "center" }}
+                            />
+                            <input
+                              className="se-input"
+                              type="text"
+                              value={opt.text || ""}
+                              onChange={(e) => editOption(idx, oi, "text", e.target.value)}
+                              placeholder="Сонголтын текст"
+                              style={{ flex: 1 }}
+                            />
+                            <button
+                              type="button"
+                              className="se-remove-btn"
+                              onClick={() => removeOption(idx, oi)}
+                              title="Устгах"
+                            ><MdClose /></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Text placeholder */}
+                  {q.type === "text" && (
+                    <FieldRow label="Placeholder">
+                      <TextInputWithEmoji
+                        value={q.placeholder || ""}
+                        onChange={(v) => editQuestion(idx, "placeholder", v)}
+                        placeholder="Бичнэ үү..."
+                      />
+                    </FieldRow>
+                  )}
+
+                  {/* Emoji scale */}
+                  {q.type === "emoji_rate" && (
+                    <FieldRow label="Emoji шатлал">
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {(q.scale || DEFAULT_EMOJI_SCALE).map((em, si) => (
+                          <input
+                            key={si}
+                            className="se-input se-input-short"
+                            type="text"
+                            value={em}
+                            onChange={(e) => editScale(idx, si, e.target.value)}
+                            style={{ width: 42, textAlign: "center" }}
+                          />
+                        ))}
+                      </div>
+                    </FieldRow>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Add question buttons */}
+        <div className="fqe-add-row">
+          {QUESTION_TYPES.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              className="se-add-card-btn fqe-add-type-btn"
+              onClick={() => addQuestion(t.value)}
+            >
+              <span>＋</span> {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════
 // FINAL SUMMARY EDITOR

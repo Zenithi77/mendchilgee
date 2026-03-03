@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
-import { generateHeartQR } from "../utils/heartQr";
+import { generateShapedQR } from "../utils/heartQr";
 import { shouldShowWatermark, getRequiredTier } from "../utils/tierUtils";
 import { TIER_META } from "../config/tiers";
-import { MdMail, MdChecklist, MdPhotoCamera, MdLock, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdAdd, MdFavorite, MdWaterDrop } from "react-icons/md";
+import { MdMail, MdChecklist, MdPhotoCamera, MdLock, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdAdd, MdFavorite, MdWaterDrop, MdDownload, MdPrint } from "react-icons/md";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -16,6 +16,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
   const [deletingId, setDeletingId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [sharePanel, setSharePanel] = useState(null);
+  const [shareShape, setShareShape] = useState("heart");
 
   const fetchGifts = useCallback(async () => {
     if (!user) return;
@@ -85,12 +86,12 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       }
 
       try {
-        const qr = await generateHeartQR(url, { size: 700, color: "#e60023" });
+        const qr = await generateShapedQR(url, { size: 700, color: "#e60023", shape: shareShape });
         setSharePanel((prev) =>
           prev?.id === gift.id ? { ...prev, qr, loading: false } : prev,
         );
       } catch (err) {
-        console.error("Heart QR generation failed:", err);
+        console.error("QR generation failed:", err);
         setSharePanel((prev) =>
           prev?.id === gift.id
             ? { ...prev, loading: false, error: "QR үүсгэхэд алдаа гарлаа" }
@@ -98,8 +99,43 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
         );
       }
     },
-    [sharePanel?.id],
+    [sharePanel?.id, shareShape],
   );
+
+  // Regenerate QR when shape changes
+  useEffect(() => {
+    if (!sharePanel?.id || !sharePanel?.url) return;
+    let cancelled = false;
+    setSharePanel((prev) => prev ? { ...prev, loading: true, qr: null } : prev);
+    generateShapedQR(sharePanel.url, { size: 700, color: "#e60023", shape: shareShape })
+      .then((qr) => { if (!cancelled) setSharePanel((prev) => prev ? { ...prev, qr, loading: false } : prev); })
+      .catch(() => { if (!cancelled) setSharePanel((prev) => prev ? { ...prev, loading: false, error: "QR алдаа" } : prev); });
+    return () => { cancelled = true; };
+  }, [shareShape]);
+
+  const handleShareDownload = () => {
+    if (!sharePanel?.qr) return;
+    const a = document.createElement("a");
+    a.href = sharePanel.qr;
+    a.download = `mendchilgee-qr-${shareShape}.png`;
+    a.click();
+  };
+
+  const handleSharePrint = () => {
+    if (!sharePanel?.qr) return;
+    const w = window.open("", "_blank", "width=500,height=600");
+    if (!w) return;
+    w.document.write(`<!DOCTYPE html><html><head><title>QR</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:Georgia,serif;color:#333;text-align:center;padding:24px}
+img{max-width:320px;max-height:320px;margin-bottom:16px}
+h3{font-size:1.1rem;margin-bottom:6px}
+p{font-size:0.82rem;color:#888;word-break:break-all}
+@media print{body{padding:0}img{max-width:280px}}</style></head>
+<body><img src="${sharePanel.qr}" alt="QR"/><h3>${sharePanel.title || "Мэндчилгээ"}</h3><p>${sharePanel.url}</p>
+<script>window.onload=function(){setTimeout(function(){window.print()},350)}<\/script></body></html>`);
+    w.document.close();
+  };
 
   /** Extract summary pills (choices stored in finalSummary fields) */
   const getGiftSummary = (gift) => {
@@ -344,6 +380,26 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                       </button>
                     </div>
 
+                    {/* Shape selector */}
+                    <div className="gift-share-shapes">
+                      {[
+                        { key: "square",  icon: "▢", label: "Дөрвөлжин" },
+                        { key: "heart",   icon: "♥", label: "Зүрх" },
+                        { key: "star",    icon: "★", label: "Од" },
+                        { key: "flower",  icon: "✿", label: "Цэцэг" },
+                      ].map((s) => (
+                        <button
+                          key={s.key}
+                          className={`gift-share-shape-btn ${shareShape === s.key ? "gift-share-shape-active" : ""}`}
+                          onClick={() => setShareShape(s.key)}
+                          title={s.label}
+                        >
+                          <span className="gift-share-shape-icon">{s.icon}</span>
+                          <span className="gift-share-shape-label">{s.label}</span>
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="gift-share-panel-qr">
                       {sharePanel.loading ? (
                         <div className="gift-share-panel-loading">
@@ -354,7 +410,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                         <img
                           className="gift-share-panel-qr-img"
                           src={sharePanel.qr}
-                          alt="Heart QR"
+                          alt="QR Code"
                         />
                       ) : (
                         <div className="gift-share-panel-error">
@@ -371,6 +427,26 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
                         readOnly
                         onFocus={(e) => e.target.select()}
                       />
+                    </div>
+
+                    {/* Download & Print */}
+                    <div className="gift-share-panel-actions">
+                      <button
+                        className="gift-share-panel-action-btn"
+                        onClick={handleShareDownload}
+                        disabled={!sharePanel.qr}
+                        title="QR татах"
+                      >
+                        <MdDownload /> Татах
+                      </button>
+                      <button
+                        className="gift-share-panel-action-btn"
+                        onClick={handleSharePrint}
+                        disabled={!sharePanel.qr}
+                        title="Хэвлэх"
+                      >
+                        <MdPrint /> Хэвлэх
+                      </button>
                     </div>
                   </div>
                 )}

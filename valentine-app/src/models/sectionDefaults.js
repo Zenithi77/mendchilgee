@@ -150,6 +150,40 @@ const SECTION_DEFAULTS = {
     ],
   },
 
+  [SECTION_TYPES.FUN_QUESTIONS]: {
+    title: "Хөгжилтэй асуултууд 💬",
+    subtitle: "Надад хариулаач 🥰",
+    continueButton: "Үргэлжлүүлэх 💕",
+    questions: [
+      {
+        id: "q1",
+        type: "choice",
+        emoji: "💕",
+        question: "Чамд хамгийн их юу таалагддаг?",
+        options: [
+          { emoji: "😊", text: "Инээмсэглэл" },
+          { emoji: "💖", text: "Зан чанар" },
+          { emoji: "🤗", text: "Халуун тэвэрлэлт" },
+          { emoji: "✨", text: "Бүх зүйл" },
+        ],
+      },
+      {
+        id: "q2",
+        type: "text",
+        emoji: "💌",
+        question: "Надад хамгийн их юу гэж хэлмээр байна?",
+        placeholder: "Зүрхнээсээ бичээрэй...",
+      },
+      {
+        id: "q3",
+        type: "emoji_rate",
+        emoji: "💗",
+        question: "Намайг хэр их санадаг вэ?",
+        scale: ["😐", "🙂", "😊", "🥰", "😍"],
+      },
+    ],
+  },
+
   [SECTION_TYPES.FINAL_SUMMARY]: {
     headerEmoji: "💝",
     title: "Бүх зүйл бэлэн! 🎉",
