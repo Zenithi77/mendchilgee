@@ -10,6 +10,7 @@ import {
   getTermsAgreement,
   saveTermsAgreement,
 } from "../services/firestoreService";
+import { subscribeToCredits } from "../services/creditService";
 import { TERMS_VERSION } from "../legal/terms";
 
 const AuthContext = createContext(null);
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [needsTermsReaccept, setNeedsTermsReaccept] = useState(false);
+  const [credits, setCredits] = useState(0);
 
   useEffect(() => {
     const unsubscribe = onAuthChange(async (authUser) => {
@@ -52,6 +54,20 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  // Real-time credits subscription
+  useEffect(() => {
+    if (!user || user.isAnonymous) {
+      setCredits(0);
+      return;
+    }
+
+    const unsubscribe = subscribeToCredits(user.uid, (newCredits) => {
+      setCredits(newCredits);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
   // Accept updated terms
   const acceptTerms = async () => {
     if (!user || user.isAnonymous) return;
@@ -67,6 +83,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    credits,
     isAuthenticated: !!user,
     isAnonymous: user?.isAnonymous ?? false,
     needsTermsReaccept,

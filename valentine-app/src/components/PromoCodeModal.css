@@ -1,0 +1,329 @@
+/* ═══════════════════════════════════════════════════════════════
+   PromoCodeModal — Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.promo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: promoFadeIn 0.2s ease;
+}
+
+@keyframes promoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.promo-modal {
+  background: #1a1d23;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  animation: promoSlideUp 0.3s ease;
+}
+
+@keyframes promoSlideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.promo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 12px;
+}
+
+.promo-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.promo-close {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #aaa;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.promo-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Tabs */
+.promo-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 0 20px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.promo-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.promo-tab:hover {
+  color: #ccc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.promo-tab.active {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+}
+
+.promo-tab svg {
+  font-size: 1.1rem;
+}
+
+/* Content */
+.promo-content {
+  padding: 20px 24px 24px;
+}
+
+.promo-hint {
+  color: #999;
+  font-size: 0.82rem;
+  margin: 0 0 14px;
+}
+
+/* Code Tab */
+.promo-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.promo-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.promo-input::placeholder {
+  color: #555;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+
+.promo-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.promo-submit-btn {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  border: none;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.promo-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+.promo-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* QR Tab */
+.promo-qr-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.promo-qr-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: #bbb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.promo-qr-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+}
+
+.promo-qr-btn svg {
+  font-size: 2rem;
+}
+
+.promo-qr-btn span {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.promo-scanner-area {
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.promo-scanner-area #promo-qr-scanner {
+  width: 100% !important;
+  border: none !important;
+}
+
+.promo-scanner-area #promo-qr-scanner video {
+  border-radius: 12px;
+}
+
+.promo-stop-camera {
+  width: 100%;
+  padding: 10px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.promo-stop-camera:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.promo-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 30px;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* Result */
+.promo-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: promoResultIn 0.3s ease;
+}
+
+@keyframes promoResultIn {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.promo-result-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.promo-result-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.promo-result-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+/* Spinner */
+.promo-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: promoSpin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes promoSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .promo-modal {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+
+  .promo-content {
+    padding: 16px 18px 20px;
+  }
+
+  .promo-qr-btn {
+    padding: 18px 12px;
+  }
+
+  .promo-qr-btn svg {
+    font-size: 1.6rem;
+  }
+}

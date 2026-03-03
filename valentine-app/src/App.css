@@ -5,6 +5,7 @@
 .app {
   min-height: 100vh;
   position: relative;
+  padding-top: 56px;
 }
 
 /* ===== ELEGANT LOADER ===== */
@@ -93,7 +94,7 @@
   }
 }
 
-/* ===== USER MENU ===== */
+/* ===== USER MENU (legacy) ===== */
 .user-menu {
   position: fixed;
   top: 16px;
@@ -134,6 +135,194 @@
   background: rgba(107, 143, 158, 0.2);
   border-color: var(--pink);
   color: var(--pink);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   APP HEADER — Credits, Promo, Purchase, User Menu
+   ═══════════════════════════════════════════════════════════════ */
+
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(10, 12, 16, 0.75);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Credits badge */
+.header-credits-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 7px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #a78bfa;
+}
+
+.header-credits-badge:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.15));
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.credits-icon {
+  font-size: 1rem;
+}
+
+.credits-count {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.credits-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+/* Header buttons */
+.header-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 50px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.header-btn svg {
+  font-size: 0.95rem;
+}
+
+.header-btn-add {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+}
+
+.header-btn-add:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3);
+}
+
+.header-btn-promo {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
+
+.header-btn-promo:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Header email */
+.header-email {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Header logout */
+.header-logout-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.header-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* Adjust main content to account for fixed header */
+.app-header + .bg-effects,
+.app-header ~ .back-to-selector {
+  margin-top: 56px;
+}
+
+/* ===== Responsive header ===== */
+@media (max-width: 640px) {
+  .app-header {
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .header-left {
+    gap: 5px;
+  }
+
+  .header-btn span {
+    display: none;
+  }
+
+  .header-btn {
+    padding: 7px 10px;
+  }
+
+  .header-credits-badge {
+    padding: 7px 10px;
+  }
+
+  .credits-label {
+    display: none;
+  }
+
+  .header-email {
+    max-width: 80px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .header-email {
+    display: none;
+  }
 }
 
 /* ===== TEMPLATE SELECTOR ===== */
@@ -1194,7 +1383,7 @@
 /* ===== BACK TO SELECTOR BUTTON ===== */
 .back-to-selector {
   position: fixed;
-  top: 20px;
+  top: 66px;
   left: 20px;
   z-index: 100;
   background: rgba(255, 255, 255, 0.06);

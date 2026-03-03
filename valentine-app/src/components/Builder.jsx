@@ -9,6 +9,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import AddSectionModal from "./AddSectionModal";
 import UpgradeModal from "./UpgradeModal";
+import PurchaseModal from "./PurchaseModal";
 import { TEMPLATES } from "../templateConfigs";
 import { TIER_META } from "../config/tiers";
 import { FEATURE_REGISTRY } from "../config/featureRegistry";
@@ -227,6 +228,7 @@ export default function Builder() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   // Auto-open upgrade modal when redirected from public view with ?upgrade=true
   const locationObj = useLocation();
@@ -537,6 +539,22 @@ export default function Builder() {
         onClose={() => setShowUpgradeModal(false)}
         gift={gift}
         giftId={gift.id}
+        onPurchase={() => setShowPurchaseModal(true)}
+        onActivated={async () => {
+          // Reload gift to get updated paidTier
+          if (gift.id) {
+            try {
+              const updated = await getGift(gift.id);
+              if (updated) setGift(updated);
+            } catch {}
+          }
+        }}
+      />
+
+      <PurchaseModal
+        open={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        onSuccess={() => {}}
       />
 
       <header className="builder-header">

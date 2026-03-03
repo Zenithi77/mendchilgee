@@ -150,6 +150,14 @@
   font-weight: 800;
 }
 
+.upgrade-credits-ok {
+  color: #22c55e !important;
+}
+
+.upgrade-credits-zero {
+  color: #ef4444 !important;
+}
+
 /* ── Actions ── */
 .upgrade-actions {
   padding: 0 28px 28px;

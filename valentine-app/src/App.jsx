@@ -15,8 +15,11 @@ import PaymentCancelPage from "./components/PaymentCancelPage";
 import TermsPage from "./components/TermsPage";
 import PrivacyPage from "./components/PrivacyPage";
 import TermsReacceptModal from "./components/TermsReacceptModal";
+import PromoRedeemPage from "./components/PromoRedeemPage";
+import PromoCodeModal from "./components/PromoCodeModal";
+import PurchaseModal from "./components/PurchaseModal";
 import FloatingHearts from "./components/FloatingHearts";
-import { MdPerson } from "react-icons/md";
+import { MdPerson, MdCardGiftcard, MdAdd, MdConfirmationNumber, MdLogout } from "react-icons/md";
 import "./App.css";
 
 // Mendchilgee.site — Дижитал мэндчилгээний платформ
@@ -56,6 +59,7 @@ function App() {
       <Route path="/payment/cancel" element={<PaymentCancelPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/promo/:code" element={<PromoRedeemPage />} />
       <Route path="/:giftId" element={<GiftPreviewPage />} />
       <Route path="*" element={<MainApp />} />
     </Routes>
@@ -85,11 +89,13 @@ function AuthGuard({ children }) {
 }
 
 function MainApp() {
-  const { user, loading, logout, needsTermsReaccept } = useAuth();
+  const { user, loading, logout, credits, needsTermsReaccept } = useAuth();
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
   const [template, setTemplate] = useState(null); // kept for theme/effects at app level
   const [page, setPage] = useState("list"); // "list" | "category" | "template"
+  const [showPromo, setShowPromo] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
 
   // Apply theme CSS variables when template changes
   useEffect(() => {
@@ -190,15 +196,58 @@ function MainApp() {
 
   return (
     <div className={`app ${themeClass}`}>
-      {/* User info & logout button */}
-      <div className="user-menu">
-        <span className="user-email">
-          {user.isAnonymous ? <><MdPerson /> Guest</> : `${user.email}`}
-        </span>
-        <button className="logout-btn" onClick={logout}>
-          Logout
-        </button>
-      </div>
+      {/* ── App Header ── */}
+      <header className="app-header">
+        <div className="header-left">
+          <button
+            className="header-credits-badge"
+            onClick={() => setShowPurchase(true)}
+            title="Мэндчилгээний эрх"
+          >
+            <MdCardGiftcard className="credits-icon" />
+            <span className="credits-count">{credits}</span>
+            <span className="credits-label">эрх</span>
+          </button>
+          <button
+            className="header-btn header-btn-add"
+            onClick={() => setShowPurchase(true)}
+          >
+            <MdAdd /> <span>Нэмэх</span>
+          </button>
+          <button
+            className="header-btn header-btn-promo"
+            onClick={() => setShowPromo(true)}
+          >
+            <MdConfirmationNumber /> <span>Промо код</span>
+          </button>
+        </div>
+        <div className="header-right">
+          <span className="header-email">
+            {user.isAnonymous ? (
+              <>
+                <MdPerson /> Guest
+              </>
+            ) : (
+              user.email
+            )}
+          </span>
+          <button className="header-logout-btn" onClick={logout} title="Гарах">
+            <MdLogout />
+          </button>
+        </div>
+      </header>
+
+      {/* ── Modals ── */}
+      <PromoCodeModal
+        open={showPromo}
+        onClose={() => setShowPromo(false)}
+        onSuccess={() => {}}
+      />
+      <PurchaseModal
+        open={showPurchase}
+        onClose={() => setShowPurchase(false)}
+        onSuccess={() => {}}
+      />
 
       {/* Background effects */}
       <div className="bg-effects">
