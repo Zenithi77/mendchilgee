@@ -20,7 +20,7 @@ import {
 } from "../utils/tierUtils";
 import { IoClose, IoColorPalette } from "react-icons/io5";
 import { IoIosSettings } from "react-icons/io";
-import { MdDelete, MdSave, MdRefresh, MdVisibility, MdEdit, MdWarning, MdAutoAwesome, MdCheck, MdClose, MdDescription, MdPlaylistAdd, MdHourglassEmpty, MdCelebration, MdMail, MdPhotoCamera, MdMovie, MdVideocam, MdChecklist } from "react-icons/md";
+import { MdDelete, MdSave, MdRefresh, MdVisibility, MdEdit, MdWarning, MdAutoAwesome, MdCheck, MdClose, MdDescription, MdPlaylistAdd, MdHourglassEmpty, MdCelebration, MdMail, MdPhotoCamera, MdMovie, MdVideocam, MdChecklist, MdAdd, MdChevronLeft, MdChevronRight, MdOpenInNew } from "react-icons/md";
 import {
   IoMdPhonePortrait,
   IoIosTabletLandscape,
@@ -605,7 +605,7 @@ export default function Builder() {
             onClick={openFullPreview}
             disabled={gift.sections.length === 0 || saving}
           >
-            <span className="builder-btn-icon">↗</span>
+            <span className="builder-btn-icon"><MdOpenInNew /></span>
             <span className="builder-btn-preview-txt">Урьдчилан харах</span>
           </button>
 
@@ -726,7 +726,7 @@ export default function Builder() {
                   onClick={() => setShowAddModal(true)}
                   type="button"
                 >
-                  <span className="builder-add-icon">＋</span>
+                  <span className="builder-add-icon"><MdAdd /></span>
                   Хуудас нэмэх
                 </button>
 
@@ -753,7 +753,7 @@ export default function Builder() {
                         disabled={activeSlideIndex <= 0}
                         title="Өмнөх хуудас"
                       >
-                        ◀
+                        <MdChevronLeft />
                       </button>
                       {/* Navigate to next section */}
                       <button
@@ -763,7 +763,7 @@ export default function Builder() {
                         disabled={activeSlideIndex >= gift.sections.length - 1}
                         title="Дараагийн хуудас"
                       >
-                        ▶
+                        <MdChevronRight />
                       </button>
                       {/* Delete */}
                       <button
@@ -921,7 +921,7 @@ export default function Builder() {
                 onClick={() => goToSlide(activeSlideIndex - 1)}
                 disabled={activeSlideIndex <= 0}
               >
-                <span>◀</span>
+                <span><MdChevronLeft /></span>
                 <span>Өмнөх</span>
               </button>
               <button
@@ -929,7 +929,7 @@ export default function Builder() {
                 className="builder-mobile-bar-btn builder-mobile-bar-add"
                 onClick={() => setShowAddModal(true)}
               >
-                <span className="builder-mobile-bar-plus">＋</span>
+                <span className="builder-mobile-bar-plus"><MdAdd /></span>
               </button>
               <button
                 type="button"
@@ -946,7 +946,7 @@ export default function Builder() {
                 onClick={() => goToSlide(activeSlideIndex + 1)}
                 disabled={activeSlideIndex >= gift.sections.length - 1}
               >
-                <span>▶</span>
+                <span><MdChevronRight /></span>
                 <span>Дараах</span>
               </button>
             </>
@@ -965,7 +965,7 @@ export default function Builder() {
                 className="builder-mobile-bar-btn"
                 onClick={openFullPreview}
               >
-                <span>↗</span>
+                <span><MdOpenInNew /></span>
                 <span>Бүтэн харах</span>
               </button>
             </>

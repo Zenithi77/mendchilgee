@@ -70,6 +70,11 @@
 
 .builder-btn-icon {
   font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+}
+.builder-btn-icon svg {
+  filter: drop-shadow(0 0 3px rgba(100, 116, 139, 0.25));
 }
 
 .builder-btn-outline {
@@ -323,9 +328,14 @@
 }
 
 .builder-add-icon {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.2s ease;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+}
+.builder-add-icon svg {
+  filter: drop-shadow(0 0 4px rgba(212, 83, 106, 0.4));
 }
 
 .builder-add-btn.builder-add-btn-save {
@@ -374,6 +384,11 @@
 .builder-active-section-icon {
   font-size: 1.2rem;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+.builder-active-section-icon svg {
+  filter: drop-shadow(0 0 4px rgba(212, 83, 106, 0.45));
 }
 
 .builder-active-section-name {
@@ -437,8 +452,11 @@
 .builder-action-nav {
   background: rgba(232, 96, 122, 0.12);
   color: #d4536a;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 700;
+}
+.builder-action-nav svg {
+  filter: drop-shadow(0 0 3px rgba(212, 83, 106, 0.35));
 }
 
 .builder-action-nav:hover:not(:disabled) {
@@ -1320,6 +1338,12 @@
     font-size: 1.35rem;
     line-height: 1;
     color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .builder-mobile-bar-btn span:first-child svg {
+    filter: drop-shadow(0 0 3px rgba(100, 116, 139, 0.3));
   }
 
   .builder-mobile-bar-btn.active {
@@ -1329,6 +1353,9 @@
 
   .builder-mobile-bar-btn.active span:first-child {
     color: #d4536a;
+  }
+  .builder-mobile-bar-btn.active span:first-child svg {
+    filter: drop-shadow(0 0 5px rgba(212, 83, 106, 0.5));
   }
 
   .builder-mobile-bar-btn:disabled {
@@ -1352,8 +1379,14 @@
 
   .builder-mobile-bar-plus {
     font-size: 1.68rem !important;
-    font-weight: 300;
     line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    color: #fff !important;
+  }
+  .builder-mobile-bar-plus svg {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
   }
 
   .builder-mobile-bar-add:active {
@@ -1385,6 +1418,12 @@
   .builder-mobile-bar-tab-toggle span:first-child {
     font-size: 1.25rem;
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .builder-mobile-bar-tab-toggle span:first-child svg {
+    filter: drop-shadow(0 0 4px rgba(212, 83, 106, 0.4));
   }
 
   .builder-mobile-bar-tab-toggle.preview-active {

@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { MdClose, MdFavorite, MdCheck, MdContentCopy, MdDownload, MdPrint } from "react-icons/md";
-import { generateShapedQR } from "../utils/heartQr";
+import { generateShapedQR, QR_SHAPES } from "../utils/heartQr";
 
-const SHAPES = [
-  { key: "square",  label: "Дөрвөлжин", icon: "▢" },
-  { key: "heart",   label: "Зүрх",      icon: "♥" },
-  { key: "star",    label: "Од",        icon: "★" },
-  { key: "flower",  label: "Цэцэг",    icon: "✿" },
-];
+const SHAPES = QR_SHAPES.map((s) => ({
+  key: s.id,
+  label: s.label.replace(/^[^\s]+\s/, ""),   // strip emoji prefix
+  icon: s.label.split(" ")[0],                // emoji char
+}));
 
 /**
  * ShareModal — Shows a QR code (with selectable shape frame) + share link.
