@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════════════════
-// PurchaseModal — Buy credits via QPay
+// PurchaseModal — Buy credits via BYL
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { createQPayInvoice, checkQPayPayment } from "../services/creditService";
+import { createCreditCheckout, checkCreditPayment } from "../services/creditService";
 import {
   MdClose,
   MdAdd,
@@ -17,51 +17,22 @@ import "./PurchaseModal.css";
 
 const PRICE_PER_CREDIT = 5000;
 
-// Known Mongolian bank apps for deeplinks
-const BANK_ICONS = {
-  "Khan bank": "🏦",
-  "Golomt bank": "🏦",
-  "TDB": "🏦",
-  "Xac bank": "🏦",
-  "State bank": "🏦",
-  "M bank": "📱",
-  "Bogd bank": "🏦",
-  "Capitron bank": "🏦",
-  "Chinggis khaan bank": "🏦",
-  "Most money": "💰",
-  "Pocket": "📱",
-  "QPay wallet": "👛",
-  "SocialPay": "💳",
-  "MonPay": "💳",
-  "Hi-Pay": "💳",
-  "Ard App": "📱",
-};
-
-function getBankIcon(name) {
-  for (const [key, icon] of Object.entries(BANK_ICONS)) {
-    if (name?.toLowerCase().includes(key.toLowerCase())) return icon;
-  }
-  return "🏦";
-}
-
 export default function PurchaseModal({ open, onClose, onSuccess }) {
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
-  const [step, setStep] = useState("select"); // "select" | "paying" | "success"
-  const [invoiceData, setInvoiceData] = useState(null);
+  const [step, setStep] = useState("select"); // "select" | "waiting" | "success"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showBanks, setShowBanks] = useState(false);
+  const [clientRef, setClientRef] = useState(null);
   const pollRef = useRef(null);
 
   // Cleanup on close
   useEffect(() => {
     if (!open) {
       setStep("select");
-      setInvoiceData(null);
       setError(null);
       setQuantity(1);
-      setShowBanks(false);
+      setClientRef(null);
       if (pollRef.current) clearInterval(pollRef.current);
     }
   }, [open]);
@@ -72,18 +43,22 @@ export default function PurchaseModal({ open, onClose, onSuccess }) {
     };
   }, []);
 
-  const handleCreateInvoice = async () => {
+  const handlePurchase = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await createQPayInvoice(user.uid, quantity);
-      setInvoiceData(data);
-      setStep("paying");
+      const data = await createCreditCheckout(user.uid, quantity);
+      setClientRef(data.client_reference_id);
 
-      // Start polling for payment status
+      // Open BYL checkout in new tab
+      window.open(data.checkoutUrl, "_blank");
+
+      // Switch to waiting state and poll for payment completion
+      setStep("waiting");
+
       pollRef.current = setInterval(async () => {
         try {
-          const status = await checkQPayPayment(data.invoiceNo);
+          const status = await checkCreditPayment(data.client_reference_id);
           if (status.status === "paid") {
             clearInterval(pollRef.current);
             pollRef.current = null;
@@ -163,90 +138,40 @@ export default function PurchaseModal({ open, onClose, onSuccess }) {
 
             <button
               className="purchase-pay-btn"
-              onClick={handleCreateInvoice}
+              onClick={handlePurchase}
               disabled={loading}
             >
               {loading ? (
                 <span className="purchase-spinner" />
               ) : (
                 <>
-                  <MdPayment /> QPay-ээр төлөх
+                  <MdPayment /> Төлбөр төлөх
                 </>
               )}
             </button>
           </div>
         )}
 
-        {/* Step: Paying — show QR */}
-        {step === "paying" && invoiceData && (
+        {/* Step: Waiting for payment */}
+        {step === "waiting" && (
           <div className="purchase-body">
-            <p className="purchase-scan-hint">
-              QPay QR кодыг банкны аппаар уншуулна уу
-            </p>
-
-            {/* QPay QR Image */}
-            <div className="purchase-qr-wrap">
-              {invoiceData.qrImage ? (
-                <img
-                  src={`data:image/png;base64,${invoiceData.qrImage}`}
-                  alt="QPay QR Code"
-                  className="purchase-qr-img"
-                />
-              ) : (
-                <div className="purchase-qr-placeholder">
-                  QR код ачааллаж байна...
-                </div>
-              )}
+            <div className="purchase-waiting-card">
+              <div className="purchase-waiting-icon">
+                <MdPayment />
+              </div>
+              <h3 className="purchase-waiting-title">Төлбөр хүлээж байна</h3>
+              <p className="purchase-waiting-text">
+                Төлбөрийн хуудас нээгдсэн байна.
+                <br />
+                Төлбөрөө хийсний дараа энэ хуудас автоматаар шинэчлэгдэнэ.
+              </p>
+              <div className="purchase-waiting-spinner">
+                <span className="purchase-spinner" />
+                <span>Төлбөр баталгаажихыг хүлээж байна...</span>
+              </div>
             </div>
 
-            <div className="purchase-amount-info">
-              <span>Төлөх дүн:</span>
-              <strong>₮{invoiceData.amount?.toLocaleString()}</strong>
-            </div>
-
-            {/* Bank deeplinks */}
-            {invoiceData.urls && invoiceData.urls.length > 0 && (
-              <>
-                <button
-                  className="purchase-banks-toggle"
-                  onClick={() => setShowBanks(!showBanks)}
-                >
-                  {showBanks ? "Аппуудыг хаах ▲" : "Банкны апп нээх ▼"}
-                </button>
-
-                {showBanks && (
-                  <div className="purchase-banks">
-                    {invoiceData.urls.map((bank, i) => (
-                      <a
-                        key={i}
-                        href={bank.link}
-                        className="purchase-bank-link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span className="purchase-bank-icon">
-                          {getBankIcon(bank.name)}
-                        </span>
-                        <span className="purchase-bank-name">
-                          {bank.description || bank.name}
-                        </span>
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Polling indicator */}
-            <div className="purchase-waiting">
-              <span className="purchase-spinner" />
-              <span>Төлбөр хүлээж байна...</span>
-            </div>
-
-            <button
-              className="purchase-cancel-btn"
-              onClick={handleClose}
-            >
+            <button className="purchase-cancel-btn" onClick={handleClose}>
               Болих
             </button>
           </div>

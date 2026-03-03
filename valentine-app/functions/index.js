@@ -1,19 +1,19 @@
 /**
- * Cloud Functions — Payment (QPay + BYL), Promo Codes, Credits
+ * Cloud Functions — Payment (BYL), Promo Codes, Credits
  *
- * QPay Endpoints:
- *   POST /createQPayInvoice — create QPay invoice, return QR + deeplinks
- *   POST /qpayCallback — QPay payment callback
- *   GET  /checkQPayPayment?invoiceNo=<id> — poll QPay payment status
+ * BYL Payment Endpoints:
+ *   POST /createBylCheckout — create BYL checkout for tier upgrade
+ *   POST /createCreditCheckout — create BYL checkout for credit purchase
+ *   POST /bylWebhook — BYL payment webhook (handles both tiers & credits)
+ *   GET  /checkPaymentStatus — poll BYL payment status
+ *   GET  /checkCreditPayment — poll credit purchase payment status
  *
  * Credit Endpoints:
  *   POST /redeemPromoCode — redeem a promo code for 1 credit
  *   POST /useCredit — consume 1 credit to activate a gift
  *
- * Legacy BYL Endpoints (kept for backward compatibility):
- *   POST /createBylCheckout
- *   POST /bylWebhook
- *   GET  /checkPaymentStatus
+ * Utility:
+ *   POST /checkExpiredGifts — expire gifts past their expiresAt date
  */
 
 const {setGlobalOptions} = require("firebase-functions");
@@ -42,49 +42,7 @@ function getConfig() {
   };
 }
 
-// ── QPay Helpers ─────────────────────────────────────────────────────────
-
-let qpayTokenCache = null;
-let qpayTokenExpiry = 0;
-
-/**
- * Get QPay access token (cached).
- * @return {Promise<string>} QPay access token
- */
-async function getQPayToken() {
-  if (qpayTokenCache && Date.now() < qpayTokenExpiry) {
-    return qpayTokenCache;
-  }
-
-  const username = process.env.QPAY_USERNAME;
-  const password = process.env.QPAY_PASSWORD;
-
-  if (!username || !password) {
-    throw new Error("QPay credentials not configured");
-  }
-
-  const auth = Buffer.from(`${username}:${password}`).toString("base64");
-
-  const response = await fetch("https://merchant.qpay.mn/v2/auth/token", {
-    method: "POST",
-    headers: {
-      "Authorization": `Basic ${auth}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    console.error("QPay auth failed:", response.status, text);
-    throw new Error("QPay authentication failed");
-  }
-
-  const data = await response.json();
-  qpayTokenCache = data.access_token;
-  // Refresh 60s before expiry
-  qpayTokenExpiry = Date.now() + (data.expires_in - 60) * 1000;
-  return qpayTokenCache;
-}
+// ── (QPay removed — using BYL for all payments) ─────────────────────────
 
 /**
  * Add credits to a user within a transaction.
@@ -150,9 +108,15 @@ const TIER_DURATION_DAYS = {
  */
 function getCorsOrigin(req, cfg) {
   const origin = req.get("Origin") || "";
-  const allowed = [cfg.baseUrl, "https://www.bolzii.com"].filter(Boolean);
+  const allowed = [
+    cfg.baseUrl,
+    "https://www.bolzii.com",
+    "https://mendchilgee-pi.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+  ].filter(Boolean);
   if (allowed.includes(origin)) return origin;
-  return cfg.baseUrl || "https://www.bolzii.com";
+  return cfg.baseUrl || "https://mendchilgee-pi.vercel.app";
 }
 
 exports.createBylCheckout = onRequest(async (req, res) => {
@@ -300,6 +264,43 @@ exports.bylWebhook = onRequest(async (req, res) => {
         const clientRef = checkout.client_reference_id;
         if (!clientRef) {
           console.warn("checkout.completed without client_reference_id");
+        } else if (clientRef.startsWith("credit_")) {
+          // ── Credit purchase via BYL ──
+          const creditDocRef = db.collection("credit_payments").doc(clientRef);
+          await db.runTransaction(async (tx) => {
+            const doc = await tx.get(creditDocRef);
+            if (!doc.exists) {
+              console.warn("credit_payments doc not found:", clientRef);
+              return;
+            }
+            const curStatus = doc.get("status");
+            if (curStatus === "paid") {
+              console.log("Credit payment already processed:", clientRef);
+              return;
+            }
+
+            const creditData = doc.data();
+            const userId = creditData.userId;
+            const qty = creditData.quantity || 1;
+
+            // Mark paid
+            tx.update(creditDocRef, {
+              status: "paid",
+              paidAt: admin.firestore.FieldValue.serverTimestamp(),
+              checkoutRaw: checkout,
+            });
+
+            // Add credits to user
+            await addCreditsInTx(tx, userId, qty);
+          });
+
+          const creditDoc = await creditDocRef.get();
+          if (creditDoc.exists) {
+            console.log(
+                `Credit purchase: ${creditDoc.data().quantity} credits ` +
+                `added to user ${creditDoc.data().userId}`,
+            );
+          }
         } else {
           const paymentDocRef = db.collection("demo_payments").doc(clientRef);
           await db.runTransaction(async (tx) => {
@@ -456,14 +457,17 @@ exports.checkExpiredGifts = onRequest(async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// QPay Payment Functions
+// BYL Credit Purchase Functions
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CREDIT_PRICE = 5000; // MNT per credit
 
-// ── createQPayInvoice ────────────────────────────────────────────────────
+// ── createCreditCheckout ─────────────────────────────────────────────────
+// Creates a BYL checkout session specifically for purchasing credits.
+// client_reference_id format: credit_<ts>_<rand>_<qty>
+// userId is saved in credit_payments collection for webhook lookup.
 
-exports.createQPayInvoice = onRequest(async (req, res) => {
+exports.createCreditCheckout = onRequest(async (req, res) => {
   const cfg = getConfig();
 
   res.set("Access-Control-Allow-Origin", getCorsOrigin(req, cfg));
@@ -482,147 +486,73 @@ exports.createQPayInvoice = onRequest(async (req, res) => {
   }
 
   const amount = CREDIT_PRICE * quantity;
-  const invoiceNo = `mc_${Date.now()}_${Math.random()
-      .toString(36).slice(2, 8)}`;
+  const randomStr = Math.random().toString(36).slice(2, 9);
+  const clientRef = `credit_${Date.now()}_${randomStr}_${quantity}`;
+
+  const encodedRef = encodeURIComponent(clientRef);
+  const payload = {
+    success_url: `${cfg.baseUrl}/payment/success?ref=${encodedRef}&type=credit`,
+    cancel_url: `${cfg.baseUrl}/payment/cancel?ref=${encodedRef}&type=credit`,
+    client_reference_id: clientRef,
+    items: [
+      {
+        price_data: {
+          unit_amount: CREDIT_PRICE,
+          product_data: {name: `Мэндчилгээ эрх (x${quantity})`},
+        },
+        quantity,
+      },
+    ],
+  };
 
   try {
-    const token = await getQPayToken();
-    const invoiceCode = process.env.QPAY_INVOICE_CODE || "MENDCHILGEE_INVOICE";
+    const response = await fetch(
+        `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${cfg.token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+    );
 
-    // Build callback URL — use the functions URL
-    const projectId = admin.app().options.projectId;
-    const functionsBase =
-      process.env.FUNCTIONS_URL ||
-      `https://us-central1-${projectId}.cloudfunctions.net`;
-    const callbackUrl =
-      `${functionsBase}/qpayCallback?invoiceNo=${encodeURIComponent(
-          invoiceNo,
-      )}`;
-
-    const qpayRes = await fetch("https://merchant.qpay.mn/v2/invoice", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        invoice_code: invoiceCode,
-        sender_invoice_no: invoiceNo,
-        invoice_receiver_code: "terminal",
-        invoice_description: `Мэндчилгээ - ${quantity} эрх`,
-        amount,
-        callback_url: callbackUrl,
-      }),
-    });
-
-    if (!qpayRes.ok) {
-      const text = await qpayRes.text();
-      console.error("QPay create invoice failed:", qpayRes.status, text);
-      return res.status(500).json({error: "QPay invoice creation failed"});
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("BYL create credit checkout failed:",
+          response.status, text);
+      return res.status(500).json({error: "BYL checkout creation failed"});
     }
 
-    const qpayData = await qpayRes.json();
+    const data = await response.json();
+    const checkoutData = data.data;
 
-    // Save invoice to Firestore
-    await db.collection("qpay_invoices").doc(invoiceNo).set({
-      invoiceNo,
+    // Save to credit_payments collection
+    await db.collection("credit_payments").doc(clientRef).set({
+      client_reference_id: clientRef,
       userId,
       quantity,
       amount,
-      qpayInvoiceId: qpayData.invoice_id,
       status: "pending",
+      checkout_id: checkoutData.id || null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     return res.json({
-      invoiceNo,
-      qrImage: qpayData.qr_image || null,
-      qrText: qpayData.qr_text || null,
-      urls: qpayData.urls || [],
-      amount,
+      checkoutUrl: checkoutData.url,
+      client_reference_id: clientRef,
     });
   } catch (err) {
-    console.error("createQPayInvoice error:", err);
+    console.error("createCreditCheckout error:", err);
     return res.status(500).json({error: "internal_error"});
   }
 });
 
-// ── qpayCallback ─────────────────────────────────────────────────────────
+// ── checkCreditPayment ───────────────────────────────────────────────────
 
-exports.qpayCallback = onRequest(async (req, res) => {
-  const invoiceNo = req.query.invoiceNo;
-  if (!invoiceNo) {
-    console.error("qpayCallback: missing invoiceNo");
-    return res.status(400).send("Missing invoiceNo");
-  }
-
-  try {
-    const invoiceDoc = await db.collection("qpay_invoices")
-        .doc(invoiceNo).get();
-    if (!invoiceDoc.exists) {
-      console.error("qpayCallback: invoice not found:", invoiceNo);
-      return res.status(404).send("Invoice not found");
-    }
-
-    const invoiceData = invoiceDoc.data();
-    if (invoiceData.status === "paid") {
-      return res.status(200).send("OK");
-    }
-
-    // Verify payment with QPay
-    const token = await getQPayToken();
-    const checkRes = await fetch("https://merchant.qpay.mn/v2/payment/check", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        object_type: "INVOICE",
-        object_id: invoiceData.qpayInvoiceId,
-        offset: {page_number: 1, page_limit: 100},
-      }),
-    });
-
-    if (!checkRes.ok) {
-      console.error("QPay payment check failed:", await checkRes.text());
-      return res.status(200).send("OK"); // Don't retry
-    }
-
-    const checkData = await checkRes.json();
-
-    if (checkData.count > 0) {
-      // Payment confirmed — add credits
-      await db.runTransaction(async (tx) => {
-        const docRef = db.collection("qpay_invoices").doc(invoiceNo);
-        const doc = await tx.get(docRef);
-        if (doc.data().status === "paid") return;
-
-        tx.update(docRef, {
-          status: "paid",
-          paidAt: admin.firestore.FieldValue.serverTimestamp(),
-          paymentData: checkData.rows[0] || null,
-        });
-
-        await addCreditsInTx(tx, invoiceData.userId, invoiceData.quantity);
-      });
-
-      console.log(
-          `QPay: ${invoiceData.quantity} credits added to ` +
-          `user ${invoiceData.userId}`,
-      );
-    }
-
-    return res.status(200).send("OK");
-  } catch (err) {
-    console.error("qpayCallback error:", err);
-    return res.status(200).send("OK"); // QPay expects 200
-  }
-});
-
-// ── checkQPayPayment ─────────────────────────────────────────────────────
-
-exports.checkQPayPayment = onRequest(async (req, res) => {
+exports.checkCreditPayment = onRequest(async (req, res) => {
   const cfg = getConfig();
 
   res.set("Access-Control-Allow-Origin", getCorsOrigin(req, cfg));
@@ -632,73 +562,17 @@ exports.checkQPayPayment = onRequest(async (req, res) => {
 
   if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
 
-  const invoiceNo = req.query.invoiceNo;
-  if (!invoiceNo) {
-    return res.status(400).json({error: "Missing invoiceNo"});
-  }
+  const ref = req.query.ref;
+  if (!ref) return res.status(400).json({error: "missing ref"});
 
-  const invoiceDoc = await db.collection("qpay_invoices")
-      .doc(invoiceNo).get();
-  if (!invoiceDoc.exists) {
-    return res.status(404).json({status: "not_found"});
-  }
+  const docSnap = await db.collection("credit_payments").doc(ref).get();
+  if (!docSnap.exists) return res.status(404).json({status: "not_found"});
 
-  const data = invoiceDoc.data();
-
-  // If still pending, actively check QPay
-  if (data.status === "pending") {
-    try {
-      const token = await getQPayToken();
-      const checkRes = await fetch(
-          "https://merchant.qpay.mn/v2/payment/check",
-          {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              object_type: "INVOICE",
-              object_id: data.qpayInvoiceId,
-              offset: {page_number: 1, page_limit: 100},
-            }),
-          },
-      );
-
-      if (checkRes.ok) {
-        const checkData = await checkRes.json();
-        if (checkData.count > 0) {
-          // Payment found — update and add credits
-          await db.runTransaction(async (tx) => {
-            const docRef = db.collection("qpay_invoices").doc(invoiceNo);
-            const doc = await tx.get(docRef);
-            if (doc.data().status === "paid") return;
-
-            tx.update(docRef, {
-              status: "paid",
-              paidAt: admin.firestore.FieldValue.serverTimestamp(),
-              paymentData: checkData.rows[0] || null,
-            });
-
-            await addCreditsInTx(tx, data.userId, data.quantity);
-          });
-
-          return res.json({
-            status: "paid",
-            quantity: data.quantity,
-            amount: data.amount,
-          });
-        }
-      }
-    } catch (err) {
-      console.error("QPay check error:", err);
-    }
-  }
-
+  const data = docSnap.data();
   return res.json({
-    status: data.status,
-    quantity: data.quantity,
-    amount: data.amount,
+    status: data?.status || "pending",
+    quantity: data?.quantity || 0,
+    amount: data?.amount || 0,
   });
 });
 

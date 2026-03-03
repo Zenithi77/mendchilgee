@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Credit Service — Manage user credits, promo codes, QPay purchases
+// Credit Service — Manage user credits, promo codes, BYL purchases
 // ═══════════════════════════════════════════════════════════════
 
 import { doc, onSnapshot, getDoc, setDoc } from "firebase/firestore";
@@ -65,14 +65,14 @@ export async function redeemPromoCode(code, userId) {
   return data;
 }
 
-// ── QPay Purchases ───────────────────────────────────────────
+// ── BYL Credit Purchases ─────────────────────────────────────
 
 /**
- * Create a QPay invoice for purchasing credits.
- * Returns { invoiceNo, qrImage, qrText, urls, amount }
+ * Create a BYL checkout for purchasing credits.
+ * Returns { checkoutUrl, client_reference_id }
  */
-export async function createQPayInvoice(userId, quantity = 1) {
-  const res = await fetch(`${FUNCTIONS_BASE}/createQPayInvoice`, {
+export async function createCreditCheckout(userId, quantity = 1) {
+  const res = await fetch(`${FUNCTIONS_BASE}/createCreditCheckout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId, quantity }),
@@ -85,12 +85,12 @@ export async function createQPayInvoice(userId, quantity = 1) {
 }
 
 /**
- * Check QPay payment status.
+ * Check credit purchase payment status.
  * Returns { status: "pending"|"paid", quantity, amount }
  */
-export async function checkQPayPayment(invoiceNo) {
+export async function checkCreditPayment(clientRef) {
   const res = await fetch(
-    `${FUNCTIONS_BASE}/checkQPayPayment?invoiceNo=${encodeURIComponent(invoiceNo)}`,
+    `${FUNCTIONS_BASE}/checkCreditPayment?ref=${encodeURIComponent(clientRef)}`,
   );
   const data = await res.json();
   return data;
