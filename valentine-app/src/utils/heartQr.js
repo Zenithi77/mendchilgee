@@ -1,23 +1,59 @@
 // ═══════════════════════════════════════════════════════════════
-// QR Code Generator with Shape Frames
+// Shaped QR Code Generator
 // ═══════════════════════════════════════════════════════════════
 //
-// Shapes: "square" (default), "heart", "star", "flower"
-// Each shape draws a decorative coloured frame around the QR.
-// The QR itself stays fully square & scannable inside.
+// Generates QR codes clipped to decorative shapes:
+//   "heart"  — modules inside a heart boundary, heart finder-patterns
+//   "circle" — modules inside a circle
+//   "star"   — modules inside a 5-point star
+//   "square" — standard square QR
+//
+// All non-square shapes use error-correction level H (30%)
+// so clipped edges remain scannable.
 // ═══════════════════════════════════════════════════════════════
 
 import QRCode from "qrcode";
+
+// ── public shape list (for UI pickers) ──────────────────────
+
+export const QR_SHAPES = [
+  { id: "heart",  label: "❤️ Зүрх",     defaultColor: "#e60023" },
+  { id: "circle", label: "⭕ Тойрог",   defaultColor: "#e60023" },
+  { id: "star",   label: "⭐ Од",       defaultColor: "#e60023" },
+  { id: "square", label: "⬜ Дөрвөлжин", defaultColor: "#1a0e12" },
+];
 
 // ── shape path helpers ──────────────────────────────────────
 
 function heartPath(ctx, cx, cy, s) {
   ctx.beginPath();
   ctx.moveTo(cx, cy - s * 0.35);
-  ctx.bezierCurveTo(cx, cy - s * 0.7, cx - s * 0.65, cy - s * 0.9, cx - s * 0.95, cy - s * 0.5);
-  ctx.bezierCurveTo(cx - s * 1.15, cy - s * 0.15, cx - s * 0.7, cy + s * 0.3, cx, cy + s * 0.85);
-  ctx.bezierCurveTo(cx + s * 0.7, cy + s * 0.3, cx + s * 1.15, cy - s * 0.15, cx + s * 0.95, cy - s * 0.5);
-  ctx.bezierCurveTo(cx + s * 0.65, cy - s * 0.9, cx, cy - s * 0.7, cx, cy - s * 0.35);
+  ctx.bezierCurveTo(
+    cx,            cy - s * 0.7,
+    cx - s * 0.65, cy - s * 0.9,
+    cx - s * 0.95, cy - s * 0.5,
+  );
+  ctx.bezierCurveTo(
+    cx - s * 1.15, cy - s * 0.15,
+    cx - s * 0.7,  cy + s * 0.3,
+    cx,            cy + s * 0.85,
+  );
+  ctx.bezierCurveTo(
+    cx + s * 0.7,  cy + s * 0.3,
+    cx + s * 1.15, cy - s * 0.15,
+    cx + s * 0.95, cy - s * 0.5,
+  );
+  ctx.bezierCurveTo(
+    cx + s * 0.65, cy - s * 0.9,
+    cx,            cy - s * 0.7,
+    cx,            cy - s * 0.35,
+  );
+  ctx.closePath();
+}
+
+function circlePath(ctx, cx, cy, r) {
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.closePath();
 }
 
@@ -35,34 +71,74 @@ function starPath(ctx, cx, cy, outerR) {
   ctx.closePath();
 }
 
-function flowerPath(ctx, cx, cy, size) {
-  const petals = 6;
-  const petalR = size * 0.44;
-  const dist = size * 0.42;
-  ctx.beginPath();
-  for (let i = 0; i < petals; i++) {
-    const a = (Math.PI * 2 * i) / petals - Math.PI / 2;
-    const px = cx + dist * Math.cos(a);
-    const py = cy + dist * Math.sin(a);
-    ctx.moveTo(px + petalR, py);
-    ctx.arc(px, py, petalR, 0, Math.PI * 2);
-  }
-  // center disc
-  ctx.moveTo(cx + size * 0.28, cy);
-  ctx.arc(cx, cy, size * 0.28, 0, Math.PI * 2);
-  ctx.closePath();
-}
-
-function drawShapePath(ctx, shape, cx, cy, size) {
+function drawClipShape(ctx, shape, cx, cy, s) {
   switch (shape) {
-    case "heart":   heartPath(ctx, cx, cy, size);  break;
-    case "star":    starPath(ctx, cx, cy, size);   break;
-    case "flower":  flowerPath(ctx, cx, cy, size); break;
+    case "heart":  heartPath(ctx, cx, cy, s);  break;
+    case "circle": circlePath(ctx, cx, cy, s); break;
+    case "star":   starPath(ctx, cx, cy, s);   break;
     default: break;
   }
 }
 
-// ── rounded rect helper ─────────────────────────────────────
+// ── finder-pattern helpers ──────────────────────────────────
+
+/** Returns true if (row, col) is inside one of the 3 finder
+    patterns OR its 1-module separator ring. */
+function isFinderZone(row, col, count) {
+  if (row <= 7 && col <= 7) return true;           // top-left
+  if (row <= 7 && col >= count - 8) return true;    // top-right
+  if (row >= count - 8 && col <= 7) return true;    // bottom-left
+  return false;
+}
+
+/** Draw a 7×7 finder with a ❤ icon in the centre. */
+function drawHeartFinder(ctx, x, y, modSize, color) {
+  const s7 = modSize * 7;
+  const m = modSize;
+
+  // outer ring (dark)
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, s7, s7);
+
+  // middle ring (white)
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(x + m, y + m, s7 - 2 * m, s7 - 2 * m);
+
+  // centre heart
+  const fcx = x + s7 / 2;
+  const fcy = y + s7 / 2;
+  ctx.fillStyle = color;
+  heartPath(ctx, fcx, fcy, m * 1.4);
+  ctx.fill();
+}
+
+/** Draw a standard 7×7 finder (outer–white–inner). */
+function drawStdFinder(ctx, x, y, modSize, color) {
+  const s7 = modSize * 7;
+  const m = modSize;
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, s7, s7);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(x + m, y + m, s7 - 2 * m, s7 - 2 * m);
+  ctx.fillStyle = color;
+  ctx.fillRect(x + 2 * m, y + 2 * m, s7 - 4 * m, s7 - 4 * m);
+}
+
+// ── centre icon ─────────────────────────────────────────────
+
+function drawCenterHeart(ctx, cx, cy, radius, color) {
+  // white disc
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
+  // heart
+  ctx.fillStyle = color;
+  heartPath(ctx, cx, cy, radius * 0.55);
+  ctx.fill();
+}
+
+// ── rounded rect ────────────────────────────────────────────
 
 function rrect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -78,52 +154,24 @@ function rrect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// ── QR module drawing (shared) ──────────────────────────────
-
-function drawModules(ctx, modules, count, ox, oy, modSize, color) {
-  ctx.fillStyle = color;
-  const r = modSize * 0.15;
-  for (let row = 0; row < count; row++) {
-    for (let col = 0; col < count; col++) {
-      if (modules.get(row, col)) {
-        rrect(ctx, ox + col * modSize, oy + row * modSize, modSize, modSize, r);
-        ctx.fill();
-      }
-    }
-  }
-}
-
-// ── center heart icon ───────────────────────────────────────
-
-function drawCenterHeart(ctx, cx, cy, size, color) {
-  const hs = size * 0.06;
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(cx, cy, hs * 0.85, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.font = `${hs}px serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillStyle = color;
-  ctx.fillText("❤️", cx, cy);
-}
-
 // ═════════════ public API ═══════════════════════════════════
 
 /**
- * Generate QR with optional decorative shape frame.
+ * Generate a QR code rendered inside a decorative shape.
  *
- * @param {string} text
- * @param {{ size?: number, color?: string, shape?: "square"|"heart"|"star"|"flower" }} opts
+ * @param {string} text  — the URL / text to encode
+ * @param {{ size?: number, color?: string,
+ *           shape?: "heart"|"circle"|"star"|"square" }} opts
  * @returns {Promise<string>} PNG data-URL
  */
 export async function generateShapedQR(
   text,
-  { size = 600, color = "#e60023", shape = "square" } = {},
+  { size = 600, color = "#e60023", shape = "heart" } = {},
 ) {
-  const segments = [{ data: text, mode: "byte" }];
-  const code = QRCode.create(segments, { errorCorrectionLevel: "H" });
-  const { modules } = code;
+  const qr = QRCode.create([{ data: text, mode: "byte" }], {
+    errorCorrectionLevel: "H",
+  });
+  const { modules } = qr;
   const count = modules.size;
 
   const canvas = document.createElement("canvas");
@@ -135,51 +183,102 @@ export async function generateShapedQR(
   const cx = size / 2;
   const cy = size / 2;
 
+  // ── square: standard rectangular QR ──
   if (shape === "square") {
-    // ── simple square QR (original look) ──
     const pad = size * 0.05;
     const modSize = (size - pad * 2) / count;
-    drawModules(ctx, modules, count, pad, pad, modSize, color);
-    drawCenterHeart(ctx, cx, cy, size, color);
+    const r = modSize * 0.12;
+
+    ctx.fillStyle = color;
+    for (let row = 0; row < count; row++) {
+      for (let col = 0; col < count; col++) {
+        if (modules.get(row, col)) {
+          rrect(ctx, pad + col * modSize, pad + row * modSize, modSize, modSize, r);
+          ctx.fill();
+        }
+      }
+    }
+    drawCenterHeart(ctx, cx, cy, size * 0.06, color);
     return canvas.toDataURL("image/png");
   }
 
-  // ── shaped frame QR ──
-  const shapeR = size * 0.46;     // radius for the shape
-  const qrArea = size * 0.58;     // side length of QR white area
-  const qrOrig = (size - qrArea) / 2;
+  // ── shaped QR (heart / circle / star) ──
 
-  // 1) draw coloured shape
-  ctx.fillStyle = color;
-  drawShapePath(ctx, shape, cx, cy, shapeR);
-  ctx.fill();
+  // QR grid sizing — star needs smaller ratio (concave shape)
+  const qrRatio = shape === "star" ? 0.52 : 0.58;
+  const modSize = (size * qrRatio) / count;
+  const qrSide = modSize * count;
 
-  // 2) white QR background (with rounded corners)
-  const bgPad = qrArea * 0.035;
+  const offsetX = (size - qrSide) / 2;
+  // shift QR up slightly for heart (heart top extends further than bottom)
+  const offsetY =
+    shape === "heart"
+      ? (size - qrSide) / 2 - size * 0.025
+      : (size - qrSide) / 2;
+
+  // clip shape scale
+  const shapeScale = shape === "star" ? size * 0.48 : size * 0.46;
+  const shapeCy = shape === "heart" ? cy - size * 0.01 : cy;
+
+  // 1) clip to shape boundary
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.12)";
-  ctx.shadowBlur = 10;
-  ctx.fillStyle = "#fff";
-  rrect(ctx, qrOrig - bgPad, qrOrig - bgPad, qrArea + bgPad * 2, qrArea + bgPad * 2, 8);
-  ctx.fill();
+  drawClipShape(ctx, shape, cx, shapeCy, shapeScale);
+  ctx.clip();
+
+  // 2) white fill inside shape
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, size, size);
+
+  // 3) draw data modules (skip finder zones — we draw those separately)
+  ctx.fillStyle = color;
+  for (let row = 0; row < count; row++) {
+    for (let col = 0; col < count; col++) {
+      if (modules.get(row, col) && !isFinderZone(row, col, count)) {
+        ctx.fillRect(
+          offsetX + col * modSize,
+          offsetY + row * modSize,
+          modSize * 0.88,
+          modSize * 0.88,
+        );
+      }
+    }
+  }
+
+  // 4) draw custom finder patterns
+  const useHeartFinders = shape === "heart";
+  const drawFinder = useHeartFinders ? drawHeartFinder : drawStdFinder;
+
+  const finders = [
+    [0, 0],             // top-left
+    [0, count - 7],     // top-right
+    [count - 7, 0],     // bottom-left
+  ];
+  for (const [fr, fc] of finders) {
+    drawFinder(
+      ctx,
+      offsetX + fc * modSize,
+      offsetY + fr * modSize,
+      modSize,
+      color,
+    );
+  }
+
+  // 5) centre heart icon
+  const centerR = modSize * 2.5;
+  const qrCy = offsetY + qrSide / 2;
+  drawCenterHeart(ctx, cx, qrCy, centerR, color);
+
   ctx.restore();
-
-  // 3) QR modules
-  const modSize = qrArea / count;
-  drawModules(ctx, modules, count, qrOrig, qrOrig, modSize, color);
-
-  // 4) center heart
-  drawCenterHeart(ctx, cx, cy, size, color);
 
   return canvas.toDataURL("image/png");
 }
 
 /**
- * Backward-compatible wrapper — generates a square QR (no frame).
+ * Backward-compatible wrapper — default heart shape.
  */
 export async function generateHeartQR(
   text,
   { size = 512, color = "#e60023" } = {},
 ) {
-  return generateShapedQR(text, { size, color, shape: "square" });
+  return generateShapedQR(text, { size, color, shape: "heart" });
 }

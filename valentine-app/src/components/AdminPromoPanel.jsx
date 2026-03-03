@@ -13,7 +13,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import QRCode from "qrcode";
+import { generateShapedQR, QR_SHAPES } from "../utils/heartQr";
 import {
   MdAdd,
   MdDelete,
@@ -28,13 +28,15 @@ import {
 import "./AdminPromoPanel.css";
 
 const SITE_URL =
-  import.meta.env.VITE_SITE_URL || "https://mendchilgee-pi.vercel.app";
+  import.meta.env.VITE_SITE_URL || "https://www.mendchilgee.site";
 
 export default function AdminPromoPanel({ onBack }) {
   const [promoCodes, setPromoCodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [qrModal, setQrModal] = useState(null); // { code, qrDataUrl }
+  const [qrModal, setQrModal] = useState(null); // { code, qrDataUrl, url }
+  const [qrShape, setQrShape] = useState("heart");
+  const [qrLoading, setQrLoading] = useState(false);
 
   // New promo form
   const [newCode, setNewCode] = useState("");
@@ -148,19 +150,32 @@ export default function AdminPromoPanel({ onBack }) {
   };
 
   // Show QR modal
-  const showQR = useCallback(async (code) => {
+  const showQR = useCallback(async (code, shape) => {
     const url = `${SITE_URL}/promo/${code}`;
+    const selectedShape = shape || qrShape;
+    const shapeMeta = QR_SHAPES.find((s) => s.id === selectedShape) || QR_SHAPES[0];
+    setQrLoading(true);
     try {
-      const qrDataUrl = await QRCode.toDataURL(url, {
-        width: 400,
-        margin: 2,
-        color: { dark: "#1a0e12", light: "#ffffff" },
+      const qrDataUrl = await generateShapedQR(url, {
+        size: 600,
+        color: shapeMeta.defaultColor,
+        shape: selectedShape,
       });
-      setQrModal({ code, qrDataUrl, url });
+      setQrModal({ code, qrDataUrl, url, shape: selectedShape });
     } catch (err) {
       console.error("QR generation error:", err);
+    } finally {
+      setQrLoading(false);
     }
-  }, []);
+  }, [qrShape]);
+
+  // Regenerate QR when shape changes
+  const handleShapeChange = useCallback(async (newShape) => {
+    setQrShape(newShape);
+    if (qrModal) {
+      showQR(qrModal.code, newShape);
+    }
+  }, [qrModal, showQR]);
 
   // Download QR
   const downloadQR = () => {
@@ -361,11 +376,33 @@ export default function AdminPromoPanel({ onBack }) {
               </button>
             </div>
             <div className="admin-qr-body">
-              <img
-                src={qrModal.qrDataUrl}
-                alt={`QR - ${qrModal.code}`}
-                className="admin-qr-img"
-              />
+              {/* Shape selector */}
+              <div className="admin-qr-shapes">
+                {QR_SHAPES.map((s) => (
+                  <button
+                    key={s.id}
+                    className={`admin-qr-shape-btn ${
+                      qrShape === s.id ? "admin-qr-shape-active" : ""
+                    }`}
+                    onClick={() => handleShapeChange(s.id)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
+              {qrLoading ? (
+                <div className="admin-qr-loading">
+                  <span className="purchase-spinner" />
+                  <span>QR үүсгэж байна...</span>
+                </div>
+              ) : (
+                <img
+                  src={qrModal.qrDataUrl}
+                  alt={`QR - ${qrModal.code}`}
+                  className="admin-qr-img"
+                />
+              )}
               <p className="admin-qr-url">{qrModal.url}</p>
               <div className="admin-qr-actions">
                 <button className="admin-qr-dl-btn" onClick={downloadQR}>
