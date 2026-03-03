@@ -9,17 +9,7 @@ export default function FinalSummary2({ choices, template }) {
   const effects = template?.effects || {};
   const baseSummaryFields = final.summaryFields || [];
 
-  // Merge custom step questions into summary fields
-  const stepQSteps = template?.stepQuestions?.steps || [];
-  const existingKeys = new Set(baseSummaryFields.map((f) => f.key));
-  const customFields = stepQSteps
-    .filter((s) => !existingKeys.has(s.key))
-    .map((s) => ({
-      key: s.key,
-      emoji: s.emoji || "📝",
-      label: s.title || s.key,
-    }));
-  const mergedFields = [...baseSummaryFields, ...customFields];
+  const mergedFields = [...baseSummaryFields];
 
   const hasMovieField = mergedFields.some((f) => f?.key === "movie");
   const summaryFields =

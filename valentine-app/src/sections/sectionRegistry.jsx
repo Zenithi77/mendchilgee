@@ -12,14 +12,12 @@ import LoveLetter from "../components/LoveLetter";
 import MovieSelection from "../components/MovieSelection";
 import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
-import StepQuestions2 from "../components/StepQuestions2";
 import SpecialQuestions from "../components/SpecialQuestions";
 import { SECTION_TYPES } from "../models/gift";
 import {
   MdCelebration,
   MdMail,
   MdPhotoCamera,
-  MdChecklist,
   MdAutoAwesome,
   MdLightbulb,
   MdMovie,
@@ -71,15 +69,6 @@ export const SECTION_REGISTRY = {
     icon: <MdVideocam />,
     iconBg: "#fef3c7",
     iconColor: "#d97706",
-  },
-  [SECTION_TYPES.STEP_QUESTIONS]: {
-    component: StepQuestions2,
-    label: "Step Questions",
-    labelMn: "Болзооны төлөвлөгөө",
-    descMn: "Хамтдаа юу хийх, хаана уулзах зэргийг алхам алхмаар сонгоорой",
-    icon: <MdChecklist />,
-    iconBg: "#ecfdf5",
-    iconColor: "#22c55e",
   },
   [SECTION_TYPES.SPECIAL_QUESTIONS]: {
     component: SpecialQuestions,

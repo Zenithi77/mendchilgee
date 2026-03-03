@@ -91,18 +91,6 @@ export const FEATURE_REGISTRY = {
     icon: "🎬",
   },
 
-  [SECTION_TYPES.STEP_QUESTIONS]: {
-    label: "Step Questions",
-    labelMn: "Болзооны төлөвлөгөө",
-    requiredTier: TIERS.FREE,
-    editable: {
-      [TIERS.FREE]: false, // Cannot edit text, template-only
-      [TIERS.STANDARD]: true,
-      [TIERS.PREMIUM]: true,
-    },
-    icon: "📝",
-  },
-
   [SECTION_TYPES.FINAL_SUMMARY]: {
     label: "Final Summary",
     labelMn: "Хураангуй хэсэг",

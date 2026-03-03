@@ -101,11 +101,9 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     [sharePanel?.id],
   );
 
-  /** Extract summary pills (step-question choices stored in finalSummary fields) */
+  /** Extract summary pills (choices stored in finalSummary fields) */
   const getGiftSummary = (gift) => {
     const pills = [];
-    // Try to pull stepQuestions options chosen at build time
-    const stepSec = gift.sections?.find((s) => s.type === "stepQuestions");
     const finalSec = gift.sections?.find((s) => s.type === "finalSummary");
     const fields = finalSec?.data?.summaryFields || [];
 
@@ -127,13 +125,6 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
           emoji: <MdMail />,
           label: "Захидал",
           value: letterSec.data.title,
-        });
-      }
-      if (stepSec?.data?.steps?.length) {
-        pills.push({
-          emoji: <MdChecklist />,
-          label: "Алхамууд",
-          value: `${stepSec.data.steps.length} алхам`,
         });
       }
       const gallerySec = gift.sections?.find((s) => s.type === "memoryGallery");

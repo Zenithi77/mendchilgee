@@ -22,11 +22,39 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   const videoIdRef = useRef(null);
   const wantPlayRef = useRef(playing);
   const startTimeRef = useRef(startTime);
+  const clipDurationRef = useRef(clipDuration);
+  const clipTimerRef = useRef(null);
 
   wantPlayRef.current = playing;
   startTimeRef.current = startTime;
+  clipDurationRef.current = clipDuration;
 
   const videoId = parseYouTubeId(url);
+
+  // ── Clip looping: seek back to startTime when clip ends ──
+  const startClipTimer = () => {
+    if (clipTimerRef.current) clearInterval(clipTimerRef.current);
+    const dur = clipDurationRef.current;
+    const st = startTimeRef.current || 0;
+    if (!dur || dur <= 0) return; // no clip — play full
+    clipTimerRef.current = setInterval(() => {
+      const p = playerRef.current;
+      if (!p || typeof p.getCurrentTime !== 'function') return;
+      try {
+        const cur = p.getCurrentTime();
+        if (cur >= st + dur || cur < st - 1) {
+          p.seekTo(st, true);
+        }
+      } catch {}
+    }, 500);
+  };
+
+  const stopClipTimer = () => {
+    if (clipTimerRef.current) {
+      clearInterval(clipTimerRef.current);
+      clipTimerRef.current = null;
+    }
+  };
 
   /* ── imperative handle for direct play/pause from parent ── */
   useImperativeHandle(ref, () => ({
@@ -38,12 +66,14 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
         p.unMute();
         if (startTimeRef.current > 0) p.seekTo(startTimeRef.current, true);
         p.playVideo();
+        startClipTimer();
       } catch {}
     },
     pause: () => {
       if (playerRef.current) {
         try { playerRef.current.pauseVideo(); } catch {}
       }
+      stopClipTimer();
     },
   }));
 
@@ -138,8 +168,10 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
           }
           playerRef.current.playVideo();
         }
+        startClipTimer();
       } else {
         if (state === 1) playerRef.current.pauseVideo();
+        stopClipTimer();
       }
     } catch {}
   }, [playing]);
@@ -147,6 +179,7 @@ const YouTubeAudioPlayer = forwardRef(function YouTubeAudioPlayer({
   // Cleanup
   useEffect(() => {
     return () => {
+      stopClipTimer();
       if (playerRef.current) {
         try { playerRef.current.destroy(); } catch {}
         playerRef.current = null;

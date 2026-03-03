@@ -65,11 +65,6 @@ export default function TemplateSelector({ onSelect, category }) {
 
                 {/* Feature tags */}
                 <div className="template-tags">
-                  {tmpl.stepQuestions?.steps?.length > 0 && (
-                    <span className="template-tag">
-                      {tmpl.stepQuestions.steps.length} асуулт
-                    </span>
-                  )}
                   {tmpl.card.tags.map((tag, ti) => (
                     <span key={ti} className="template-tag">
                       {tag}

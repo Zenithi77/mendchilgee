@@ -150,44 +150,6 @@ const SECTION_DEFAULTS = {
     ],
   },
 
-  [SECTION_TYPES.STEP_QUESTIONS]: {
-    multiSelectHint: "✨ Олон хариулт сонгох боломжтой",
-    selectedCountSuffix: "сонгогдсон ✨",
-    backButton: "← Буцах",
-    nextButton: "Дараагийх →",
-    doneButton: "Баталгаажуулах 💕",
-    steps: [
-      {
-        emoji: "📍",
-        title: "Хаана уулзах вэ?",
-        key: "place",
-        type: "grid",
-        multiSelect: false,
-        options: [
-          { emoji: "☕", name: "Кафе", desc: "Тайван яриа", value: "Кафе" },
-          { emoji: "🌸", name: "Парк", desc: "Алхаж ярилцъя", value: "Парк" },
-          {
-            emoji: "🎬",
-            name: "Кино",
-            desc: "Хамтдаа кино",
-            value: "Кино",
-          },
-        ],
-      },
-      {
-        emoji: "⏰",
-        title: "Хэдэн цагт?",
-        key: "time",
-        type: "time",
-        multiSelect: false,
-        options: [
-          { label: "🌅 17:00", value: "17:00" },
-          { label: "🌙 19:00", value: "19:00" },
-        ],
-      },
-    ],
-  },
-
   [SECTION_TYPES.FINAL_SUMMARY]: {
     headerEmoji: "💝",
     title: "Бүх зүйл бэлэн! 🎉",

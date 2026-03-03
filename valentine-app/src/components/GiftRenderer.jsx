@@ -6,17 +6,9 @@ import HeartRain from "./HeartRain";
 import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
 import { MdPause, MdPlayArrow } from "react-icons/md";
 
-/** Build initial choices state from the stepQuestions section data. */
-function buildInitialChoices(gift) {
-  const stepSection = gift.sections.find(
-    (s) => s.type === SECTION_TYPES.STEP_QUESTIONS,
-  );
-  if (!stepSection?.data?.steps) return {};
-  const init = {};
-  stepSection.data.steps.forEach((s) => {
-    init[s.key] = s.multiSelect ? [] : null;
-  });
-  return init;
+/** Build initial choices state. */
+function buildInitialChoices() {
+  return {};
 }
 
 /**
@@ -27,7 +19,7 @@ function buildInitialChoices(gift) {
  *
  * Manages:
  *  - Section navigation (current index, next/back)
- *  - User choices state (for stepQuestions / finalSummary)
+ *  - User choices state (for finalSummary)
  *  - HeartRain visual effect
  */
 export default function GiftRenderer({
@@ -42,7 +34,7 @@ export default function GiftRenderer({
   const [prevInitialIndex, setPrevInitialIndex] = useState(
     initialSectionIndex || 0,
   );
-  const [choices, setChoices] = useState(() => buildInitialChoices(gift));
+  const [choices, setChoices] = useState(() => buildInitialChoices());
   const [heartRain, setHeartRain] = useState(false);
 
   // Adjust sectionIndex when initialSectionIndex prop changes (deep-linking)
@@ -219,18 +211,6 @@ export default function GiftRenderer({
             onContinue={goNext}
             template={template}
             musicPlaying={musicPlaying}
-          />
-        );
-
-      case SECTION_TYPES.STEP_QUESTIONS:
-        return (
-          <Component
-            steps={template.stepQuestions?.steps || []}
-            choices={choices}
-            updateChoice={updateChoice}
-            onDone={goNext}
-            onBack={goBack}
-            template={template}
           />
         );
 

@@ -32,7 +32,6 @@ export const SECTION_TYPES = {
   MOVIE_SELECTION: "movieSelection",
   MEMORY_GALLERY: "memoryGallery",
   MEMORY_VIDEO: "memoryVideo",
-  STEP_QUESTIONS: "stepQuestions",
   FINAL_SUMMARY: "finalSummary",
   SPECIAL_QUESTIONS: "specialQuestions",
 };
@@ -121,14 +120,7 @@ export function templateToGift(template) {
     });
   }
 
-  // Step questions
-  if (template.stepQuestions) {
-    sections.push({
-      id: generateSectionId(),
-      type: SECTION_TYPES.STEP_QUESTIONS,
-      data: { ...template.stepQuestions },
-    });
-  }
+  // Step questions removed
 
   return {
     id: null,

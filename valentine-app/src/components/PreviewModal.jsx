@@ -107,17 +107,6 @@ function SingleSectionPreview({ section, template, category, startDate }) {
           template={template}
         />
       );
-    case SECTION_TYPES.STEP_QUESTIONS:
-      return (
-        <Component
-          steps={template.stepQuestions?.steps || []}
-          choices={{}}
-          updateChoice={noop}
-          onDone={noop}
-          onBack={noop}
-          template={template}
-        />
-      );
     case SECTION_TYPES.FINAL_SUMMARY:
       return <Component choices={{}} template={template} category={category} />;
     default:

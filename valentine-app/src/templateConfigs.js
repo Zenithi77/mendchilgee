@@ -9,7 +9,6 @@
   ─ welcome:         Welcome page (character, title, timer, button)
   ─ loveLetter:      Message / Greeting letter overlay
   ─ memoryGallery:   Photo gallery section
-  ─ stepQuestions:    Step-by-step interactive questions
   ─ finalSummary:    Final summary / closing page
   ─ effects:         Visual effects (emojis, confetti, flowers, etc.)
 */
@@ -289,39 +288,6 @@ const MARCH8_TEMPLATES = [
         { type: "image", src: "", date: "Дурсамж", caption: "Хамгийн сайхан мөчүүд 🌷" },
       ],
     },
-    stepQuestions: {
-      ...DEFAULT_STEP_UI,
-      steps: [
-        {
-          emoji: "🎁",
-          title: "Юу бэлэглэх вэ?",
-          key: "gift",
-          type: "grid",
-          multiSelect: false,
-          options: [
-            { emoji: "💐", name: "Цэцэг", desc: "Үзэсгэлэнтэй баглаа", value: "Цэцэг" },
-            { emoji: "🧣", name: "Ороолт", desc: "Дулаахан бэлэг", value: "Ороолт" },
-            { emoji: "💍", name: "Үнэт эдлэл", desc: "Онцгой бэлэг", value: "Үнэт эдлэл" },
-            { emoji: "🍰", name: "Бялуу", desc: "Амтат баяр", value: "Бялуу" },
-            { emoji: "💄", name: "Гоо сайхан", desc: "Гоёлын хэрэгсэл", value: "Гоо сайхан" },
-            { emoji: "💝", name: "Сэтгэлийн бэлэг", desc: "Зүрхнээсээ бэлэглэх", value: "Сэтгэлийн бэлэг" },
-          ],
-        },
-        {
-          emoji: "☕",
-          title: "Хаана хамт цагийг өнгөрүүлэх вэ?",
-          key: "place",
-          type: "grid",
-          multiSelect: false,
-          options: [
-            { emoji: "🏠", name: "Гэртээ", desc: "Дулаахан гэр бүлийн уур амьсгалд", value: "Гэртээ" },
-            { emoji: "🍽️", name: "Ресторан", desc: "Гоёмсог оройн хоол", value: "Ресторан" },
-            { emoji: "☕", name: "Кафе", desc: "Аяга цайны хамт", value: "Кафе" },
-            { emoji: "🌸", name: "Парк", desc: "Хаврын агаарт зугаалах", value: "Парк" },
-          ],
-        },
-      ],
-    },
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       title: "3-р сарын 8-ны мэнд! 🌷",
@@ -399,7 +365,6 @@ const MARCH8_TEMPLATES = [
         { type: "image", src: "", date: "Баярын мөч", caption: "Хамтдаа цаг үргэлж гоё ✨" },
       ],
     },
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       title: "Хамт олондоо мэнд! 🌸",
@@ -473,26 +438,6 @@ const MARCH8_TEMPLATES = [
       memories: [
         { type: "image", src: "", date: "Онцгой мөч", caption: "Хамтын мөч бүр үнэтэй ✨" },
         { type: "image", src: "", date: "Инээмсэглэл", caption: "Таны инээмсэглэл бүхнийг гоёдог 🌹" },
-      ],
-    },
-    stepQuestions: {
-      ...DEFAULT_STEP_UI,
-      steps: [
-        {
-          emoji: "🎁",
-          title: "Юу бэлэглэх вэ?",
-          key: "gift",
-          type: "grid",
-          multiSelect: false,
-          options: [
-            { emoji: "💐", name: "Цэцэг", desc: "Сайхан баглаа цэцэг", value: "Цэцэг" },
-            { emoji: "🍫", name: "Шоколад", desc: "Амтат бэлэг", value: "Шоколад" },
-            { emoji: "📖", name: "Ном", desc: "Мэдлэгийн бэлэг", value: "Ном" },
-            { emoji: "🎀", name: "Гарын бэлэг", desc: "Сэтгэлийн бэлэг", value: "Гарын бэлэг" },
-            { emoji: "☕", name: "Цай/Кофе", desc: "Дулаахан мөч хамтдаа", value: "Цай/Кофе" },
-            { emoji: "💝", name: "Сюрприз", desc: "Тэсэн ядсан бэлэг", value: "Сюрприз" },
-          ],
-        },
       ],
     },
     finalSummary: {
@@ -580,24 +525,6 @@ const SOLDIERS_DAY_TEMPLATES = [
         { type: "image", src: "", date: "Бахархал", caption: "Бахархлын мөч ⭐" },
       ],
     },
-    stepQuestions: {
-      ...DEFAULT_STEP_UI,
-      steps: [
-        {
-          emoji: "🎁",
-          title: "Юугаар баярлуулах вэ?",
-          key: "gift",
-          type: "grid",
-          multiSelect: false,
-          options: [
-            { emoji: "🎖️", name: "Медаль", desc: "Хүндэтгэлийн тэмдэг", value: "Медаль" },
-            { emoji: "⌚", name: "Цаг", desc: "Цагийн бэлэг", value: "Цаг" },
-            { emoji: "👔", name: "Хувцас", desc: "Гоёлын бэлэг", value: "Хувцас" },
-            { emoji: "📖", name: "Ном", desc: "Мэдлэгийн бэлэг", value: "Ном" },
-          ],
-        },
-      ],
-    },
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "🎖️",
@@ -667,7 +594,6 @@ const SOLDIERS_DAY_TEMPLATES = [
     },
     question: null,
     memoryGallery: null,
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "🛡️",
@@ -751,39 +677,6 @@ const BIRTHDAY_TEMPLATES = [
         { type: "image", src: "", date: "Инээмсэглэл", caption: "Аз жаргал ✨" },
       ],
     },
-    stepQuestions: {
-      ...DEFAULT_STEP_UI,
-      steps: [
-        {
-          emoji: "🎁",
-          title: "Ямар бэлэг авмаар байна?",
-          key: "gift",
-          type: "grid",
-          multiSelect: true,
-          options: [
-            { emoji: "🎮", name: "Тоглоом", desc: "Тоглоомын бэлэг", value: "Тоглоом" },
-            { emoji: "👟", name: "Пүүз", desc: "Cool пүүз", value: "Пүүз" },
-            { emoji: "📱", name: "Утас", desc: "Шинэ утас", value: "Утас" },
-            { emoji: "🎧", name: "Чихэвч", desc: "Wireless чихэвч", value: "Чихэвч" },
-            { emoji: "🎂", name: "Бялуу", desc: "Амтат бялуу", value: "Бялуу" },
-            { emoji: "💝", name: "Сюрприз", desc: "Чи шийд!", value: "Сюрприз" },
-          ],
-        },
-        {
-          emoji: "🎈",
-          title: "Хаана тэмдэглэх вэ?",
-          key: "place",
-          type: "grid",
-          multiSelect: false,
-          options: [
-            { emoji: "🏠", name: "Гэрт", desc: "Тохилог party", value: "Гэрт" },
-            { emoji: "🍕", name: "Ресторан", desc: "Гадуур идье", value: "Ресторан" },
-            { emoji: "🎳", name: "Боулинг", desc: "Хөгжилтэй!", value: "Боулинг" },
-            { emoji: "🎤", name: "Каракоке", desc: "Дуулъя!", value: "Каракоке" },
-          ],
-        },
-      ],
-    },
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "🎂",
@@ -857,7 +750,6 @@ const BIRTHDAY_TEMPLATES = [
         { type: "image", src: "", date: "Онцгой мөч", caption: "Хамтын аз жаргал ✨" },
       ],
     },
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "✨",
@@ -935,37 +827,6 @@ const VALENTINE_TEMPLATES = [
         { type: "image", src: "", date: "Хайрын мөч", caption: "Хайрын мөч 💕" },
       ],
     },
-    stepQuestions: {
-      ...DEFAULT_STEP_UI,
-      steps: [
-        {
-          emoji: "☕",
-          title: "Хаана уулзах вэ?",
-          key: "place",
-          type: "grid",
-          multiSelect: false,
-          options: [
-            { emoji: "☕", name: "Кафе", desc: "Тайван яриа", value: "Кафе" },
-            { emoji: "🍽️", name: "Ресторан", desc: "Гоёмсог хоол", value: "Ресторан" },
-            { emoji: "🎬", name: "Кино", desc: "Хамтдаа кино", value: "Кино" },
-            { emoji: "🌸", name: "Парк", desc: "Алхаж ярилцъя", value: "Парк" },
-          ],
-        },
-        {
-          emoji: "🎁",
-          title: "Юу бэлэглэх вэ?",
-          key: "gift",
-          type: "grid",
-          multiSelect: true,
-          options: [
-            { emoji: "🌹", name: "Цэцэг", desc: "Улаан сарнай", value: "Цэцэг" },
-            { emoji: "🍫", name: "Шоколад", desc: "Амтат бэлэг", value: "Шоколад" },
-            { emoji: "💍", name: "Бөгж", desc: "Онцгой бэлэг", value: "Бөгж" },
-            { emoji: "💝", name: "Сюрприз", desc: "Чи шийд!", value: "Сюрприз" },
-          ],
-        },
-      ],
-    },
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       title: "Happy Valentine's Day! 💕",
@@ -1030,7 +891,6 @@ const VALENTINE_TEMPLATES = [
     },
     question: null,
     memoryGallery: null,
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       title: "I Love You! 💗",
@@ -1099,7 +959,6 @@ const GENERAL_TEMPLATES = [
     },
     question: null,
     memoryGallery: null,
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "🙏",
@@ -1165,7 +1024,6 @@ const GENERAL_TEMPLATES = [
     },
     question: null,
     memoryGallery: null,
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "🎊",
@@ -1230,7 +1088,6 @@ const GENERAL_TEMPLATES = [
     },
     question: null,
     memoryGallery: null,
-    stepQuestions: null,
     finalSummary: {
       ...DEFAULT_FINAL_UI,
       headerEmoji: "🎆",

@@ -30,7 +30,6 @@ import {
   WelcomeLetterEditor,
   MovieSelectionEditor,
   MemoryGalleryEditor,
-  StepQuestionsEditor,
   MemoryVideoEditor,
   GenericEditor,
 } from "./SectionEditors";
@@ -478,14 +477,6 @@ export default function Builder() {
     if (type === SECTION_TYPES.MEMORY_GALLERY)
       return (
         <MemoryGalleryEditor
-          section={selectedSection}
-          onUpdate={updateSectionData}
-        />
-      );
-
-    if (type === SECTION_TYPES.STEP_QUESTIONS)
-      return (
-        <StepQuestionsEditor
           section={selectedSection}
           onUpdate={updateSectionData}
         />
