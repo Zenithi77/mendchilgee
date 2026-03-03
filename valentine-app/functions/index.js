@@ -270,6 +270,7 @@ exports.bylWebhook = onRequest(async (req, res) => {
           // ── Credit purchase via BYL ──
           const creditDocRef = db.collection("credit_payments").doc(clientRef);
           await db.runTransaction(async (tx) => {
+            // ── ALL READS FIRST ──
             const doc = await tx.get(creditDocRef);
             if (!doc.exists) {
               console.warn("credit_payments doc not found:", clientRef);
@@ -285,6 +286,11 @@ exports.bylWebhook = onRequest(async (req, res) => {
             const userId = creditData.userId;
             const qty = creditData.quantity || 1;
 
+            // Read user profile BEFORE any writes
+            const userRef = db.collection("userProfiles").doc(userId);
+            const userDoc = await tx.get(userRef);
+
+            // ── ALL WRITES AFTER ──
             // Mark paid
             tx.update(creditDocRef, {
               status: "paid",
@@ -293,7 +299,14 @@ exports.bylWebhook = onRequest(async (req, res) => {
             });
 
             // Add credits to user
-            await addCreditsInTx(tx, userId, qty);
+            const currentCredits = userDoc.exists ?
+              (userDoc.data().credits || 0) : 0;
+            const newBalance = currentCredits + qty;
+            if (userDoc.exists) {
+              tx.update(userRef, {credits: newBalance});
+            } else {
+              tx.set(userRef, {credits: newBalance}, {merge: true});
+            }
           });
 
           const creditDoc = await creditDocRef.get();
