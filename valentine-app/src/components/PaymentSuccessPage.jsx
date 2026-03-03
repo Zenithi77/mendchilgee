@@ -12,9 +12,12 @@ export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
   const ref = searchParams.get("ref");
   const giftId = searchParams.get("giftId");
+  const type = searchParams.get("type"); // "credit" for credit purchases
   const [status, setStatus] = useState(() => (ref ? "checking" : "no_ref"));
   const [attempts, setAttempts] = useState(0);
   const [paymentData, setPaymentData] = useState(null);
+
+  const isCredit = type === "credit";
 
   useEffect(() => {
     if (!ref) return;
@@ -22,15 +25,18 @@ export default function PaymentSuccessPage() {
     let cancelled = false;
     const maxTries = 40;
 
+    // Pick the right endpoint: credit purchases vs tier payments
+    const endpoint = isCredit
+      ? `${FUNCTIONS_BASE}/checkCreditPayment?ref=${encodeURIComponent(ref)}`
+      : `${FUNCTIONS_BASE}/checkPaymentStatus?ref=${encodeURIComponent(ref)}`;
+
     async function poll() {
       let tries = 0;
       while (tries < maxTries && !cancelled) {
         tries++;
         setAttempts(tries);
         try {
-          const r = await fetch(
-            `${FUNCTIONS_BASE}/checkPaymentStatus?ref=${encodeURIComponent(ref)}`,
-          );
+          const r = await fetch(endpoint);
           if (!r.ok) break;
           const j = await r.json();
           if (j.status === "paid") {
@@ -56,7 +62,7 @@ export default function PaymentSuccessPage() {
     return () => {
       cancelled = true;
     };
-  }, [ref]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ref, isCredit]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (status === "no_ref") {
     return (
@@ -69,6 +75,25 @@ export default function PaymentSuccessPage() {
   }
 
   if (status === "paid") {
+    // Credit purchase success
+    if (isCredit) {
+      const qty = paymentData?.quantity || 1;
+      return (
+        <div className="payment-status-page">
+          <div className="status-icon"><MdCelebration /></div>
+          <h1>Төлбөр амжилттай!</h1>
+          <p>
+            <strong>{qty} эрх</strong> таны данс руу нэмэгдлээ.
+          </p>
+          <p style={{ color: "#64748b", fontSize: "0.85rem" }}>
+            Одоо мэндчилгээ үүсгэж эхлээрэй! <MdAutoAwesome />
+          </p>
+          <Link to="/">← Нүүр хуудас руу буцах</Link>
+        </div>
+      );
+    }
+
+    // Tier purchase success
     const tier = paymentData?.plan || "standard";
     const tierMeta = TIER_META[tier] || TIER_META.standard;
     const durationDays = TIER_DURATION_DAYS[tier] || 14;

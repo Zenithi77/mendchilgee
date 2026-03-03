@@ -18,8 +18,9 @@ import TermsReacceptModal from "./components/TermsReacceptModal";
 import PromoRedeemPage from "./components/PromoRedeemPage";
 import PromoCodeModal from "./components/PromoCodeModal";
 import PurchaseModal from "./components/PurchaseModal";
+import AdminPromoPanel from "./components/AdminPromoPanel";
 import FloatingHearts from "./components/FloatingHearts";
-import { MdPerson, MdCardGiftcard, MdAdd, MdConfirmationNumber, MdLogout } from "react-icons/md";
+import { MdPerson, MdCardGiftcard, MdAdd, MdConfirmationNumber, MdLogout, MdAdminPanelSettings } from "react-icons/md";
 import "./App.css";
 
 // Mendchilgee.site — Дижитал мэндчилгээний платформ
@@ -89,13 +90,14 @@ function AuthGuard({ children }) {
 }
 
 function MainApp() {
-  const { user, loading, logout, credits, needsTermsReaccept } = useAuth();
+  const { user, loading, logout, credits, needsTermsReaccept, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
   const [template, setTemplate] = useState(null); // kept for theme/effects at app level
   const [page, setPage] = useState("list"); // "list" | "category" | "template"
   const [showPromo, setShowPromo] = useState(false);
   const [showPurchase, setShowPurchase] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   // Apply theme CSS variables when template changes
   useEffect(() => {
@@ -220,6 +222,15 @@ function MainApp() {
           >
             <MdConfirmationNumber /> <span>Промо код</span>
           </button>
+          {isAdmin && (
+            <button
+              className="header-btn header-btn-admin"
+              onClick={() => setShowAdmin(true)}
+              title="Админ"
+            >
+              <MdAdminPanelSettings /> <span>Админ</span>
+            </button>
+          )}
         </div>
         <div className="header-right">
           <span className="header-email">
@@ -249,42 +260,51 @@ function MainApp() {
         onSuccess={() => {}}
       />
 
-      {/* Background effects */}
-      <div className="bg-effects">
-        <div className="bg-orb" />
-        <div className="bg-orb" />
-        <div className="bg-orb" />
-      </div>
+      {/* ── Admin Panel ── */}
+      {showAdmin && isAdmin ? (
+        <div style={{ paddingTop: 56 }}>
+          <AdminPromoPanel onBack={() => setShowAdmin(false)} />
+        </div>
+      ) : (
+        <>
+          {/* Background effects */}
+          <div className="bg-effects">
+            <div className="bg-orb" />
+            <div className="bg-orb" />
+            <div className="bg-orb" />
+          </div>
 
-      <FloatingHearts emojis={template?.effects?.floatingHearts} />
+          <FloatingHearts emojis={template?.effects?.floatingHearts} />
 
-      {/* Back buttons */}
-      {page === "category" && (
-        <button className="back-to-selector" onClick={resetToList}>
-          Буцах
-        </button>
-      )}
-      {page === "template" && (
-        <button className="back-to-selector" onClick={resetToCategory}>
-          Буцах
-        </button>
-      )}
+          {/* Back buttons */}
+          {page === "category" && (
+            <button className="back-to-selector" onClick={resetToList}>
+              Буцах
+            </button>
+          )}
+          {page === "template" && (
+            <button className="back-to-selector" onClick={resetToCategory}>
+              Буцах
+            </button>
+          )}
 
-      {/* Pages */}
-      {page === "list" && (
-        <GiftListPage
-          onCreateNew={handleCreateNew}
-          onEditGift={handleEditGift}
-        />
-      )}
-      {page === "category" && (
-        <CategorySelector
-          onSelect={handleSelectCategory}
-          onOpenBuilder={() => navigate("/builder")}
-        />
-      )}
-      {page === "template" && (
-        <TemplateSelector onSelect={handleSelectTemplate} category={category} />
+          {/* Pages */}
+          {page === "list" && (
+            <GiftListPage
+              onCreateNew={handleCreateNew}
+              onEditGift={handleEditGift}
+            />
+          )}
+          {page === "category" && (
+            <CategorySelector
+              onSelect={handleSelectCategory}
+              onOpenBuilder={() => navigate("/builder")}
+            />
+          )}
+          {page === "template" && (
+            <TemplateSelector onSelect={handleSelectTemplate} category={category} />
+          )}
+        </>
       )}
     </div>
   );

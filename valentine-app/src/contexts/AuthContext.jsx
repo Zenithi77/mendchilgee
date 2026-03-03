@@ -12,6 +12,8 @@ import {
 } from "../services/firestoreService";
 import { subscribeToCredits } from "../services/creditService";
 import { TERMS_VERSION } from "../legal/terms";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 const AuthContext = createContext(null);
 
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [needsTermsReaccept, setNeedsTermsReaccept] = useState(false);
   const [credits, setCredits] = useState(0);
+  const [role, setRole] = useState(null); // "admin" | null
 
   useEffect(() => {
     const unsubscribe = onAuthChange(async (authUser) => {
@@ -68,6 +71,24 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, [user]);
 
+  // Real-time role subscription
+  useEffect(() => {
+    if (!user || user.isAnonymous) {
+      setRole(null);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(doc(db, "userProfiles", user.uid), (snap) => {
+      if (snap.exists()) {
+        setRole(snap.data().role || null);
+      } else {
+        setRole(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
   // Accept updated terms
   const acceptTerms = async () => {
     if (!user || user.isAnonymous) return;
@@ -84,6 +105,8 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     credits,
+    role,
+    isAdmin: role === "admin",
     isAuthenticated: !!user,
     isAnonymous: user?.isAnonymous ?? false,
     needsTermsReaccept,

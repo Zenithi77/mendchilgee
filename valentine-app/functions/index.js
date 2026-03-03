@@ -112,6 +112,8 @@ function getCorsOrigin(req, cfg) {
     cfg.baseUrl,
     "https://www.bolzii.com",
     "https://mendchilgee-pi.vercel.app",
+    "https://www.mendchilgee.site",
+    "https://mendchilgee.site",
     "http://localhost:5173",
     "http://localhost:3000",
   ].filter(Boolean);
