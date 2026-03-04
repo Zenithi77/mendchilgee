@@ -239,6 +239,36 @@ export default function Builder() {
     } catch {}
   }, [activeSlideIndex]);
 
+  // ── Send gift data to preview iframes via postMessage ──
+  const sendGiftToPreview = useCallback(() => {
+    const msg = { type: 'builder-preview-data', gift };
+    try {
+      desktopIframeRef.current?.contentWindow?.postMessage(msg, window.location.origin);
+    } catch {}
+    // Also send to mobile iframe
+    const mobileIframe = document.querySelector('.builder-phone-iframe');
+    try {
+      mobileIframe?.contentWindow?.postMessage(msg, window.location.origin);
+    } catch {}
+  }, [gift]);
+
+  // Send gift data whenever gift changes
+  useEffect(() => {
+    sendGiftToPreview();
+  }, [sendGiftToPreview]);
+
+  // Listen for preview-ready messages from iframes
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.origin !== window.location.origin) return;
+      if (e.data?.type === 'builder-preview-ready') {
+        sendGiftToPreview();
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [sendGiftToPreview]);
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -428,21 +458,6 @@ export default function Builder() {
     setSelectedSectionId(null);
     setSectionSnapshot(null);
   }, [handleSave]);
-
-  const autoSaveOnceRef = useRef(false);
-  useEffect(() => {
-    if (autoSaveOnceRef.current) return;
-    if (gift && !gift.id && user) {
-      autoSaveOnceRef.current = true;
-      (async () => {
-        try {
-          await handleSave();
-        } catch (err) {
-          console.error("Auto-save error:", err);
-        }
-      })();
-    }
-  }, [gift?.id, user, handleSave]);
 
   const openFullPreview = useCallback(async () => {
     const docId = gift?.id || (await handleSave());
@@ -750,15 +765,14 @@ export default function Builder() {
         </aside>
 
         {/* ═══ MOBILE: Phone Mockup Preview (shown when mobileTab === 'preview') ═══ */}
-        {gift.id && (
-          <div className={`builder-phone-preview-panel ${mobileTab === 'preview' ? 'active' : ''}`}>
+        <div className={`builder-phone-preview-panel ${mobileTab === 'preview' ? 'active' : ''}`}>
             <div className="builder-phone-frame">
               <div className="builder-phone-notch" />
               <div className="builder-phone-screen" ref={phoneScreenRef}>
                 <iframe
                   key={previewReloadKey}
                   className="builder-phone-iframe"
-                  src={`/${gift.id}${selectedSectionId ? `#section-${selectedSectionId}` : ''}`}
+                  src="/preview"
                   title="Урьдчилан харах"
                   sandbox="allow-scripts allow-same-origin allow-popups"
                   style={{ transform: `scale(${iframeScale})`, width: '430px', height: `${iframeHeight}px` }}
@@ -767,7 +781,6 @@ export default function Builder() {
               <div className="builder-phone-home-bar" />
             </div>
           </div>
-        )}
 
         {/* ═══ RIGHT PANEL: Real Preview (desktop) ═══ */}
         <main className="builder-main builder-slides-main">
@@ -798,7 +811,6 @@ export default function Builder() {
           </div>
 
           {/* Real iframe preview */}
-          {gift.id ? (
             <div className={`builder-desktop-preview-wrap ${desktopPreviewMode === 'mobile' ? 'mobile-mode' : 'desktop-mode'}`}>
               {desktopPreviewMode === 'mobile' ? (
                 <div className="builder-desktop-phone-frame">
@@ -808,7 +820,7 @@ export default function Builder() {
                       ref={desktopIframeRef}
                       key={`desktop-preview-${desktopPreviewReloadKey}`}
                       className="builder-desktop-iframe"
-                      src={`/${gift.id}`}
+                      src="/preview"
                       title="Mobile Preview"
                       sandbox="allow-scripts allow-same-origin allow-popups"
                       style={{ transform: `scale(${desktopIframeScale})`, width: '430px', height: `${desktopIframeHeight}px` }}
@@ -822,19 +834,14 @@ export default function Builder() {
                     ref={desktopIframeRef}
                     key={`desktop-preview-${desktopPreviewReloadKey}`}
                     className="builder-desktop-iframe"
-                    src={`/${gift.id}`}
+                    src="/preview"
                     title="Desktop Preview"
                     sandbox="allow-scripts allow-same-origin allow-popups"
                     style={{ transform: `scale(${desktopIframeScale})`, width: '1200px', height: `${desktopIframeHeight}px` }}
                   />
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="builder-preview-placeholder">
-              Хадгалсны дараа урьдчилж харах боломжтой
-            </div>
-          )}
+            </div>}
         </main>
 
         {/* ✅ Mobile bottom action bar — tab-based */}

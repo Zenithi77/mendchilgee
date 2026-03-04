@@ -7,7 +7,7 @@ import GiftListPage from "./components/GiftListPage";
 import CategorySelector from "./components/CategorySelector";
 import TemplateSelector from "./components/TemplateSelector";
 import Builder from "./components/Builder";
-import GiftPreviewPage from "./components/GiftPreviewPage";
+import GiftPreviewPage from "./components/GiftPreviewPage";\nimport BuilderPreview from "./components/BuilderPreview";
 import GiftResponsesPage from "./components/GiftResponsesPage";
 import DemoPaymentPage from "./components/DemoPaymentPage";
 import PaymentSuccessPage from "./components/PaymentSuccessPage";
@@ -61,6 +61,7 @@ function App() {
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/promo/:code" element={<PromoRedeemPage />} />
+      <Route path="/preview" element={<BuilderPreview />} />
       <Route path="/:giftId" element={<GiftPreviewPage />} />
       <Route path="*" element={<MainApp />} />
     </Routes>
