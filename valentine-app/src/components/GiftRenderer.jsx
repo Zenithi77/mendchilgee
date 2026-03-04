@@ -43,6 +43,22 @@ export default function GiftRenderer({
     setSectionIndex(initialSectionIndex || 0);
   }
 
+  // ── Listen for builder postMessage to sync section ──
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.origin !== window.location.origin) return;
+      if (e.data?.type === 'builder-go-to-section') {
+        const idx = e.data.index;
+        if (typeof idx === 'number' && idx >= 0 && idx < (gift?.sections?.length ?? 0)) {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          setSectionIndex(idx);
+        }
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [gift?.sections?.length]);
+
   // ── Persistent music state ──
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);

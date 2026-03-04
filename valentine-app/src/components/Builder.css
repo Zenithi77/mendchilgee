@@ -552,6 +552,40 @@
   cursor: not-allowed;
 }
 
+/* ── Finish (Дуусгах) Button ── */
+.builder-finish-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ff6b8a, #e60023);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  margin-top: 10px;
+  box-shadow: 0 4px 20px rgba(230, 0, 35, 0.3);
+  letter-spacing: 0.3px;
+}
+.builder-finish-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e60023, #c40020);
+  box-shadow: 0 6px 28px rgba(230, 0, 35, 0.45);
+  transform: translateY(-2px);
+}
+.builder-finish-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.builder-finish-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ── Sidebar Footer ── */
 
 .builder-sidebar-footer {

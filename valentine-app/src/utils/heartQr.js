@@ -10,7 +10,7 @@
 //   3. Fill remaining shape area with QR-style decorative dots
 //   4. Clip everything to the shape boundary
 //
-// Supported shapes: heart, circle, star, flower, square
+// Supported shapes: heart, circle, star, flower (rose), square
 // Non-square shapes use error-correction level H (30%)
 // ═══════════════════════════════════════════════════════════════
 
@@ -22,7 +22,7 @@ export const QR_SHAPES = [
   { id: "heart",  label: "❤️ Зүрх",     defaultColor: "#e60023" },
   { id: "circle", label: "⭕ Тойрог",   defaultColor: "#e60023" },
   { id: "star",   label: "⭐ Од",       defaultColor: "#e60023" },
-  { id: "flower", label: "🌸 Цэцэг",   defaultColor: "#e60023" },
+  { id: "flower", label: "� Сарнай",   defaultColor: "#e60023" },
   { id: "square", label: "⬜ Дөрвөлжин", defaultColor: "#1a0e12" },
 ];
 
@@ -75,20 +75,20 @@ function starPath(ctx, cx, cy, outerR) {
 }
 
 function flowerPath(ctx, cx, cy, r) {
-  const petals = 6;
-  const petalR = r * 0.52;
-  const petalDist = r * 0.52;
+  // Сарнай (Rose) – continuous 5-petal silhouette.
+  // Uses cos²(2.5θ) to create 5 smooth petal bumps with no gaps,
+  // so the QR code inside is never clipped between petals.
+  const steps = 360;
   ctx.beginPath();
-  for (let i = 0; i < petals; i++) {
-    const a = (Math.PI * 2 / petals) * i - Math.PI / 2;
-    const px = cx + petalDist * Math.cos(a);
-    const py = cy + petalDist * Math.sin(a);
-    ctx.moveTo(px + petalR, py);
-    ctx.arc(px, py, petalR, 0, Math.PI * 2);
+  for (let i = 0; i <= steps; i++) {
+    const theta = (i / steps) * Math.PI * 2;
+    const c = Math.cos(2.5 * theta);
+    // min radius 0.72r (valleys) → max radius 1.0r (petal tips)
+    const rr = r * (0.72 + 0.28 * c * c);
+    const x = cx + rr * Math.cos(theta);
+    const y = cy + rr * Math.sin(theta);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  // center disc
-  ctx.moveTo(cx + petalR * 0.55, cy);
-  ctx.arc(cx, cy, petalR * 0.55, 0, Math.PI * 2);
   ctx.closePath();
 }
 
@@ -107,8 +107,9 @@ function drawClipShape(ctx, shape, cx, cy, s) {
 function getInscribedSquare(shape, cx, cy, scale) {
   switch (shape) {
     case "heart": {
-      const side = scale * 1.0;
-      return { x: cx - side / 2, y: cy - side / 2 + scale * 0.06, side };
+      // Keep QR safely inside the heart with quiet zone margin
+      const side = scale * 0.82;
+      return { x: cx - side / 2, y: cy - side / 2 + scale * 0.08, side };
     }
     case "circle": {
       const side = scale * Math.SQRT2 * 0.96;
@@ -119,7 +120,9 @@ function getInscribedSquare(shape, cx, cy, scale) {
       return { x: cx - side / 2, y: cy - side / 2, side };
     }
     case "flower": {
-      const side = scale * 0.7;
+      // Rose shape: min radius = 0.72·scale → inscribed square ≈ 0.72·√2·scale
+      // Using 0.98 keeps the QR fully inside the valleys.
+      const side = scale * 0.98;
       return { x: cx - side / 2, y: cy - side / 2, side };
     }
     default:
@@ -284,49 +287,55 @@ export async function generateShapedQR(
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, size, size);
 
-  // 5) Draw modules (real QR + decorative fill)
+  // 5) Draw modules — ONLY real QR data (no decorative fill,
+  //    which confuses scanners into detecting a bigger, invalid code)
   const mDraw = modSize * 0.88;
   const rr = modSize * 0.1;
 
   ctx.fillStyle = color;
-  for (let row = gridRowStart; row < gridRowEnd; row++) {
-    for (let col = gridColStart; col < gridColEnd; col++) {
+  for (let row = 0; row < count; row++) {
+    for (let col = 0; col < count; col++) {
+      // Skip finder zones — drawn separately below
+      if (isFinderZone(row, col, count)) continue;
+      if (!modules.get(row, col)) continue;
+
       const px = qrX + col * modSize;
       const py = qrY + row * modSize;
-
-      const inQR = row >= 0 && row < count && col >= 0 && col < count;
-
-      let draw = false;
-      if (inQR) {
-        // Real QR data (skip finder zones — drawn separately below)
-        if (!isFinderZone(row, col, count)) {
-          draw = modules.get(row, col);
-        }
-      } else {
-        // Decorative fill: ~42% density, looks like QR data
-        draw = fillHash(col + 500, row + 500) % 100 < 42;
-      }
-
-      if (draw) {
-        rrect(ctx, px, py, mDraw, mDraw, rr);
-        ctx.fill();
-      }
+      rrect(ctx, px, py, mDraw, mDraw, rr);
+      ctx.fill();
     }
   }
 
-  // 6) Draw finder patterns (cleanly on top)
-  const drawFinder = shape === "heart" ? drawHeartFinder : drawStdFinder;
+  // 5b) Light decorative fill OUTSIDE quiet zone (only cosmetic fringe)
+  const quietModules = 4; // standard quiet zone
+  ctx.fillStyle = color;
+  for (let row = gridRowStart; row < gridRowEnd; row++) {
+    for (let col = gridColStart; col < gridColEnd; col++) {
+      // Skip anything inside or near the real QR grid
+      if (row >= -quietModules && row < count + quietModules &&
+          col >= -quietModules && col < count + quietModules) continue;
+      if (fillHash(col + 500, row + 500) % 100 >= 30) continue;
+
+      const px = qrX + col * modSize;
+      const py = qrY + row * modSize;
+      rrect(ctx, px, py, mDraw, mDraw, rr);
+      ctx.fill();
+    }
+  }
+
+  // 6) Draw finder patterns (always standard — scanners need the
+  //    exact 7→5→3 concentric-square pattern to detect QR codes)
   const finders = [
     [0, 0],
     [0, count - 7],
     [count - 7, 0],
   ];
   for (const [fr, fc] of finders) {
-    drawFinder(ctx, qrX + fc * modSize, qrY + fr * modSize, modSize, color);
+    drawStdFinder(ctx, qrX + fc * modSize, qrY + fr * modSize, modSize, color);
   }
 
-  // 7) Centre heart icon
-  const centerR = modSize * 2.5;
+  // 7) Centre icon (small — must not exceed H-level error budget)
+  const centerR = modSize * 1.8;
   const qrCenterY = qrY + inscribed.side / 2;
   drawCenterHeart(ctx, cx, qrCenterY, centerR, color);
 

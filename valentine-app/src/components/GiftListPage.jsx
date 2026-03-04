@@ -386,7 +386,7 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                         { key: "square",  icon: "▢", label: "Дөрвөлжин" },
                         { key: "heart",   icon: "♥", label: "Зүрх" },
                         { key: "star",    icon: "★", label: "Од" },
-                        { key: "flower",  icon: "✿", label: "Цэцэг" },
+                        { key: "flower",  icon: "🌹", label: "Сарнай" },
                       ].map((s) => (
                         <button
                           key={s.key}

@@ -10,6 +10,7 @@ import { useAuth } from "../contexts/AuthContext";
 import AddSectionModal from "./AddSectionModal";
 import UpgradeModal from "./UpgradeModal";
 import PurchaseModal from "./PurchaseModal";
+import GiftCompletionModal from "./GiftCompletionModal";
 import { TEMPLATES } from "../templateConfigs";
 import { TIER_META } from "../config/tiers";
 import { FEATURE_REGISTRY } from "../config/featureRegistry";
@@ -145,6 +146,7 @@ export default function Builder() {
   const [desktopPreviewMode, setDesktopPreviewMode] = useState('desktop'); // 'desktop' | 'mobile'
   const [desktopPreviewReloadKey, setDesktopPreviewReloadKey] = useState(0);
   const desktopScreenRef = useRef(null);
+  const desktopIframeRef = useRef(null);
   const [desktopIframeScale, setDesktopIframeScale] = useState(1);
   const [desktopIframeHeight, setDesktopIframeHeight] = useState(900);
 
@@ -225,10 +227,23 @@ export default function Builder() {
     [gift?.sections?.length],
   );
 
+  // ── Sync desktop preview iframe with active slide ──
+  useEffect(() => {
+    const iframe = desktopIframeRef.current;
+    if (!iframe?.contentWindow) return;
+    try {
+      iframe.contentWindow.postMessage(
+        { type: 'builder-go-to-section', index: activeSlideIndex },
+        window.location.origin,
+      );
+    } catch {}
+  }, [activeSlideIndex]);
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   // Auto-open upgrade modal when redirected from public view with ?upgrade=true
   const locationObj = useLocation();
@@ -434,6 +449,14 @@ export default function Builder() {
     if (docId) navigate(`/${docId}`);
   }, [gift?.id, handleSave, navigate]);
 
+  // ── Finish gift creation → save & show completion modal ──
+  const handleFinish = useCallback(async () => {
+    const docId = gift?.id || (await handleSave());
+    if (docId) {
+      setShowCompletionModal(true);
+    }
+  }, [gift?.id, handleSave]);
+
   const getSectionLabel = (section) => {
     const reg = SECTION_REGISTRY[section.type];
     return reg ? reg.labelMn || reg.label : section.type;
@@ -557,6 +580,24 @@ export default function Builder() {
         onSuccess={() => {}}
       />
 
+      <GiftCompletionModal
+        open={showCompletionModal}
+        onClose={() => setShowCompletionModal(false)}
+        giftId={gift?.id}
+        onPurchase={() => {
+          setShowCompletionModal(false);
+          setShowPurchaseModal(true);
+        }}
+        onGiftReload={async () => {
+          if (gift?.id) {
+            try {
+              const updated = await getGift(gift.id);
+              if (updated) setGift(updated);
+            } catch {}
+          }
+        }}
+      />
+
       <header className="builder-header">
         <div className="builder-header-left">
           <button
@@ -567,36 +608,7 @@ export default function Builder() {
             <span className="builder-btn-exit-txt">Буцах</span>
           </button>
 
-          {/* ✅ Mobile: open style panel drawer */}
-          <button
-            type="button"
-            className="builder-menu-btn"
-            onClick={() => {
-              setShowStylePanel(true);
-              setSidebarOpen(true);
-            }}
-            aria-label="Open style"
-            title="Загвар"
-          >
-            <IoIosSettings />
-          </button>
 
-          {/* ── Tier badge in header ── */}
-          {requiredTier !== "free" && (
-            <>
-              <div className="builder-divider" />
-              <span
-                className="builder-tier-badge builder-tier-badge-hide-mobile"
-                style={{
-                  background: requiredTierMeta.bgColor,
-                  color: requiredTierMeta.color,
-                }}
-                title={`Энэ мэндчилгээ ${requiredTierMeta.label} plan шаардана`}
-              >
-                {requiredTierMeta.badge} {requiredTierMeta.label}
-              </span>
-            </>
-          )}
         </div>
 
         <div className="builder-header-right">
@@ -648,77 +660,7 @@ export default function Builder() {
               </button>
             </div>
 
-            {/* Tabs: Тохиргоо / Загвар */}
-            <div className="button-group-container">
-              <button
-                className={`builder-tab-btn btn-style ${!showStylePanel ? "active" : ""}`}
-                type="button"
-                onClick={() => setShowStylePanel(false)}
-              >
-                <IoIosSettings />
-                <span>Тохиргоо</span>
-              </button>
-
-              <button
-                className={`builder-tab-btn btn-style ${showStylePanel ? "active" : ""}`}
-                type="button"
-                onClick={() => setShowStylePanel(true)}
-              >
-                <IoColorPalette />
-                <span>Загвар</span>
-              </button>
-            </div>
-
-            {/* Style / Template selector */}
-            {showStylePanel && (
-              <div className="builder-settings-panel">
-                <div
-                  style={{
-                    marginBottom: 8,
-                    fontSize: 12,
-                    color: "#64748b",
-                    fontWeight: 700,
-                  }}
-                >
-                  Загвар сонгох
-                </div>
-
-                <div className="template-grid">
-                  {TEMPLATES.map((tmpl, i) => {
-                    const cols = tmpl.theme?.colors || {};
-                    const primary =
-                      cols["--t-primary"] || cols["--t-secondary"] || "#ff6b9d";
-                    const accent = cols["--t-accent"] || primary;
-                    const isSelected =
-                      gift.theme?.className === tmpl.theme?.className;
-                    const bg = `linear-gradient(135deg, ${accent}, ${primary})`;
-
-                    return (
-                      <button
-                        key={tmpl.id || i}
-                        type="button"
-                        className={`template-tile template-${i + 1} ${isSelected ? "selected" : ""}`}
-                        onClick={async () => {
-                          applyTemplate(tmpl);
-                          await handleSave();
-                          setSidebarOpen(false);
-                        }}
-                        title={tmpl.card?.name || tmpl.id}
-                        style={{ background: bg }}
-                        disabled={saving}
-                      >
-                        <div className="template-tile-label">
-                          {tmpl.card?.name || tmpl.id}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Settings tab: current section's editor */}
-            {!showStylePanel && (
+            {/* Section editors */}
               <>
                 {/* Add + Save buttons */}
                 <button
@@ -818,8 +760,20 @@ export default function Builder() {
                     Бүтэн урьдчилж харах
                   </button>
                 )}
+
+                {/* ── Finish (Дуусгах) Button ── */}
+                {gift.sections.length > 0 && (
+                  <button
+                    className="builder-finish-btn"
+                    onClick={handleFinish}
+                    disabled={saving}
+                    type="button"
+                  >
+                    <MdCelebration style={{ fontSize: '1.3rem' }} />
+                    {saving ? 'Хадгалж байна...' : 'Дуусгах'}
+                  </button>
+                )}
               </>
-            )}
           </div>
 
 
@@ -881,6 +835,7 @@ export default function Builder() {
                   <div className="builder-desktop-phone-notch" />
                   <div className="builder-desktop-phone-screen" ref={desktopScreenRef}>
                     <iframe
+                      ref={desktopIframeRef}
                       key={`desktop-preview-${desktopPreviewReloadKey}`}
                       className="builder-desktop-iframe"
                       src={`/${gift.id}`}
@@ -894,6 +849,7 @@ export default function Builder() {
               ) : (
                 <div className="builder-desktop-screen" ref={desktopScreenRef}>
                   <iframe
+                    ref={desktopIframeRef}
                     key={`desktop-preview-${desktopPreviewReloadKey}`}
                     className="builder-desktop-iframe"
                     src={`/${gift.id}`}
@@ -959,14 +915,6 @@ export default function Builder() {
               >
                 <span><MdRefresh /></span>
                 <span>Шинэчлэх</span>
-              </button>
-              <button
-                type="button"
-                className="builder-mobile-bar-btn"
-                onClick={openFullPreview}
-              >
-                <span><MdOpenInNew /></span>
-                <span>Бүтэн харах</span>
               </button>
             </>
           )}

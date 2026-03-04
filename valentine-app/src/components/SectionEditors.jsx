@@ -274,18 +274,47 @@ function ImageUploader({ src, onUploaded }) {
 function VideoUploader({ src, onUploaded }) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const MAX_DURATION = 30; // seconds
+
+  const checkDuration = (file) =>
+    new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        if (video.duration > MAX_DURATION) {
+          reject(new Error(`Бичлэг хамгийн ихдээ ${MAX_DURATION} секунд байна. (${Math.round(video.duration)}с)`));
+        } else {
+          resolve();
+        }
+      };
+      video.onerror = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(); // can't check — let upload proceed
+      };
+      video.src = URL.createObjectURL(file);
+    });
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
+    setError(null);
     try {
+      await checkDuration(file);
       setUploading(true);
       const url = await uploadMemoryVideo(file, user.uid);
       onUploaded(url);
     } catch (err) {
-      console.error("Video upload error:", err);
+      if (err.message.includes("секунд")) {
+        setError(err.message);
+      } else {
+        console.error("Video upload error:", err);
+      }
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
 
@@ -319,9 +348,14 @@ function VideoUploader({ src, onUploaded }) {
           {uploading ? (
             <span className="se-upload-progress"><MdCloudUpload /> Хуулж байна...</span>
           ) : (
-            <span className="se-upload-text"><MdVideocam /> Бичлэг сонгох</span>
+            <span className="se-upload-text"><MdVideocam /> Бичлэг сонгох (30с хүртэл)</span>
           )}
         </label>
+      )}
+      {error && (
+        <div style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6, fontWeight: 600 }}>
+          {error}
+        </div>
       )}
     </div>
   );
@@ -1337,7 +1371,7 @@ export function MemoryVideoEditor({ section, onUpdate }) {
                 />
               </FieldRow>
 
-              <FieldRow label="Бичлэгний гарчиг">
+              <FieldRow label="Бичлэгний тайлбар">
                 <TextInputWithEmoji
                   value={vid.caption || ""}
                   onChange={(v) => editVideo(idx, "caption", v)}

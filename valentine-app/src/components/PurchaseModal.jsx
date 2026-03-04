@@ -2,82 +2,40 @@
 // PurchaseModal — Buy credits via BYL
 // ═══════════════════════════════════════════════════════════════
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { createCreditCheckout, checkCreditPayment } from "../services/creditService";
+import { createCreditCheckout } from "../services/creditService";
 import {
   MdClose,
   MdAdd,
   MdRemove,
-  MdCheckCircle,
-  MdShoppingCart,
   MdPayment,
 } from "react-icons/md";
 import "./PurchaseModal.css";
 
 const PRICE_PER_CREDIT = 5000;
 
-export default function PurchaseModal({ open, onClose, onSuccess }) {
+export default function PurchaseModal({ open, onClose }) {
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
-  const [step, setStep] = useState("select"); // "select" | "waiting" | "success"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [clientRef, setClientRef] = useState(null);
-  const pollRef = useRef(null);
-
-  // Cleanup on close
-  useEffect(() => {
-    if (!open) {
-      setStep("select");
-      setError(null);
-      setQuantity(1);
-      setClientRef(null);
-      if (pollRef.current) clearInterval(pollRef.current);
-    }
-  }, [open]);
-
-  useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, []);
 
   const handlePurchase = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await createCreditCheckout(user.uid, quantity);
-      setClientRef(data.client_reference_id);
 
-      // Open BYL checkout in new tab
-      window.open(data.checkoutUrl, "_blank");
-
-      // Switch to waiting state and poll for payment completion
-      setStep("waiting");
-
-      pollRef.current = setInterval(async () => {
-        try {
-          const status = await checkCreditPayment(data.client_reference_id);
-          if (status.status === "paid") {
-            clearInterval(pollRef.current);
-            pollRef.current = null;
-            setStep("success");
-            onSuccess?.();
-          }
-        } catch {
-          // Polling error — ignore, will retry
-        }
-      }, 3000);
+      // Redirect directly to BYL checkout page
+      window.location.href = data.checkoutUrl;
     } catch (err) {
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
 
   const handleClose = useCallback(() => {
-    if (pollRef.current) clearInterval(pollRef.current);
     onClose();
   }, [onClose]);
 
@@ -89,15 +47,14 @@ export default function PurchaseModal({ open, onClose, onSuccess }) {
         {/* Header */}
         <div className="purchase-header">
           <h2 className="purchase-title">
-            {step === "success" ? "🎉 Амжилттай!" : "🎁 Эрх худалдаж авах"}
+            🎁 Эрх худалдаж авах
           </h2>
           <button className="purchase-close" onClick={handleClose}>
             <MdClose />
           </button>
         </div>
 
-        {/* Step: Select quantity */}
-        {step === "select" && (
+        {/* Select quantity */}
           <div className="purchase-body">
             <div className="purchase-price-card">
               <div className="purchase-price-label">Нэг эрхийн үнэ</div>
@@ -150,50 +107,6 @@ export default function PurchaseModal({ open, onClose, onSuccess }) {
               )}
             </button>
           </div>
-        )}
-
-        {/* Step: Waiting for payment */}
-        {step === "waiting" && (
-          <div className="purchase-body">
-            <div className="purchase-waiting-card">
-              <div className="purchase-waiting-icon">
-                <MdPayment />
-              </div>
-              <h3 className="purchase-waiting-title">Төлбөр хүлээж байна</h3>
-              <p className="purchase-waiting-text">
-                Төлбөрийн хуудас нээгдсэн байна.
-                <br />
-                Төлбөрөө хийсний дараа энэ хуудас автоматаар шинэчлэгдэнэ.
-              </p>
-              <div className="purchase-waiting-spinner">
-                <span className="purchase-spinner" />
-                <span>Төлбөр баталгаажихыг хүлээж байна...</span>
-              </div>
-            </div>
-
-            <button className="purchase-cancel-btn" onClick={handleClose}>
-              Болих
-            </button>
-          </div>
-        )}
-
-        {/* Step: Success */}
-        {step === "success" && (
-          <div className="purchase-body purchase-success-body">
-            <div className="purchase-success-icon">
-              <MdCheckCircle />
-            </div>
-            <h3 className="purchase-success-title">Төлбөр амжилттай!</h3>
-            <p className="purchase-success-text">
-              {quantity} эрх таны данс руу нэмэгдлээ.
-              <br />
-              Одоо мэндчилгээ үүсгэж эхлээрэй!
-            </p>
-            <button className="purchase-done-btn" onClick={handleClose}>
-              <MdShoppingCart /> Дуусгах
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
