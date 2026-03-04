@@ -1,0 +1,287 @@
+/* ═══════════════════════════════════════════════════════════════
+   SimpleQuestions — Clean, minimal Q&A renderer
+   ═══════════════════════════════════════════════════════════════ */
+
+.sq-scene {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: linear-gradient(160deg, #0f0a1a 0%, #1a1025 40%, #120e1e 100%);
+  position: relative;
+  overflow: hidden;
+  gap: 20px;
+}
+
+/* Subtle ambient glow */
+.sq-scene::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Header ── */
+.sq-header {
+  text-align: center;
+  z-index: 1;
+}
+.sq-title {
+  font-family: "Josefin Sans", "Cormorant Garamond", serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 4px;
+}
+.sq-subtitle {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ── Progress ── */
+.sq-progress {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+}
+.sq-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.sq-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sq-progress-text {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Card ── */
+.sq-card {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 28px 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1;
+  position: relative;
+}
+.sq-card-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.sq-card-question {
+  font-family: "Josefin Sans", "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+.sq-card-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #fff;
+  resize: none;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  line-height: 1.5;
+}
+.sq-card-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+.sq-card-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* ── Navigation ── */
+.sq-nav {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+  z-index: 1;
+}
+.sq-btn {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sq-btn-back {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.5);
+  flex: 0 0 auto;
+}
+.sq-btn-back:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+.sq-btn-back:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.sq-btn-next {
+  flex: 1;
+  background: rgba(139, 92, 246, 0.2);
+  color: rgba(139, 92, 246, 0.6);
+}
+.sq-btn-next.sq-btn-active {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+.sq-btn-next.sq-btn-active:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+}
+.sq-btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  padding: 14px 32px;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+.sq-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+}
+
+/* ── Done screen ── */
+.sq-done {
+  text-align: center;
+  z-index: 1;
+}
+.sq-done-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+}
+.sq-done-title {
+  font-family: "Josefin Sans", "Cormorant Garamond", serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 8px;
+}
+.sq-done-sub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 28px;
+}
+
+/* ── Animations ── */
+.sq-anim-in {
+  animation: sq-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.sq-anim-out {
+  animation: sq-slide-out 0.3s ease both;
+}
+.sq-anim-out-back {
+  animation: sq-slide-out-back 0.3s ease both;
+}
+
+@keyframes sq-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+@keyframes sq-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.96);
+  }
+}
+@keyframes sq-slide-out-back {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(30px) scale(0.96);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .sq-scene {
+    padding: 24px 16px;
+    gap: 16px;
+  }
+  .sq-title {
+    font-size: 1.3rem;
+  }
+  .sq-card {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+  .sq-card-question {
+    font-size: 1rem;
+  }
+  .sq-btn {
+    padding: 11px 16px;
+    font-size: 0.82rem;
+  }
+}

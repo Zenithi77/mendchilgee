@@ -248,6 +248,9 @@ export default function GiftRenderer({
       case SECTION_TYPES.SPECIAL_QUESTIONS:
         return <Component data={currentSection.data} onContinue={goNext} />;
 
+      case SECTION_TYPES.SIMPLE_QUESTIONS:
+        return <Component data={currentSection.data} onContinue={goNext} />;
+
       default:
         return null;
     }

@@ -14,6 +14,7 @@ import MemoryGallery2 from "../components/MemoryGallery2";
 import MemoryVideo from "../components/MemoryVideo";
 import FunQuestions from "../components/FunQuestions";
 import SpecialQuestions from "../components/SpecialQuestions";
+import SimpleQuestions from "../components/SimpleQuestions";
 import { SECTION_TYPES } from "../models/gift";
 import {
   MdCelebration,
@@ -24,6 +25,7 @@ import {
   MdMovie,
   MdVideocam,
   MdQuestionAnswer,
+  MdChat,
 } from "react-icons/md";
 
 export const SECTION_REGISTRY = {
@@ -31,7 +33,7 @@ export const SECTION_REGISTRY = {
     component: Welcome2,
     label: "Welcome",
     labelMn: "Нүүр хэсэг",
-    descMn: "Хайрын түүхээ хамгийн сайхнаар эхлүүлээрэй",
+    descMn: "Мэндчилгээгээ сайхан нүүрээр эхлүүлээрэй",
     icon: <MdCelebration />,
     iconBg: "#fce7f3",
     iconColor: "#ec4899",
@@ -40,7 +42,7 @@ export const SECTION_REGISTRY = {
     component: LoveLetter,
     label: "Love Letter",
     labelMn: "Захидал хэсэг",
-    descMn: "Зүрхний үгээ цаасан дээр биш энд үлдээгээрэй",
+    descMn: "Мэдэгдэхүүн болон захидлаа сайхнаар бичээрэй",
     icon: <MdMail />,
     iconBg: "#fefce8",
     iconColor: "#eab308",
@@ -59,7 +61,7 @@ export const SECTION_REGISTRY = {
     component: MemoryGallery2,
     label: "Memory Gallery",
     labelMn: "Зургийн цомог",
-    descMn: "Дурсамж дүүрэн зургуудаа гулсдаг хэлбэрээр үзүүлээрэй",
+    descMn: "Зургуудаа гулсдаг хэлбэрээр сайхан харуулаарай",
     icon: <MdPhotoCamera />,
     iconBg: "#fff7ed",
     iconColor: "#f97316",
@@ -68,7 +70,7 @@ export const SECTION_REGISTRY = {
     component: MemoryVideo,
     label: "Video",
     labelMn: "Видео хэсэг",
-    descMn: "Өөрийн бичлэгүүдээ оруулаад үзүүлээрэй",
+    descMn: "Бичлэгүүдээ оруулаад үзүүлээрэй",
     icon: <MdVideocam />,
     iconBg: "#fef3c7",
     iconColor: "#d97706",
@@ -92,6 +94,15 @@ export const SECTION_REGISTRY = {
     iconBg: "#fdf2f8",
     iconColor: "#db2777",
     hidden: true,
+  },
+  [SECTION_TYPES.SIMPLE_QUESTIONS]: {
+    component: SimpleQuestions,
+    label: "Simple Questions",
+    labelMn: "Асуулт",
+    descMn: "Асуултуудаа оруулаад хариултыг нь аваарай",
+    icon: <MdChat />,
+    iconBg: "#ede9fe",
+    iconColor: "#7c3aed",
   },
 };
 

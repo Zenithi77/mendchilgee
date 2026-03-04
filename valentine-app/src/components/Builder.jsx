@@ -35,6 +35,7 @@ import {
   MemoryVideoEditor,
   FunQuestionsEditor,
   GenericEditor,
+  SimpleQuestionsEditor,
 } from "./SectionEditors";
 
 import "./Builder.css";
@@ -534,6 +535,14 @@ export default function Builder() {
     if (type === SECTION_TYPES.FUN_QUESTIONS)
       return (
         <FunQuestionsEditor
+          section={selectedSection}
+          onUpdate={updateSectionData}
+        />
+      );
+
+    if (type === SECTION_TYPES.SIMPLE_QUESTIONS)
+      return (
+        <SimpleQuestionsEditor
           section={selectedSection}
           onUpdate={updateSectionData}
         />

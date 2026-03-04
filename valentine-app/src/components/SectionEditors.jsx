@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdMovie, MdSettings, MdAutoAwesome, MdStar, MdPlayArrow, MdPause, MdQuestionAnswer } from "react-icons/md";
+import { MdClose, MdCloudUpload, MdPhotoCamera, MdVideocam, MdCelebration, MdMail, MdMusicNote, MdFavorite, MdMovie, MdSettings, MdAutoAwesome, MdStar, MdPlayArrow, MdPause, MdQuestionAnswer, MdChat, MdArrowUpward, MdArrowDownward, MdDelete } from "react-icons/md";
 import { SECTION_TYPES } from "../models/gift";
 import {
   uploadMemoryPhoto,
@@ -1384,6 +1384,143 @@ export function MemoryVideoEditor({ section, onUpdate }) {
 
         <button type="button" className="se-add-card-btn" onClick={addVideo}>
           <span>＋</span> Бичлэг нэмэх
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SIMPLE QUESTIONS EDITOR
+// ═══════════════════════════════════════════════════════════════
+
+export function SimpleQuestionsEditor({ section, onUpdate }) {
+  const data = section?.data || {};
+  const questions = data.questions || [];
+
+  const update = (key, value) => {
+    onUpdate(section.id, { ...data, [key]: value });
+  };
+
+  const updateQuestions = (updated) => {
+    update("questions", updated);
+  };
+
+  const addQuestion = () => {
+    const id = `sq_${Date.now()}`;
+    updateQuestions([
+      ...questions,
+      { id, question: "", placeholder: "Хариултаа бичээрэй..." },
+    ]);
+  };
+
+  const removeQuestion = (idx) => {
+    updateQuestions(questions.filter((_, i) => i !== idx));
+  };
+
+  const editQuestion = (idx, key, value) => {
+    const updated = [...questions];
+    updated[idx] = { ...updated[idx], [key]: value };
+    updateQuestions(updated);
+  };
+
+  const moveQuestion = (idx, dir) => {
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= questions.length) return;
+    const updated = [...questions];
+    [updated[idx], updated[newIdx]] = [updated[newIdx], updated[idx]];
+    updateQuestions(updated);
+  };
+
+  return (
+    <div className="se-editor">
+      <div className="se-group">
+        <h3 className="se-group-title"><MdChat /> Асуулт хариулт</h3>
+
+        <FieldRow label="Гарчиг">
+          <TextInputWithEmoji
+            value={data.title || ""}
+            onChange={(v) => update("title", v)}
+            placeholder="Асуулт хариулт 💬"
+          />
+        </FieldRow>
+
+        <FieldRow label="Дэд гарчиг">
+          <TextInputWithEmoji
+            value={data.subtitle || ""}
+            onChange={(v) => update("subtitle", v)}
+            placeholder="Миний асуултуудад хариулаач"
+          />
+        </FieldRow>
+
+        <FieldRow label="Үргэлжлүүлэх товч">
+          <TextInputWithEmoji
+            value={data.continueButton || ""}
+            onChange={(v) => update("continueButton", v)}
+            placeholder="Үргэлжлүүлэх"
+          />
+        </FieldRow>
+      </div>
+
+      <div className="se-group">
+        <h3 className="se-group-title">Асуултууд ({questions.length})</h3>
+
+        <div className="se-entries-list">
+          {questions.map((q, idx) => (
+            <div key={q.id} className="se-entry-card">
+              <div className="se-entry-header">
+                <span className="se-entry-num">{idx + 1}</span>
+                <div className="se-entry-actions">
+                  <button
+                    type="button"
+                    className="se-entry-action-btn"
+                    onClick={() => moveQuestion(idx, -1)}
+                    disabled={idx === 0}
+                    title="Дээшлүүлэх"
+                  >
+                    <MdArrowUpward />
+                  </button>
+                  <button
+                    type="button"
+                    className="se-entry-action-btn"
+                    onClick={() => moveQuestion(idx, 1)}
+                    disabled={idx === questions.length - 1}
+                    title="Доошлуулах"
+                  >
+                    <MdArrowDownward />
+                  </button>
+                  <button
+                    type="button"
+                    className="se-entry-action-btn se-entry-action-del"
+                    onClick={() => removeQuestion(idx)}
+                    title="Устгах"
+                  >
+                    <MdDelete />
+                  </button>
+                </div>
+              </div>
+
+              <FieldRow label="Асуулт">
+                <TextInputWithEmoji
+                  value={q.question || ""}
+                  onChange={(v) => editQuestion(idx, "question", v)}
+                  placeholder="Асуултаа энд бичнэ үү..."
+                />
+              </FieldRow>
+
+              <FieldRow label="Placeholder">
+                <TextInputWithEmoji
+                  value={q.placeholder || ""}
+                  onChange={(v) => editQuestion(idx, "placeholder", v)}
+                  placeholder="Хариултаа бичээрэй..."
+                />
+              </FieldRow>
+            </div>
+          ))}
+        </div>
+
+        <button type="button" className="se-add-card-btn" onClick={addQuestion}>
+          <span>＋</span> Асуулт нэмэх
         </button>
       </div>
     </div>

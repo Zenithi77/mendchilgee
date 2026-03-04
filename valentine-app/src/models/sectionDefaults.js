@@ -261,6 +261,24 @@ const SECTION_DEFAULTS = {
       },
     ],
   },
+
+  [SECTION_TYPES.SIMPLE_QUESTIONS]: {
+    title: "Асуулт хариулт 💬",
+    subtitle: "Миний асуултуудад хариулаач",
+    continueButton: "Үргэлжлүүлэх",
+    questions: [
+      {
+        id: "sq1",
+        question: "Чамд хамгийн их юу таалагддаг?",
+        placeholder: "Хариултаа бичээрэй...",
+      },
+      {
+        id: "sq2",
+        question: "Бидний хамгийн сайхан дурсамж юу вэ?",
+        placeholder: "Хариултаа бичээрэй...",
+      },
+    ],
+  },
 };
 
 /**

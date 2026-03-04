@@ -114,7 +114,17 @@ export const FEATURE_REGISTRY = {
     },
     icon: "🎊",
   },
-};
+  [SECTION_TYPES.SIMPLE_QUESTIONS]: {
+    label: "Simple Questions",
+    labelMn: "Асуулт",
+    requiredTier: TIERS.FREE,
+    editable: {
+      [TIERS.FREE]: true,
+      [TIERS.STANDARD]: true,
+      [TIERS.PREMIUM]: true,
+    },
+    icon: "💬",
+  },};
 
 // ── Premium-only future features (reserved keys) ──
 export const RESERVED_FEATURES = {

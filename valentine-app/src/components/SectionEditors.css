@@ -674,3 +674,74 @@
 .trim-preview-btn svg {
   font-size: 1rem;
 }
+
+/* ── Entry list (SimpleQuestions, etc.) ── */
+
+.se-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.se-entry-card {
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fafbfc;
+  transition: border-color 0.15s ease;
+}
+.se-entry-card:hover {
+  border-color: #e2e6eb;
+}
+
+.se-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.se-entry-num {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #94a3b8;
+  background: #f1f5f9;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.se-entry-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.se-entry-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: #f1f5f9;
+  color: #94a3b8;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.se-entry-action-btn:hover:not(:disabled) {
+  background: #e2e6eb;
+  color: #64748b;
+}
+.se-entry-action-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.se-entry-action-del:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #ef4444;
+}
