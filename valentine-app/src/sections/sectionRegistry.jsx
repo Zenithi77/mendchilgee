@@ -53,6 +53,7 @@ export const SECTION_REGISTRY = {
     icon: <MdMovie />,
     iconBg: "#e0f2fe",
     iconColor: "#0284c7",
+    hidden: true,
   },
   [SECTION_TYPES.MEMORY_GALLERY]: {
     component: MemoryGallery2,
@@ -80,6 +81,7 @@ export const SECTION_REGISTRY = {
     icon: <MdQuestionAnswer />,
     iconBg: "#ede9fe",
     iconColor: "#7c3aed",
+    hidden: true,
   },
   [SECTION_TYPES.SPECIAL_QUESTIONS]: {
     component: SpecialQuestions,
@@ -89,6 +91,7 @@ export const SECTION_REGISTRY = {
     icon: <MdLightbulb />,
     iconBg: "#fdf2f8",
     iconColor: "#db2777",
+    hidden: true,
   },
 };
 
@@ -96,13 +99,15 @@ export const SECTION_REGISTRY = {
  * Get list of available section types for the builder UI.
  */
 export function getAvailableSectionTypes() {
-  return Object.entries(SECTION_REGISTRY).map(([type, meta]) => ({
-    type,
-    label: meta.label,
-    labelMn: meta.labelMn,
-    descMn: meta.descMn,
-    icon: meta.icon,
-    iconBg: meta.iconBg,
-    iconColor: meta.iconColor,
-  }));
+  return Object.entries(SECTION_REGISTRY)
+    .filter(([, meta]) => !meta.hidden)
+    .map(([type, meta]) => ({
+      type,
+      label: meta.label,
+      labelMn: meta.labelMn,
+      descMn: meta.descMn,
+      icon: meta.icon,
+      iconBg: meta.iconBg,
+      iconColor: meta.iconColor,
+    }));
 }
