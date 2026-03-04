@@ -1435,7 +1435,7 @@ export function SimpleQuestionsEditor({ section, onUpdate }) {
   return (
     <div className="se-editor">
       <div className="se-group">
-        <h3 className="se-group-title"><MdChat /> Асуулт хариулт</h3>
+        <h3 className="se-group-title"><MdChat /> Тохиргоо</h3>
 
         <FieldRow label="Гарчиг">
           <TextInputWithEmoji
@@ -1453,7 +1453,7 @@ export function SimpleQuestionsEditor({ section, onUpdate }) {
           />
         </FieldRow>
 
-        <FieldRow label="Үргэлжлүүлэх товч">
+        <FieldRow label="Товч текст">
           <TextInputWithEmoji
             value={data.continueButton || ""}
             onChange={(v) => update("continueButton", v)}
@@ -1463,17 +1463,20 @@ export function SimpleQuestionsEditor({ section, onUpdate }) {
       </div>
 
       <div className="se-group">
-        <h3 className="se-group-title">Асуултууд ({questions.length})</h3>
+        <h3 className="se-group-title">
+          <MdChat /> Асуултууд
+          <span className="sqe-count-badge">{questions.length}</span>
+        </h3>
 
-        <div className="se-entries-list">
+        <div className="sqe-question-list">
           {questions.map((q, idx) => (
-            <div key={q.id} className="se-entry-card">
-              <div className="se-entry-header">
-                <span className="se-entry-num">{idx + 1}</span>
-                <div className="se-entry-actions">
+            <div key={q.id} className="sqe-q-card">
+              <div className="sqe-q-top">
+                <div className="sqe-q-num-pill">{idx + 1}</div>
+                <div className="sqe-q-toolbar">
                   <button
                     type="button"
-                    className="se-entry-action-btn"
+                    className="sqe-q-tool"
                     onClick={() => moveQuestion(idx, -1)}
                     disabled={idx === 0}
                     title="Дээшлүүлэх"
@@ -1482,7 +1485,7 @@ export function SimpleQuestionsEditor({ section, onUpdate }) {
                   </button>
                   <button
                     type="button"
-                    className="se-entry-action-btn"
+                    className="sqe-q-tool"
                     onClick={() => moveQuestion(idx, 1)}
                     disabled={idx === questions.length - 1}
                     title="Доошлуулах"
@@ -1491,7 +1494,7 @@ export function SimpleQuestionsEditor({ section, onUpdate }) {
                   </button>
                   <button
                     type="button"
-                    className="se-entry-action-btn se-entry-action-del"
+                    className="sqe-q-tool sqe-q-tool-del"
                     onClick={() => removeQuestion(idx)}
                     title="Устгах"
                   >
@@ -1500,27 +1503,27 @@ export function SimpleQuestionsEditor({ section, onUpdate }) {
                 </div>
               </div>
 
-              <FieldRow label="Асуулт">
-                <TextInputWithEmoji
-                  value={q.question || ""}
-                  onChange={(v) => editQuestion(idx, "question", v)}
-                  placeholder="Асуултаа энд бичнэ үү..."
-                />
-              </FieldRow>
+              <textarea
+                className="sqe-q-input"
+                value={q.question || ""}
+                onChange={(e) => editQuestion(idx, "question", e.target.value)}
+                placeholder="Асуултаа энд бичнэ үү..."
+                rows={2}
+              />
 
-              <FieldRow label="Placeholder">
-                <TextInputWithEmoji
-                  value={q.placeholder || ""}
-                  onChange={(v) => editQuestion(idx, "placeholder", v)}
-                  placeholder="Хариултаа бичээрэй..."
-                />
-              </FieldRow>
+              <input
+                className="sqe-q-ph"
+                value={q.placeholder || ""}
+                onChange={(e) => editQuestion(idx, "placeholder", e.target.value)}
+                placeholder="Placeholder текст..."
+              />
             </div>
           ))}
         </div>
 
-        <button type="button" className="se-add-card-btn" onClick={addQuestion}>
-          <span>＋</span> Асуулт нэмэх
+        <button type="button" className="sqe-add-btn" onClick={addQuestion}>
+          <span className="sqe-add-icon">+</span>
+          Асуулт нэмэх
         </button>
       </div>
     </div>
