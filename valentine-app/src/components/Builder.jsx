@@ -429,21 +429,6 @@ export default function Builder() {
     setSectionSnapshot(null);
   }, [handleSave]);
 
-  const autoSaveOnceRef = useRef(false);
-  useEffect(() => {
-    if (autoSaveOnceRef.current) return;
-    if (gift && !gift.id && user) {
-      autoSaveOnceRef.current = true;
-      (async () => {
-        try {
-          await handleSave();
-        } catch (err) {
-          console.error("Auto-save error:", err);
-        }
-      })();
-    }
-  }, [gift?.id, user, handleSave]);
-
   const openFullPreview = useCallback(async () => {
     const docId = gift?.id || (await handleSave());
     if (docId) navigate(`/${docId}`);
@@ -755,18 +740,6 @@ export default function Builder() {
                   </div>
                 ) : null}
 
-                {/* ── Full Preview Button ── */}
-                {gift.sections.length > 0 && (
-                  <button
-                    className="builder-full-preview-btn"
-                    onClick={openFullPreview}
-                    disabled={saving || gift.sections.length === 0}
-                    type="button"
-                  >
-                    <MdVisibility style={{ fontSize: '1.3rem' }} />
-                    Бүтэн урьдчилж харах
-                  </button>
-                )}
               </>
           </div>
 
