@@ -8,8 +8,6 @@ import { redeemPromoCode } from "../services/creditService";
 import {
   MdClose,
   MdQrCodeScanner,
-  MdKeyboard,
-  MdCameraAlt,
   MdImage,
   MdCheckCircle,
   MdError,
@@ -18,14 +16,14 @@ import "./PromoCodeModal.css";
 
 export default function PromoCodeModal({ open, onClose, onSuccess }) {
   const { user } = useAuth();
-  const [tab, setTab] = useState("code"); // "code" | "qr"
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null); // { type: "success"|"error", message }
-  const [cameraActive, setCameraActive] = useState(false);
+  const [result, setResult] = useState(null);
+  const [scanning, setScanning] = useState(false);
   const streamRef = useRef(null);
   const scannerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const scannerDivRef = useRef(null);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -38,10 +36,9 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
       } catch { /* noop */ }
       scannerRef.current = null;
     }
-    setCameraActive(false);
+    setScanning(false);
   }, []);
 
-  // Cleanup camera on unmount or close
   useEffect(() => {
     return () => stopCamera();
   }, [stopCamera]);
@@ -51,8 +48,7 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
       stopCamera();
       setResult(null);
       setCode("");
-      setTab("code");
-      setCameraActive(false);
+      setScanning(false);
     }
   }, [open, stopCamera]);
 
@@ -78,7 +74,6 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
     async (decodedText) => {
       if (loading) return;
 
-      // Extract promo code from URL or use raw text
       let promoCode = decodedText;
       try {
         const url = new URL(decodedText);
@@ -107,17 +102,20 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
     [user, loading, onSuccess, stopCamera],
   );
 
-  const startCamera = async () => {
+  const startCamera = useCallback(async () => {
     setResult(null);
+    // Show the scanner area first so the container has dimensions
+    setScanning(true);
+
+    // Wait for React to render the visible scanner div
+    await new Promise((r) => setTimeout(r, 100));
+
     try {
       const { Html5Qrcode } = await import("html5-qrcode");
       const scannerId = "promo-qr-scanner";
 
-      // Ensure previous scanner is cleaned up
       if (scannerRef.current) {
-        try {
-          await scannerRef.current.stop();
-        } catch { /* noop */ }
+        try { await scannerRef.current.stop(); } catch { /* noop */ }
       }
 
       const scanner = new Html5Qrcode(scannerId);
@@ -125,24 +123,25 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
 
       await scanner.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        {
+          fps: 10,
+          qrbox: { width: 220, height: 220 },
+          aspectRatio: 1,
+        },
         (decodedText) => {
           handleQRResult(decodedText);
         },
-        () => {
-          // QR not found in frame — ignore
-        },
+        () => {},
       );
-
-      setCameraActive(true);
     } catch (err) {
       console.error("Camera error:", err);
+      setScanning(false);
       setResult({
         type: "error",
         message: "Камер нээхэд алдаа гарлаа. Камерын зөвшөөрөл өгнө үү.",
       });
     }
-  };
+  }, [handleQRResult]);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -179,121 +178,74 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="promo-tabs">
-          <button
-            className={`promo-tab ${tab === "code" ? "active" : ""}`}
-            onClick={() => {
-              setTab("code");
-              stopCamera();
-              setResult(null);
-            }}
-          >
-            <MdKeyboard /> Код оруулах
-          </button>
-          <button
-            className={`promo-tab ${tab === "qr" ? "active" : ""}`}
-            onClick={() => {
-              setTab("qr");
-              setResult(null);
-            }}
-          >
-            <MdQrCodeScanner /> QR уншуулах
-          </button>
-        </div>
-
-        {/* Content */}
         <div className="promo-content">
-          {/* Code Tab */}
-          {tab === "code" && (
-            <div className="promo-code-tab">
-              <p className="promo-hint">Промо кодоо оруулна уу</p>
-              <div className="promo-input-row">
-                <input
-                  type="text"
-                  className="promo-input"
-                  placeholder="PROMO2025"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => e.key === "Enter" && handleSubmitCode()}
-                  disabled={loading}
-                  autoFocus
-                />
-                <button
-                  className="promo-submit-btn"
-                  onClick={handleSubmitCode}
-                  disabled={loading || !code.trim()}
-                >
-                  {loading ? (
-                    <span className="promo-spinner" />
-                  ) : (
-                    "Ашиглах"
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Input row with QR icon */}
+          <p className="promo-hint">Промо кодоо оруулах эсвэл QR уншуулна уу</p>
+          <div className="promo-input-row">
+            <input
+              type="text"
+              className="promo-input"
+              placeholder="PROMO2025"
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmitCode()}
+              disabled={loading}
+              autoFocus
+            />
+            <button
+              className="promo-qr-icon-btn"
+              onClick={scanning ? stopCamera : startCamera}
+              title="QR уншуулах"
+              disabled={loading}
+            >
+              <MdQrCodeScanner />
+            </button>
+            <button
+              className="promo-submit-btn"
+              onClick={handleSubmitCode}
+              disabled={loading || !code.trim()}
+            >
+              {loading ? <span className="promo-spinner" /> : "Ашиглах"}
+            </button>
+          </div>
 
-          {/* QR Tab */}
-          {tab === "qr" && (
-            <div className="promo-qr-tab">
-              <p className="promo-hint">
-                QR кодоо камераар уншуулах эсвэл зургаас уншуулна уу
-              </p>
-
-              {/* Camera scanner area */}
-              <div
-                className="promo-scanner-area"
-                style={{ display: cameraActive ? "block" : "none" }}
-              >
+          {/* QR Scanner area */}
+          {scanning && (
+            <div className="promo-scanner-wrap">
+              <div className="promo-scanner-area" ref={scannerDivRef}>
                 <div id="promo-qr-scanner" />
+                {/* Scan frame overlay */}
+                <div className="promo-scan-frame">
+                  <span className="promo-scan-corner promo-scan-tl" />
+                  <span className="promo-scan-corner promo-scan-tr" />
+                  <span className="promo-scan-corner promo-scan-bl" />
+                  <span className="promo-scan-corner promo-scan-br" />
+                  <span className="promo-scan-line" />
+                </div>
               </div>
-
-              {/* Hidden div for file scanning */}
-              <div id="promo-qr-file-scanner" style={{ display: "none" }} />
-
-              {/* Camera action buttons */}
-              {!cameraActive && !loading && (
-                <div className="promo-qr-actions">
-                  <button
-                    className="promo-qr-btn promo-qr-camera"
-                    onClick={startCamera}
-                  >
-                    <MdCameraAlt />
-                    <span>Камер нээх</span>
-                  </button>
-                  <button
-                    className="promo-qr-btn promo-qr-upload"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <MdImage />
-                    <span>Зураг сонгох</span>
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    onChange={handleFileUpload}
-                  />
-                </div>
-              )}
-
-              {/* Stop camera button */}
-              {cameraActive && (
-                <button className="promo-stop-camera" onClick={stopCamera}>
-                  Камер хаах
+              <div className="promo-scanner-actions">
+                <button
+                  className="promo-scanner-action-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <MdImage /> Зургаас уншуулах
                 </button>
-              )}
-
-              {loading && !cameraActive && (
-                <div className="promo-loading">
-                  <span className="promo-spinner" />
-                  <span>Уншиж байна...</span>
-                </div>
-              )}
+                <button className="promo-scanner-action-btn promo-scanner-stop" onClick={stopCamera}>
+                  Хаах
+                </button>
+              </div>
             </div>
           )}
+
+          {/* Hidden div for file scanning */}
+          <div id="promo-qr-file-scanner" style={{ display: "none" }} />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={handleFileUpload}
+          />
 
           {/* Result */}
           {result && (

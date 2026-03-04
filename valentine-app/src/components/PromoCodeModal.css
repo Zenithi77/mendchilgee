@@ -71,72 +71,33 @@
   color: #fff;
 }
 
-/* Tabs */
-.promo-tabs {
-  display: flex;
-  gap: 4px;
-  margin: 0 20px;
-  padding: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-}
-
-.promo-tab {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 12px;
-  border: none;
-  background: transparent;
-  color: #888;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.promo-tab:hover {
-  color: #ccc;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.promo-tab.active {
-  background: rgba(139, 92, 246, 0.2);
-  color: #a78bfa;
-}
-
-.promo-tab svg {
-  font-size: 1.1rem;
-}
-
 /* Content */
 .promo-content {
-  padding: 20px 24px 24px;
+  padding: 16px 24px 24px;
 }
 
 .promo-hint {
   color: #999;
   font-size: 0.82rem;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
 }
 
-/* Code Tab */
+/* ── Input row with QR icon ── */
 .promo-input-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  align-items: stretch;
 }
 
 .promo-input {
   flex: 1;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 12px 14px;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 2px;
   outline: none;
@@ -150,21 +111,49 @@
 }
 
 .promo-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: rgba(230, 0, 35, 0.4);
+}
+
+/* QR icon button */
+.promo-qr-icon-btn {
+  width: 46px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(230, 0, 35, 0.12);
+  border: 1px solid rgba(230, 0, 35, 0.25);
+  border-radius: 12px;
+  color: #FF85A2;
+  font-size: 1.35rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.promo-qr-icon-btn:hover:not(:disabled) {
+  background: rgba(230, 0, 35, 0.2);
+  border-color: rgba(230, 0, 35, 0.4);
+  color: #FFC4D0;
+  transform: scale(1.04);
+}
+
+.promo-qr-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .promo-submit-btn {
-  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  background: linear-gradient(135deg, #e60023, #FF85A2);
   border: none;
   color: #fff;
-  padding: 12px 20px;
+  padding: 12px 18px;
   border-radius: 12px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s;
-  min-width: 80px;
+  min-width: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,7 +161,7 @@
 
 .promo-submit-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(230, 0, 35, 0.35);
 }
 
 .promo-submit-btn:disabled {
@@ -180,82 +169,125 @@
   cursor: not-allowed;
 }
 
-/* QR Tab */
-.promo-qr-actions {
-  display: flex;
-  gap: 12px;
+/* ── Scanner wrap ── */
+.promo-scanner-wrap {
+  margin-top: 14px;
+  animation: promoScanIn 0.3s ease;
 }
 
-.promo-qr-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 24px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  color: #bbb;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.promo-qr-btn:hover {
-  background: rgba(139, 92, 246, 0.08);
-  border-color: rgba(139, 92, 246, 0.3);
-  color: #a78bfa;
-}
-
-.promo-qr-btn svg {
-  font-size: 2rem;
-}
-
-.promo-qr-btn span {
-  font-size: 0.8rem;
-  font-weight: 600;
+@keyframes promoScanIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .promo-scanner-area {
+  position: relative;
   border-radius: 16px;
   overflow: hidden;
-  margin-bottom: 12px;
+  background: #0a0a0a;
+  aspect-ratio: 1;
 }
 
+/* html5-qrcode container */
 .promo-scanner-area #promo-qr-scanner {
   width: 100% !important;
+  height: 100% !important;
   border: none !important;
 }
 
 .promo-scanner-area #promo-qr-scanner video {
-  border-radius: 12px;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 16px;
 }
 
-.promo-stop-camera {
-  width: 100%;
-  padding: 10px;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
+/* Hide the html5-qrcode built-in UI chrome */
+.promo-scanner-area #promo-qr-scanner img[alt="Info icon"],
+.promo-scanner-area #promo-qr-scanner span,
+.promo-scanner-area #promo-qr-scanner br {
+  display: none !important;
+}
+
+/* ── Scan frame overlay ── */
+.promo-scan-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.promo-scan-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: #FF85A2;
+  border-style: solid;
+  border-width: 0;
+}
+
+.promo-scan-tl { top: 20%; left: 20%; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
+.promo-scan-tr { top: 20%; right: 20%; border-top-width: 3px; border-right-width: 3px; border-radius: 0 4px 0 0; }
+.promo-scan-bl { bottom: 20%; left: 20%; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 4px; }
+.promo-scan-br { bottom: 20%; right: 20%; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 4px 0; }
+
+.promo-scan-line {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FF85A2, transparent);
+  top: 20%;
+  animation: promoScanLine 2.2s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(255, 133, 162, 0.5);
+}
+
+@keyframes promoScanLine {
+  0%, 100% { top: 20%; }
+  50% { top: 78%; }
+}
+
+/* Scanner action buttons */
+.promo-scanner-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.promo-scanner-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  font-size: 0.85rem;
+  color: #bbb;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.promo-stop-camera:hover {
-  background: rgba(239, 68, 68, 0.25);
+.promo-scanner-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-.promo-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 30px;
-  color: #aaa;
-  font-size: 0.9rem;
+.promo-scanner-action-btn svg {
+  font-size: 1rem;
+}
+
+.promo-scanner-stop {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.promo-scanner-stop:hover {
+  background: rgba(239, 68, 68, 0.2);
 }
 
 /* Result */
@@ -316,14 +348,19 @@
   }
 
   .promo-content {
-    padding: 16px 18px 20px;
+    padding: 14px 16px 20px;
   }
 
-  .promo-qr-btn {
-    padding: 18px 12px;
+  .promo-input {
+    padding: 10px 12px;
+    font-size: 0.88rem;
   }
 
-  .promo-qr-btn svg {
-    font-size: 1.6rem;
+  .promo-qr-icon-btn {
+    width: 42px;
+  }
+
+  .promo-submit-btn {
+    padding: 10px 14px;
   }
 }
