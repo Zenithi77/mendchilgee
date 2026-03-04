@@ -7,12 +7,14 @@ export default function MemoryGallery2({
   onContinue,
   template,
   musicPlaying,
+  onMusicPause,
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const gallery = template?.memoryGallery || {};
   const total = memories.length;
   const autoRef = useRef(null);
   const [touchStartX, setTouchStartX] = useState(null);
+  const videoRefs = useRef({});
 
   /* ── Auto-advance photos when music is playing ── */
   useEffect(() => {
@@ -107,7 +109,14 @@ export default function MemoryGallery2({
               >
                 {m.src ? (
                   m.type === "video" ? (
-                    <video src={m.src} controls playsInline loop muted />
+                    <video
+                      ref={(el) => { if (el) videoRefs.current[i] = el; }}
+                      src={m.src}
+                      controls
+                      playsInline
+                      loop
+                      onPlay={() => { if (onMusicPause) onMusicPause(); }}
+                    />
                   ) : (
                     <img
                       src={m.src}

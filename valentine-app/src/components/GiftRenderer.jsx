@@ -227,6 +227,7 @@ export default function GiftRenderer({
             onContinue={goNext}
             template={template}
             musicPlaying={musicPlaying}
+            onMusicPause={() => setMusicPlaying(false)}
           />
         );
 
