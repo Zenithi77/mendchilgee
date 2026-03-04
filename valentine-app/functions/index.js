@@ -725,6 +725,7 @@ exports.useCredit = onRequest(async (req, res) => {
       const giftRef = db.collection("gifts").doc(giftId);
       tx.update(giftRef, {
         paidTier: "premium",
+        status: "published",
         activatedAt: admin.firestore.FieldValue.serverTimestamp(),
         paymentExpired: false,
         creditUsed: true,

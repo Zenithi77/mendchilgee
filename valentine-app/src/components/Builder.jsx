@@ -400,7 +400,7 @@ export default function Builder() {
       setSaveStatus(null);
       // Compute and persist requiredTier before saving
       const tierToSave = getRequiredTier(gift.sections);
-      const giftToSave = { ...gift, requiredTier: tierToSave };
+      const giftToSave = { ...gift, requiredTier: tierToSave, status: gift.status || "draft" };
       const docId = await saveOrUpdateGift(giftToSave, user.uid);
       setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
       // Update URL to include giftId if not already present

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getGift, incrementViewCount } from "../services/giftService";
 import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
+import { useAuth } from "../contexts/AuthContext";
 import { isPaymentExpired } from "../utils/tierUtils";
 import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdFavorite } from "react-icons/md";
 import "./GiftPreviewPage.css";
@@ -16,6 +17,7 @@ import "./GiftPreviewPage.css";
 export default function GiftPreviewPage() {
   const { giftId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [gift, setGift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -128,6 +130,21 @@ export default function GiftPreviewPage() {
         <button className="gift-preview-back-btn" onClick={() => navigate(-1)}>
           ← Буцах
         </button>
+      </div>
+    );
+  }
+
+  /* ── Draft gate: block public access to unpublished gifts ── */
+  const isDraft = gift && gift.status === "draft";
+  const isOwner = user && gift && user.uid === gift.userId;
+  const isInIframe = window.self !== window.top;
+
+  if (isDraft && !isOwner && !isInIframe) {
+    return (
+      <div className="gift-preview-page gift-preview-error">
+        <div className="gift-preview-error-icon"><MdLock /></div>
+        <h2>Мэндчилгээ одоогоор нээлттэй байна</h2>
+        <p>Энэ мэндчилгээ идэвхжүүлэгдээгүй байна.</p>
       </div>
     );
   }
