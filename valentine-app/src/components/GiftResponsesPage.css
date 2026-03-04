@@ -1,0 +1,137 @@
+/* ═══════════════════════════════════════════════════════════════
+   GiftResponsesPage — SimpleQuestions answers display
+   Pink/rose palette matching app theme
+   ═══════════════════════════════════════════════════════════════ */
+
+.grp-page {
+  min-height: 100dvh;
+  background: #1a0e12;
+  padding: 24px 16px 48px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Back button ── */
+.grp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #FF85A2;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+.grp-back:hover {
+  color: #FFC4D0;
+}
+
+/* ── Section ── */
+.grp-section {
+  margin-bottom: 32px;
+}
+.grp-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 133, 162, 0.15);
+}
+.grp-section-icon {
+  color: #e60023;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.grp-section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #FFC4D0;
+  margin: 0;
+}
+
+/* ── Q&A list ── */
+.grp-qa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Q&A card ── */
+.grp-qa-card {
+  display: flex;
+  gap: 12px;
+  background: rgba(255, 133, 162, 0.06);
+  border: 1px solid rgba(255, 133, 162, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  transition: background 0.2s;
+}
+.grp-qa-card:hover {
+  background: rgba(255, 133, 162, 0.1);
+}
+
+/* Number badge */
+.grp-qa-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(230, 0, 35, 0.15);
+  color: #FF85A2;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Content */
+.grp-qa-content {
+  flex: 1;
+  min-width: 0;
+}
+.grp-qa-question {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #F7DDDE;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+.grp-qa-answer {
+  font-size: 0.9rem;
+  color: rgba(255, 196, 208, 0.85);
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 10px 14px;
+  background: rgba(255, 133, 162, 0.08);
+  border-radius: 10px;
+  border-left: 3px solid rgba(230, 0, 35, 0.3);
+}
+
+/* Empty answer */
+.grp-qa-empty {
+  color: rgba(255, 133, 162, 0.35);
+  font-style: italic;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .grp-page {
+    padding: 16px 12px 40px;
+  }
+  .grp-qa-card {
+    padding: 12px;
+    gap: 10px;
+  }
+  .grp-section-title {
+    font-size: 1.05rem;
+  }
+}

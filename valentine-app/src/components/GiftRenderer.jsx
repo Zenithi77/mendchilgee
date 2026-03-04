@@ -249,7 +249,22 @@ export default function GiftRenderer({
         return <Component data={currentSection.data} onContinue={goNext} />;
 
       case SECTION_TYPES.SIMPLE_QUESTIONS:
-        return <Component data={currentSection.data} onContinue={goNext} />;
+        return (
+          <Component
+            data={currentSection.data}
+            onContinue={goNext}
+            onAnswersSubmit={(pairs) => {
+              const key = `simpleQuestions_${sectionIndex}`;
+              updateChoice(key, pairs);
+              if (persistResponses && giftId) {
+                const updated = { ...choices, [key]: pairs };
+                saveGiftResponse(giftId, updated).catch((err) =>
+                  console.warn("Failed to save SimpleQuestions answers:", err),
+                );
+              }
+            }}
+          />
+        );
 
       default:
         return null;

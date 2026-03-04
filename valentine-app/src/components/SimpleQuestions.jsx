@@ -38,7 +38,7 @@ function Particles() {
   );
 }
 
-export default function SimpleQuestions({ data, onContinue }) {
+export default function SimpleQuestions({ data, onContinue, onAnswersSubmit }) {
   const questions = data?.questions || [];
   const title = data?.title || "Асуулт хариулт";
   const subtitle = data?.subtitle || "";
@@ -71,6 +71,17 @@ export default function SimpleQuestions({ data, onContinue }) {
   const setAnswer = useCallback((id, value) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
   }, []);
+
+  // Submit answers to parent when all questions are done
+  useEffect(() => {
+    if (done && onAnswersSubmit) {
+      const pairs = questions.map((q) => ({
+        question: q.question,
+        answer: answers[q.id] || "",
+      }));
+      onAnswersSubmit(pairs);
+    }
+  }, [done]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const goNext = useCallback(() => {
     if (currentIdx < total - 1) {
