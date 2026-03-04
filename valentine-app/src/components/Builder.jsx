@@ -429,6 +429,21 @@ export default function Builder() {
     setSectionSnapshot(null);
   }, [handleSave]);
 
+  const autoSaveOnceRef = useRef(false);
+  useEffect(() => {
+    if (autoSaveOnceRef.current) return;
+    if (gift && !gift.id && user) {
+      autoSaveOnceRef.current = true;
+      (async () => {
+        try {
+          await handleSave();
+        } catch (err) {
+          console.error("Auto-save error:", err);
+        }
+      })();
+    }
+  }, [gift?.id, user, handleSave]);
+
   const openFullPreview = useCallback(async () => {
     const docId = gift?.id || (await handleSave());
     if (docId) navigate(`/${docId}`);
@@ -592,15 +607,6 @@ export default function Builder() {
             <span className="builder-btn-icon">←</span>
             <span className="builder-btn-exit-txt">Буцах</span>
           </button>
-
-          <button
-            className="builder-btn builder-btn-export"
-            onClick={handleFinish}
-            disabled={saving || gift.sections.length === 0}
-          >
-            <MdCelebration />
-            <span className="builder-btn-export-txt">{saving ? 'Хадгалж байна...' : 'Export'}</span>
-          </button>
         </div>
 
         <div className="builder-header-right">
@@ -613,17 +619,14 @@ export default function Builder() {
             <span className="builder-btn-preview-txt">Урьдчилан харах</span>
           </button>
 
-          <div className="builder-divider" />
-
-          {saveStatus === "saved" && (
-            <span className="builder-save-badge builder-save-ok">
-              <MdCheck /> Хадгалсан
-            </span>
-          )}
-          {saveStatus === "error" && (
-            <span className="builder-save-badge builder-save-err"><MdClose /> Алдаа</span>
-          )}
-
+          <button
+            className="builder-btn builder-btn-export"
+            onClick={handleFinish}
+            disabled={saving || gift.sections.length === 0}
+          >
+            <MdCelebration />
+            <span className="builder-btn-export-txt">{saving ? 'Хадгалж байна...' : 'Export'}</span>
+          </button>
         </div>
       </header>
 
