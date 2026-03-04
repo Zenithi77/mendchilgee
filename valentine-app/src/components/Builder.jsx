@@ -789,14 +789,14 @@ export default function Builder() {
             <button
               type="button"
               className={`builder-dpt-btn ${desktopPreviewMode === 'desktop' ? 'active' : ''}`}
-              onClick={() => { setDesktopPreviewMode('desktop'); setDesktopPreviewReloadKey(k => k + 1); }}
+              onClick={() => setDesktopPreviewMode('desktop')}
             >
               <IoMdDesktop /> Desktop
             </button>
             <button
               type="button"
               className={`builder-dpt-btn ${desktopPreviewMode === 'mobile' ? 'active' : ''}`}
-              onClick={() => { setDesktopPreviewMode('mobile'); setDesktopPreviewReloadKey(k => k + 1); }}
+              onClick={() => setDesktopPreviewMode('mobile')}
             >
               <IoMdPhonePortrait /> Mobile
             </button>
@@ -810,38 +810,28 @@ export default function Builder() {
             </button>
           </div>
 
-          {/* Real iframe preview */}
+          {/* Real iframe preview — single persistent iframe, no destruction on mode switch */}
             <div className={`builder-desktop-preview-wrap ${desktopPreviewMode === 'mobile' ? 'mobile-mode' : 'desktop-mode'}`}>
-              {desktopPreviewMode === 'mobile' ? (
-                <div className="builder-desktop-phone-frame">
-                  <div className="builder-desktop-phone-notch" />
-                  <div className="builder-desktop-phone-screen" ref={desktopScreenRef}>
-                    <iframe
-                      ref={desktopIframeRef}
-                      key={`desktop-preview-${desktopPreviewReloadKey}`}
-                      className="builder-desktop-iframe"
-                      src="/preview"
-                      title="Mobile Preview"
-                      sandbox="allow-scripts allow-same-origin allow-popups"
-                      style={{ transform: `scale(${desktopIframeScale})`, width: '430px', height: `${desktopIframeHeight}px` }}
-                    />
-                  </div>
-                  <div className="builder-desktop-phone-home-bar" />
-                </div>
-              ) : (
-                <div className="builder-desktop-screen" ref={desktopScreenRef}>
+              <div className="builder-desktop-phone-frame">
+                <div className="builder-desktop-phone-notch" />
+                <div className="builder-desktop-phone-screen" ref={desktopScreenRef}>
                   <iframe
                     ref={desktopIframeRef}
                     key={`desktop-preview-${desktopPreviewReloadKey}`}
                     className="builder-desktop-iframe"
                     src="/preview"
-                    title="Desktop Preview"
+                    title="Preview"
                     sandbox="allow-scripts allow-same-origin allow-popups"
-                    style={{ transform: `scale(${desktopIframeScale})`, width: '1200px', height: `${desktopIframeHeight}px` }}
+                    style={{
+                      transform: `scale(${desktopIframeScale})`,
+                      width: desktopPreviewMode === 'mobile' ? '430px' : '1200px',
+                      height: `${desktopIframeHeight}px`,
+                    }}
                   />
                 </div>
-              )}
-            </div>}
+                <div className="builder-desktop-phone-home-bar" />
+              </div>
+            </div>
         </main>
 
         {/* ✅ Mobile bottom action bar — tab-based */}

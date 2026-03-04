@@ -717,17 +717,33 @@
 }
 
 /* Desktop mode: screen fills the wrap via absolute */
-.builder-desktop-preview-wrap.desktop-mode .builder-desktop-screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.builder-desktop-preview-wrap.desktop-mode .builder-desktop-phone-frame {
+  border: none;
+  border-radius: 0;
+  background: none;
+  padding: 0;
+  box-shadow: none;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: unset;
+}
+.builder-desktop-preview-wrap.desktop-mode .builder-desktop-phone-notch,
+.builder-desktop-preview-wrap.desktop-mode .builder-desktop-phone-home-bar {
+  display: none;
+}
+.builder-desktop-preview-wrap.desktop-mode .builder-desktop-phone-screen {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
   border: 2px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* Mobile mode: center the phone frame */
