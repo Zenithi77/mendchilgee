@@ -122,7 +122,20 @@ export function templateToGift(template) {
     });
   }
 
-  // Step questions removed
+  // SimpleQuestions — always added as last interactive section
+  sections.push({
+    id: generateSectionId(),
+    type: SECTION_TYPES.SIMPLE_QUESTIONS,
+    data: {
+      title: "Асуулт хариулт 💬",
+      subtitle: "Миний асуултуудад хариулаач",
+      continueButton: "Үргэлжлүүлэх",
+      questions: [
+        { id: "sq1", question: "Чамд хамгийн их юу таалагддаг?", placeholder: "Хариултаа бичээрэй..." },
+        { id: "sq2", question: "Бидний хамгийн сайхан дурсамж юу вэ?", placeholder: "Хариултаа бичээрэй..." },
+      ],
+    },
+  });
 
   return {
     id: null,

@@ -149,6 +149,20 @@ export default function MemoryGallery2({
           <div className="music-box-counter">
             {currentSlide + 1} / {total}
           </div>
+
+          {/* ── arrows inside frame ── */}
+          <button
+            className="music-box-arrow music-box-arrow-left"
+            onClick={() => goTo(currentSlide - 1)}
+          >
+            ‹
+          </button>
+          <button
+            className="music-box-arrow music-box-arrow-right"
+            onClick={() => goTo(currentSlide + 1)}
+          >
+            ›
+          </button>
         </div>
 
         {/* ── waveform visualiser ── */}
@@ -177,22 +191,6 @@ export default function MemoryGallery2({
               onClick={() => goTo(i)}
             />
           ))}
-        </div>
-
-        {/* ── arrows ── */}
-        <div className="music-box-arrows">
-          <button
-            className="music-box-arrow"
-            onClick={() => goTo(currentSlide - 1)}
-          >
-            ‹
-          </button>
-          <button
-            className="music-box-arrow"
-            onClick={() => goTo(currentSlide + 1)}
-          >
-            ›
-          </button>
         </div>
 
         {/* ── footer ── */}

@@ -1048,22 +1048,26 @@
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 16px 16px 72px; /* bottom padding for music bar */
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  box-sizing: border-box;
 }
 
 .music-box-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 14px;
 }
 
 .music-box-header-icon {
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   display: inline-block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .music-box-title {
-  font-size: 2rem;
+  font-size: 1.6rem;
   color: var(--pink);
   margin: 0;
   text-shadow: 0 0 40px rgba(255, 196, 208, 0.25);
@@ -1240,10 +1244,10 @@
   align-items: flex-end;
   justify-content: center;
   gap: 2.5px;
-  height: 52px;
-  margin: 18px 8px 0;
-  padding: 6px 4px;
-  border-radius: 12px;
+  height: 36px;
+  margin: 10px 8px 0;
+  padding: 4px 4px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -1289,7 +1293,7 @@
   display: flex;
   justify-content: center;
   gap: 7px;
-  margin-top: 18px;
+  margin-top: 10px;
 }
 
 .music-box-dot {
@@ -1320,46 +1324,53 @@
   box-shadow: 0 0 14px rgba(247, 221, 222, 0.35);
 }
 
-/* ── arrows ── */
-.music-box-arrows {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 14px;
-  padding: 0 6px;
-}
-
+/* ── arrows (inside photo frame, on sides) ── */
 .music-box-arrow {
-  width: 42px;
-  height: 42px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.3rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  z-index: 8;
+}
+
+.music-box-arrow-left {
+  left: 8px;
+}
+
+.music-box-arrow-right {
+  right: 8px;
 }
 
 .music-box-arrow:hover {
-  background: rgba(255, 196, 208, 0.1);
-  border-color: rgba(255, 196, 208, 0.2);
+  background: rgba(255, 196, 208, 0.2);
+  border-color: rgba(255, 196, 208, 0.35);
   color: #fff;
-  transform: scale(1.06);
+  transform: translateY(-50%) scale(1.08);
 }
 
 /* ── footer ── */
 .music-box-footer {
   text-align: center;
-  margin-top: 36px;
+  margin-top: 14px;
 }
 
 .music-box-footer-text {
-  font-size: 1.15rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 /* ===== MULTI-SELECT SUMMARY TAGS ===== */
