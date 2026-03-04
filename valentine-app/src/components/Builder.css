@@ -89,6 +89,25 @@
   border-color: #e8a0b0;
 }
 
+/* Export button in header */
+.builder-btn-export {
+  background: linear-gradient(135deg, #ff6b8a, #e60023);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(230, 0, 35, 0.3);
+  padding: 8px 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.builder-btn-export:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e60023, #c40020);
+  box-shadow: 0 4px 18px rgba(230, 0, 35, 0.4);
+  transform: translateY(-1px);
+}
+.builder-btn-export:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .builder-btn-primary {
   background: linear-gradient(135deg, #e8607a, #d4536a);
   color: #fff;
@@ -1486,6 +1505,12 @@
 @media (max-width: 520px) {
   .builder-btn-preview-txt {
     display: none;
+  }
+  .builder-btn-export-txt {
+    display: none;
+  }
+  .builder-btn-export {
+    padding: 8px 10px;
   }
   .builder-btn-preview {
     padding: 8px 10px;

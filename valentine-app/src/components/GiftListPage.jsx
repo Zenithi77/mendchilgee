@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import { generateShapedQR } from "../utils/heartQr";
-import { shouldShowWatermark, getRequiredTier } from "../utils/tierUtils";
-import { TIER_META } from "../config/tiers";
-import { MdMail, MdChecklist, MdPhotoCamera, MdLock, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdAdd, MdFavorite, MdWaterDrop, MdDownload, MdPrint } from "react-icons/md";
+import { MdMail, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdFavorite, MdDownload, MdPrint } from "react-icons/md";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -137,52 +135,6 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
     w.document.close();
   };
 
-  /** Extract summary pills (choices stored in finalSummary fields) */
-  const getGiftSummary = (gift) => {
-    const pills = [];
-    const finalSec = gift.sections?.find((s) => s.type === "finalSummary");
-    const fields = finalSec?.data?.summaryFields || [];
-
-    // If the builder persisted choices inside the gift, use them
-    const choices = gift.choices || {};
-    for (const f of fields) {
-      const val = choices[f.key];
-      if (val) {
-        const display = Array.isArray(val) ? val.join(", ") : val;
-        pills.push({ emoji: f.emoji, label: f.label, value: display });
-      }
-    }
-
-    // Fallback: show info from sections
-    if (pills.length === 0) {
-      const letterSec = gift.sections?.find((s) => s.type === "loveLetter");
-      if (letterSec?.data?.title) {
-        pills.push({
-          emoji: <MdMail />,
-          label: "Захидал",
-          value: letterSec.data.title,
-        });
-      }
-      const gallerySec = gift.sections?.find((s) => s.type === "memoryGallery");
-      if (gallerySec?.data?.memories?.length) {
-        const withImg = gallerySec.data.memories.filter((m) => m.src).length;
-        if (withImg > 0)
-          pills.push({
-            emoji: <MdPhotoCamera />,
-            label: "Зураг",
-            value: `${withImg} зураг`,
-          });
-      }
-    }
-
-    // Password status
-    if (gift.password) {
-      pills.push({ emoji: <MdLock />, label: "Нууц үг", value: "тохируулсан" });
-    }
-
-    return pills;
-  };
-
   const formatDate = (timestamp) => {
     if (!timestamp) return "";
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -214,10 +166,6 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
       general: "🎊",
     };
     return emojiMap[category] || "🎁";
-  };
-
-  const getSectionCount = (gift) => {
-    return gift.sections?.length || 0;
   };
 
   if (loading) {
@@ -266,49 +214,6 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                     </span>
                   </div>
                 </div>
-
-                <div className="gift-card-meta">
-                  <span className="gift-card-badge">
-                    {getSectionCount(gift)} section
-                    {getSectionCount(gift) !== 1 ? "s" : ""}
-                  </span>
-                  {gift.category && (
-                    <span className="gift-card-badge gift-card-badge-cat">
-                      {gift.category}
-                    </span>
-                  )}
-                  {(() => {
-                    const tier = getRequiredTier(gift.sections);
-                    const meta = TIER_META[tier];
-                    return (
-                      <span
-                        className="gift-card-badge gift-card-badge-tier"
-                        style={{ borderColor: meta.color, color: meta.color }}
-                      >
-                        {meta.badge} {meta.label}
-                      </span>
-                    );
-                  })()}
-                  {shouldShowWatermark(gift) && (
-                    <span className="gift-card-badge gift-card-badge-watermark">
-                      <MdWaterDrop /> Watermark
-                    </span>
-                  )}
-                </div>
-
-                {/* Summary pills */}
-                {(() => {
-                  const pills = getGiftSummary(gift);
-                  return pills.length > 0 ? (
-                    <div className="gift-card-summary">
-                      {pills.map((p, i) => (
-                        <span key={i} className="gift-card-summary-pill">
-                          {p.emoji} {p.label}: {p.value}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null;
-                })()}
 
                 <div className="gift-card-actions">
                   <button

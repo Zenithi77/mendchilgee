@@ -608,7 +608,14 @@ export default function Builder() {
             <span className="builder-btn-exit-txt">Буцах</span>
           </button>
 
-
+          <button
+            className="builder-btn builder-btn-export"
+            onClick={handleFinish}
+            disabled={saving || gift.sections.length === 0}
+          >
+            <MdCelebration />
+            <span className="builder-btn-export-txt">{saving ? 'Хадгалж байна...' : 'Export'}</span>
+          </button>
         </div>
 
         <div className="builder-header-right">
@@ -758,19 +765,6 @@ export default function Builder() {
                   >
                     <MdVisibility style={{ fontSize: '1.3rem' }} />
                     Бүтэн урьдчилж харах
-                  </button>
-                )}
-
-                {/* ── Finish (Дуусгах) Button ── */}
-                {gift.sections.length > 0 && (
-                  <button
-                    className="builder-finish-btn"
-                    onClick={handleFinish}
-                    disabled={saving}
-                    type="button"
-                  >
-                    <MdCelebration style={{ fontSize: '1.3rem' }} />
-                    {saving ? 'Хадгалж байна...' : 'Дуусгах'}
                   </button>
                 )}
               </>
