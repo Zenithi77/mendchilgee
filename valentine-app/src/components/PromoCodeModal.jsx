@@ -77,14 +77,23 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
     async (decodedText) => {
       if (loading) return;
 
-      let promoCode = decodedText;
+      let promoCode = decodedText.trim();
       try {
-        const url = new URL(decodedText);
-        const match = url.pathname.match(/\/promo\/(.+)/);
-        if (match) promoCode = decodeURIComponent(match[1]);
+        const url = new URL(promoCode);
+        // Try /promo/CODE pattern
+        const match = url.pathname.match(/\/promo\/([^/]+)/);
+        if (match) {
+          promoCode = decodeURIComponent(match[1]);
+        } else {
+          // Try ?code=CODE query param
+          const qCode = url.searchParams.get("code");
+          if (qCode) promoCode = qCode;
+        }
       } catch {
-        // Not a URL, use as-is
+        // Not a URL — use as-is
       }
+      // Remove any slashes/special chars that break Firestore paths
+      promoCode = promoCode.replace(/[/\\]/g, "").trim().toUpperCase();
 
       stopCamera();
       setLoading(true);

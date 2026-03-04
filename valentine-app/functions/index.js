@@ -608,7 +608,9 @@ exports.redeemPromoCode = onRequest(async (req, res) => {
   if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
 
   const body = req.body || {};
-  const code = (body.code || "").trim().toUpperCase();
+  const rawCode = (body.code || "").trim().toUpperCase();
+  // Strip slashes and whitespace — prevent invalid Firestore paths
+  const code = rawCode.replace(/[/\\]/g, "").trim();
   const userId = body.userId;
 
   if (!code || !userId) {
