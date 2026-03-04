@@ -1522,11 +1522,8 @@
   .builder-btn-preview-txt {
     display: none;
   }
-  .builder-btn-export-txt {
-    display: none;
-  }
   .builder-btn-export {
-    padding: 8px 10px;
+    padding: 8px 14px;
   }
   .builder-btn-preview {
     padding: 8px 10px;

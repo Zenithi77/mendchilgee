@@ -34,14 +34,16 @@ const SHAPES = QR_SHAPES.map((s) => ({
  *
  * @param {boolean}  open
  * @param {Function} onClose
- * @param {string}   giftId
+ * @param {object}   gift         — full gift object (NOT yet saved)
+ * @param {Function} onSaveGift   — async fn that saves & returns docId
  * @param {Function} onPurchase   — opens the PurchaseModal
  * @param {Function} onGiftReload — reload gift after activation
  */
 export default function GiftCompletionModal({
   open,
   onClose,
-  giftId,
+  gift,
+  onSaveGift,
   onPurchase,
   onGiftReload,
 }) {
@@ -50,6 +52,7 @@ export default function GiftCompletionModal({
   // Steps: "activating" → "activated" | "no-credits"
   const [step, setStep] = useState("activating");
   const [error, setError] = useState(null);
+  const [savedGiftId, setSavedGiftId] = useState(null);
 
   // Share state
   const [qrDataUrl, setQrDataUrl] = useState(null);
@@ -59,33 +62,39 @@ export default function GiftCompletionModal({
 
   const hasActivated = useRef(false);
 
-  const shareUrl = giftId ? `${window.location.origin}/${giftId}` : "";
+  const shareUrl = savedGiftId ? `${window.location.origin}/${savedGiftId}` : "";
 
-  // ── Step 1: Try to activate (use credit) when modal opens ──
+  // ── Step 1: Try to activate (save + use credit) when modal opens ──
   useEffect(() => {
-    if (!open || !giftId || !user) return;
+    if (!open || !gift || !user) return;
     if (hasActivated.current) return;
 
     hasActivated.current = true;
 
     if (credits > 0) {
-      // Use 1 credit to activate
+      // Save gift first, then use 1 credit to activate
       setStep("activating");
       setError(null);
-      consumeCredit(user.uid, giftId)
+      onSaveGift()
+        .then((docId) => {
+          if (!docId) throw new Error("Хадгалахад алдаа гарлаа");
+          setSavedGiftId(docId);
+          return consumeCredit(user.uid, docId);
+        })
         .then(() => {
           setStep("activated");
           onGiftReload?.();
         })
         .catch((err) => {
           console.error("Activation failed:", err);
-          setError(err.message || "Эрх ашиглахад алдаа гарлаа");
+          setError(err.message || "Идэвхжүүлэхэд алдаа гарлаа");
           setStep("no-credits");
         });
     } else {
+      // No credits — don't save anything
       setStep("no-credits");
     }
-  }, [open, giftId, user, credits, onGiftReload]);
+  }, [open, gift, user, credits, onSaveGift, onGiftReload]);
 
   // ── Generate QR when activated ──
   useEffect(() => {
@@ -115,6 +124,7 @@ export default function GiftCompletionModal({
     hasActivated.current = false;
     setStep("activating");
     setError(null);
+    setSavedGiftId(null);
     setQrDataUrl(null);
     setCopied(false);
     onClose();

@@ -452,26 +452,23 @@ export default function Builder() {
     }
   }, [gift, user, urlGiftId, navigate]);
 
-  // Save changes from the warning modal, then collapse
-  const saveAndCloseEditor = useCallback(async () => {
+  // Close editor from the warning modal (changes already in local state)
+  const saveAndCloseEditor = useCallback(() => {
     setShowUnsavedWarning(false);
-    await handleSave();
     setSelectedSectionId(null);
     setSectionSnapshot(null);
-  }, [handleSave]);
+  }, []);
 
   const openFullPreview = useCallback(async () => {
     const docId = gift?.id || (await handleSave());
     if (docId) navigate(`/${docId}`);
   }, [gift?.id, handleSave, navigate]);
 
-  // ── Finish gift creation → save & show completion modal ──
-  const handleFinish = useCallback(async () => {
-    const docId = gift?.id || (await handleSave());
-    if (docId) {
-      setShowCompletionModal(true);
-    }
-  }, [gift?.id, handleSave]);
+  // ── Finish gift creation → show completion modal (NO SAVE yet) ──
+  const handleFinish = useCallback(() => {
+    if (!gift || gift.sections.length === 0) return;
+    setShowCompletionModal(true);
+  }, [gift]);
 
   const getSectionLabel = (section) => {
     const reg = SECTION_REGISTRY[section.type];
@@ -607,7 +604,8 @@ export default function Builder() {
       <GiftCompletionModal
         open={showCompletionModal}
         onClose={() => setShowCompletionModal(false)}
-        giftId={gift?.id}
+        gift={gift}
+        onSaveGift={handleSave}
         onPurchase={() => {
           setShowCompletionModal(false);
           setShowPurchaseModal(true);
@@ -862,15 +860,6 @@ export default function Builder() {
                 onClick={() => setShowAddModal(true)}
               >
                 <span className="builder-mobile-bar-plus"><MdAdd /></span>
-              </button>
-              <button
-                type="button"
-                className="builder-mobile-bar-btn"
-                onClick={handleSave}
-                disabled={saving || gift.sections.length === 0}
-              >
-                <span>{saving ? <MdHourglassEmpty /> : <MdSave />}</span>
-                <span>{saving ? "..." : "Хадгалах"}</span>
               </button>
               <button
                 type="button"
