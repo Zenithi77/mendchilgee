@@ -101,8 +101,8 @@ export const SECTION_REGISTRY = {
     labelMn: "Асуулт",
     descMn: "Асуултуудаа оруулаад хариултыг нь аваарай",
     icon: <MdChat />,
-    iconBg: "#ede9fe",
-    iconColor: "#7c3aed",
+    iconBg: "#fff0f3",
+    iconColor: "#e60023",
   },
 };
 
