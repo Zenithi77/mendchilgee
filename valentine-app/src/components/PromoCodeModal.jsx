@@ -64,7 +64,10 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
       });
       onSuccess?.(data.newCredits);
     } catch (err) {
-      setResult({ type: "error", message: err.message });
+      const msg = err.message?.includes("fetch") || err.message?.includes("network")
+        ? "Интернет холболтоо шалгана уу"
+        : err.message;
+      setResult({ type: "error", message: msg });
     } finally {
       setLoading(false);
     }
@@ -94,7 +97,10 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
         });
         onSuccess?.(data.newCredits);
       } catch (err) {
-        setResult({ type: "error", message: err.message });
+        const msg = err.message?.includes("fetch") || err.message?.includes("network")
+          ? "Интернет холболтоо шалгана уу"
+          : err.message;
+        setResult({ type: "error", message: msg });
       } finally {
         setLoading(false);
       }
@@ -173,13 +179,23 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
         {/* Header */}
         <div className="promo-header">
           <h2 className="promo-title">🎟️ Промо код</h2>
-          <button className="promo-close" onClick={onClose}>
-            <MdClose />
-          </button>
+          <div className="promo-header-actions">
+            <button
+              className="promo-qr-icon-btn"
+              onClick={scanning ? stopCamera : startCamera}
+              title="QR уншуулах"
+              disabled={loading}
+            >
+              <MdQrCodeScanner />
+            </button>
+            <button className="promo-close" onClick={onClose}>
+              <MdClose />
+            </button>
+          </div>
         </div>
 
         <div className="promo-content">
-          {/* Input row with QR icon */}
+          {/* Input row */}
           <p className="promo-hint">Промо кодоо оруулах эсвэл QR уншуулна уу</p>
           <div className="promo-input-row">
             <input
@@ -192,14 +208,6 @@ export default function PromoCodeModal({ open, onClose, onSuccess }) {
               disabled={loading}
               autoFocus
             />
-            <button
-              className="promo-qr-icon-btn"
-              onClick={scanning ? stopCamera : startCamera}
-              title="QR уншуулах"
-              disabled={loading}
-            >
-              <MdQrCodeScanner />
-            </button>
             <button
               className="promo-submit-btn"
               onClick={handleSubmitCode}
