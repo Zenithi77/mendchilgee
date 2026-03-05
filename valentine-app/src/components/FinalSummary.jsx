@@ -16,7 +16,7 @@ const LOVE_QUOTES = [
   'Энэ мэндчилгээ зүрхнээс ирэв ❤️',
 ]
 
-export default function FinalSummary({ choices }) {
+export default function FinalSummary({ choices, onContinue }) {
   const [meterW, setMeterW] = useState(0)
   const [quoteIdx, setQuoteIdx] = useState(0)
   const [revealedRows, setRevealedRows] = useState(0)
@@ -115,6 +115,28 @@ export default function FinalSummary({ choices }) {
         <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.2)', marginTop: 20 }}>
           mendchilgee.site • Made with ❤️
         </div>
+
+        {/* Finish button */}
+        {onContinue && (
+          <button
+            onClick={onContinue}
+            style={{
+              marginTop: 24,
+              padding: '14px 36px',
+              borderRadius: 60,
+              border: 'none',
+              background: 'linear-gradient(135deg, var(--pink, #ff85a2), var(--rose, #ff6b9d))',
+              color: '#fff',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 20px rgba(255,107,157,0.35)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+          >
+            Дуусгах ✨
+          </button>
+        )}
       </div>
     </div>
   )

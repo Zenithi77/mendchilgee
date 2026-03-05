@@ -194,11 +194,19 @@ export default function GiftRenderer({
   }
 
   const currentSection = gift.sections[sectionIndex];
-  if (!currentSection) return null;
+  if (!currentSection) {
+    // No more sections — show completion
+    if (!giftComplete) setGiftComplete(true);
+    return <GiftCompletePage />;
+  }
 
   const { type } = currentSection;
   const entry = SECTION_REGISTRY[type];
-  if (!entry) return null;
+  if (!entry) {
+    // Unknown section type — skip to next
+    goNext();
+    return null;
+  }
 
   const Component = entry.component;
 
@@ -253,6 +261,7 @@ export default function GiftRenderer({
             choices={choices}
             template={template}
             category={category}
+            onContinue={goNext}
           />
         );
 

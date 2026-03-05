@@ -15,6 +15,7 @@ import MemoryVideo from "../components/MemoryVideo";
 import FunQuestions from "../components/FunQuestions";
 import SpecialQuestions from "../components/SpecialQuestions";
 import SimpleQuestions from "../components/SimpleQuestions";
+import FinalSummary2 from "../components/FinalSummary2";
 import { SECTION_TYPES } from "../models/gift";
 import {
   MdCelebration,
@@ -103,6 +104,16 @@ export const SECTION_REGISTRY = {
     icon: <MdChat />,
     iconBg: "#fff0f3",
     iconColor: "#e60023",
+  },
+  [SECTION_TYPES.FINAL_SUMMARY]: {
+    component: FinalSummary2,
+    label: "Final Summary",
+    labelMn: "Дүгнэлт",
+    descMn: "Мэндчилгээний нэгтгэл",
+    icon: <MdCelebration />,
+    iconBg: "#fce7f3",
+    iconColor: "#ec4899",
+    hidden: true,
   },
 };
 
