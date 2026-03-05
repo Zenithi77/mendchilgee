@@ -1,5 +1,5 @@
 // Firebase core exports
-export { auth, db, storage } from "../firebase";
+export { auth, db } from "../firebase";
 
 // Auth service exports
 export {
@@ -29,16 +29,19 @@ export {
   subscribeToMemories,
 } from "./firestoreService";
 
-// Storage service exports
+// Storage / Cloudinary service exports
 export {
   uploadFile,
   uploadFileWithProgress,
-  getFileURL,
-  deleteFile,
-  listFiles,
   uploadMemoryPhoto,
   uploadMemoryPhotoWithProgress,
   uploadMemoryVideo,
-  getUserMemoryPhotos,
   uploadCouplePhoto,
-} from "./storageService";
+} from "./cloudinaryService";
+
+// Cloudinary URL optimization helpers
+export {
+  optimizedImageUrl,
+  optimizedVideoUrl,
+  videoThumbnailUrl,
+} from "./cloudinaryService";

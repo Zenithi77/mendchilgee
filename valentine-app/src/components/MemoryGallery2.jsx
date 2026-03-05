@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import ContinueArrow from "./ContinueArrow";
+import { optimizedImageUrl, optimizedVideoUrl } from "../services/cloudinaryService";
 
 const BAR_COUNT = 40;
 
@@ -112,7 +113,7 @@ export default function MemoryGallery2({
                   m.type === "video" ? (
                     <video
                       ref={(el) => { if (el) videoRefs.current[i] = el; }}
-                      src={m.src}
+                      src={optimizedVideoUrl(m.src, { width: 800, quality: "auto" })}
                       controls
                       playsInline
                       loop
@@ -120,7 +121,7 @@ export default function MemoryGallery2({
                     />
                   ) : (
                     <img
-                      src={m.src}
+                      src={optimizedImageUrl(m.src, { width: 800, quality: "auto" })}
                       alt={m.caption}
                       loading="lazy"
                       draggable={false}

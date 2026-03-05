@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import ContinueArrow from './ContinueArrow';
+import { optimizedImageUrl, optimizedVideoUrl } from '../services/cloudinaryService';
 
 
 const MEMORIES = [
@@ -99,9 +100,9 @@ export default function MemoryGallery({ onContinue }) {
               <div className="memory-img-wrap">
                 {mem.src ? (
                   mem.type === 'video' ? (
-                    <video src={mem.src} controls playsInline loop muted />
+                    <video src={optimizedVideoUrl(mem.src, { width: 800 })} controls playsInline loop muted />
                   ) : (
-                    <img src={mem.src} alt={mem.caption} loading="lazy" />
+                    <img src={optimizedImageUrl(mem.src, { width: 800 })} alt={mem.caption} loading="lazy" />
                   )
                 ) : (
                   <div className="memory-placeholder">

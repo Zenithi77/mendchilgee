@@ -4,7 +4,7 @@ import { SECTION_TYPES } from "../models/gift";
 import {
   uploadMemoryPhoto,
   uploadMemoryVideo,
-} from "../services/storageService";
+} from "../services/cloudinaryService";
 import { useAuth } from "../contexts/AuthContext";
 import { getSectionLimits } from "../config/featureRegistry";
 import { TIERS, TIER_META } from "../config/tiers";
@@ -212,24 +212,27 @@ function MusicTrimmer({ music, onChange }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Image Uploader — uploads to Firebase Storage
+// Image Uploader — uploads to Cloudinary CDN
 // ═══════════════════════════════════════════════════════════════
 
 function ImageUploader({ src, onUploaded }) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     try {
       setUploading(true);
-      const url = await uploadMemoryPhoto(file, user.uid);
+      setProgress(0);
+      const url = await uploadMemoryPhoto(file, user.uid, (p) => setProgress(p));
       onUploaded(url);
     } catch (err) {
       console.error("Upload error:", err);
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
 
@@ -268,12 +271,13 @@ function ImageUploader({ src, onUploaded }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Video Uploader — uploads video to Firebase Storage
+// Video Uploader — uploads video to Cloudinary CDN
 // ═══════════════════════════════════════════════════════════════
 
 function VideoUploader({ src, onUploaded }) {
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
 
   const MAX_DURATION = 30; // seconds
@@ -304,7 +308,8 @@ function VideoUploader({ src, onUploaded }) {
     try {
       await checkDuration(file);
       setUploading(true);
-      const url = await uploadMemoryVideo(file, user.uid);
+      setProgress(0);
+      const url = await uploadMemoryVideo(file, user.uid, (p) => setProgress(p));
       onUploaded(url);
     } catch (err) {
       if (err.message.includes("секунд")) {
@@ -314,6 +319,7 @@ function VideoUploader({ src, onUploaded }) {
       }
     } finally {
       setUploading(false);
+      setProgress(0);
       e.target.value = "";
     }
   };
@@ -346,7 +352,9 @@ function VideoUploader({ src, onUploaded }) {
             disabled={uploading}
           />
           {uploading ? (
-            <span className="se-upload-progress"><MdCloudUpload /> Хуулж байна...</span>
+            <span className="se-upload-progress">
+              <MdCloudUpload /> Хуулж байна... {progress > 0 && `${progress}%`}
+            </span>
           ) : (
             <span className="se-upload-text"><MdVideocam /> Бичлэг сонгох (30с хүртэл)</span>
           )}

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import ContinueArrow from "./ContinueArrow";
+import { optimizedVideoUrl } from "../services/cloudinaryService";
 
 /* ─── Floating sparkle particle ────────────────────────────── */
 function Sparkle({ delay, left }) {
@@ -220,7 +221,7 @@ export default function MemoryVideo({ data, onContinue, onMusicPause }) {
                   <video
                     ref={videoRef}
                     key={current.src}
-                    src={current.src}
+                    src={optimizedVideoUrl(current.src, { width: 960, quality: "auto" })}
                     playsInline
                     className="mv-video"
                   />
