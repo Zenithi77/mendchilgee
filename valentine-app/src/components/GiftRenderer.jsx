@@ -246,21 +246,22 @@ export default function GiftRenderer({
     }
   }, [sectionIndex, currentSection, currentEntry, giftComplete, gift.sections.length, goToSection]);
 
-  // ── Render current section ──────────────────────────────────
-
-  // Show gift completion page when all sections are done
-  if (giftComplete) {
-    return <GiftCompletePage />;
-  }
-
   // Debug: log what section we're on
   useEffect(() => {
     console.log(`[GiftRenderer] section ${sectionIndex}/${gift.sections.length}`, {
       type: currentSection?.type,
       hasEntry: !!currentEntry,
       dataKeys: currentSection?.data ? Object.keys(currentSection.data) : [],
+      giftComplete,
     });
-  }, [sectionIndex, currentSection, currentEntry, gift.sections.length]);
+  }, [sectionIndex, currentSection, currentEntry, gift.sections.length, giftComplete]);
+
+  // ── Render current section ──────────────────────────────────
+
+  // Show gift completion page when all sections are done
+  if (giftComplete) {
+    return <GiftCompletePage />;
+  }
 
   if (!currentSection || !currentEntry) return null;
 
