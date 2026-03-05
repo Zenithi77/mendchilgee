@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
+import ContinueArrow from "./ContinueArrow";
 import {
   buildYouTubeEmbedSrc,
   buildYouTubeEmbedVideoSrc,
@@ -304,13 +305,7 @@ export default function SparkCustomizer({
             </div>
 
             <div className="spark-actions">
-              <button
-                type="button"
-                className="btn btn-love"
-                onClick={onContinue}
-              >
-                {sc.continueButton || "Continue 💌"}
-              </button>
+              <ContinueArrow onClick={onContinue} />
               <div className="spark-note">
                 {sc.note ||
                   "YouTube audio нь browser policy-оос шалтгаалаад зөвхөн Play дарсны дараа асна."}

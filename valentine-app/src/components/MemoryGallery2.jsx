@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import ContinueArrow from "./ContinueArrow";
 
 const BAR_COUNT = 40;
 
@@ -207,9 +208,7 @@ export default function MemoryGallery2({
           <p className="font-script music-box-footer-text">
             {gallery.footerText || "Бидний дурсамж бүхэн үнэ цэнэтэй... ✨"}
           </p>
-          <button className="btn btn-magic" onClick={onContinue}>
-            {gallery.continueButton || "Үргэлжлүүлэх 💕"}
-          </button>
+          <ContinueArrow onClick={onContinue} />
         </div>
       </div>
     </div>

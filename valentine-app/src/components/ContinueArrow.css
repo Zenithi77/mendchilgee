@@ -1,0 +1,103 @@
+/* ═══════════════════════════════════════════════════════════════
+   ContinueArrow — Floating action button (bottom-right)
+   ═══════════════════════════════════════════════════════════════ */
+
+.continue-arrow-fab {
+  position: fixed;
+  bottom: 90px; /* above persistent music bar */
+  right: 24px;
+  z-index: 200;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--t-primary, var(--hot-pink, #ff85a2)),
+    var(--t-secondary, var(--pink, #ff6b9d))
+  );
+  color: #fff;
+  box-shadow:
+    0 4px 20px rgba(255, 133, 162, 0.45),
+    0 0 0 0 rgba(255, 133, 162, 0.25);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease;
+  animation: continue-fab-enter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  overflow: hidden;
+}
+
+.continue-arrow-fab:hover {
+  transform: scale(1.12);
+  box-shadow:
+    0 6px 28px rgba(255, 133, 162, 0.55),
+    0 0 0 8px rgba(255, 133, 162, 0.1);
+}
+
+.continue-arrow-fab:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 12px rgba(255, 133, 162, 0.4);
+}
+
+.continue-arrow-icon {
+  font-size: 26px;
+  position: relative;
+  z-index: 2;
+  animation: continue-arrow-nudge 2s ease-in-out infinite;
+}
+
+/* Subtle nudge animation */
+@keyframes continue-arrow-nudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+
+/* Entrance animation */
+@keyframes continue-fab-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Ripple ring */
+.continue-arrow-ripple {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--t-primary, var(--hot-pink, #ff85a2));
+  opacity: 0;
+  animation: continue-ripple-pulse 2.5s ease-out infinite;
+}
+
+@keyframes continue-ripple-pulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .continue-arrow-fab {
+    width: 50px;
+    height: 50px;
+    bottom: 80px;
+    right: 18px;
+  }
+  .continue-arrow-icon {
+    font-size: 22px;
+  }
+}

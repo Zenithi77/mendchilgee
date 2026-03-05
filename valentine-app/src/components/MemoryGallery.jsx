@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ContinueArrow from './ContinueArrow';
 
 
 const MEMORIES = [
@@ -122,9 +123,7 @@ export default function MemoryGallery({ onContinue }) {
             Бүх дурсамж үнэ цэнэтэй... ✨<br />
             Үргэлжлүүлэя!
           </p>
-          <button className="btn btn-magic" onClick={onContinue}>
-            Үргэлжлүүлэх ➡
-          </button>
+          <ContinueArrow onClick={onContinue} />
         </div>
       </div>
     </div>

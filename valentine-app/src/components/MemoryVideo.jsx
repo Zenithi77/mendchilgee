@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import ContinueArrow from "./ContinueArrow";
 
 /* ─── Floating sparkle particle ────────────────────────────── */
 function Sparkle({ delay, left }) {
@@ -148,11 +149,7 @@ export default function MemoryVideo({ data, onContinue, onMusicPause }) {
             {data?.title || "Дурсамж бичлэг"}
           </h2>
           <p style={{ color: "rgba(255,255,255,0.5)" }}>Бичлэг оруулаагүй байна</p>
-          {onContinue && (
-            <button className="btn btn-magic" style={{ marginTop: 24 }} onClick={onContinue}>
-              Үргэлжлүүлэх ✨
-            </button>
-          )}
+          {onContinue && <ContinueArrow onClick={onContinue} />}
         </div>
       </div>
     );
@@ -366,13 +363,7 @@ export default function MemoryVideo({ data, onContinue, onMusicPause }) {
         )}
 
         {/* Continue */}
-        {onContinue && (
-          <div className="mv-continue">
-            <button className="btn btn-magic" onClick={onContinue}>
-              {data?.continueButton || "Үргэлжлүүлэх ✨"}
-            </button>
-          </div>
-        )}
+        {onContinue && <ContinueArrow onClick={onContinue} />}
       </div>
     </div>
   );

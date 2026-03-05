@@ -1,4 +1,5 @@
 import "./MovieSelection.css";
+import ContinueArrow from "./ContinueArrow";
 
 export default function MovieSelection({ onContinue, template, selectedMovie, onSelectMovie }) {
   const data = template?.movieSelection || {};
@@ -71,11 +72,7 @@ export default function MovieSelection({ onContinue, template, selectedMovie, on
         </div>
 
         {typeof onContinue === "function" ? (
-          <div style={{ marginTop: 26 }}>
-            <button className="btn btn-magic" onClick={onContinue}>
-              {data.continueButton || "Үргэлжлүүлэх ✨"}
-            </button>
-          </div>
+          <ContinueArrow onClick={onContinue} />
         ) : null}
       </div>
     </div>
