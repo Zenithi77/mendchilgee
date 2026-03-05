@@ -325,7 +325,7 @@ function VideoUploader({ src, onUploaded }) {
           <video
             src={src}
             className="se-image-thumb"
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "contain" }}
           />
           <button
             type="button"
