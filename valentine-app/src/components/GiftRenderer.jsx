@@ -63,6 +63,16 @@ export default function GiftRenderer({
   giftId,
   persistResponses = false,
 }) {
+  // Filter out finalSummary sections — we go straight to GiftCompletePage
+  const filteredSections = useMemo(
+    () => (gift?.sections || []).filter(s => s.type !== SECTION_TYPES.FINAL_SUMMARY),
+    [gift?.sections],
+  );
+  const filteredGift = useMemo(
+    () => ({ ...gift, sections: filteredSections }),
+    [gift, filteredSections],
+  );
+
   const [sectionIndex, setSectionIndex] = useState(initialSectionIndex || 0);
   const [prevInitialIndex, setPrevInitialIndex] = useState(
     initialSectionIndex || 0,
@@ -83,7 +93,7 @@ export default function GiftRenderer({
       if (e.origin !== window.location.origin) return;
       if (e.data?.type === 'builder-go-to-section') {
         const idx = e.data.index;
-        if (typeof idx === 'number' && idx >= 0 && idx < (gift?.sections?.length ?? 0)) {
+        if (typeof idx === 'number' && idx >= 0 && idx < (filteredSections.length)) {
           window.scrollTo({ top: 0, behavior: 'instant' });
           setSectionIndex(idx);
         }
@@ -91,7 +101,7 @@ export default function GiftRenderer({
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [gift?.sections?.length]);
+  }, [filteredSections.length]);
 
   // ── Persistent music state ──
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -170,7 +180,7 @@ export default function GiftRenderer({
       window.scrollTo({ top: 0, behavior: "instant" });
       setSectionIndex(index);
       // Activate heart rain when entering memoryGallery
-      const target = gift.sections[index];
+      const target = filteredSections[index];
       if (target?.type === SECTION_TYPES.MEMORY_GALLERY) {
         setHeartRain(true);
       }
@@ -179,12 +189,12 @@ export default function GiftRenderer({
         setMusicPlaying(false);
       }
     },
-    [gift.sections],
+    [filteredSections],
   );
 
   const goNext = useCallback(() => {
     const nextIndex = sectionIndex + 1;
-    if (nextIndex < gift.sections.length) {
+    if (nextIndex < filteredSections.length) {
       goToSection(nextIndex);
     } else {
       // All sections done → show completion page
@@ -192,7 +202,7 @@ export default function GiftRenderer({
       setMusicPlaying(false);
       setGiftComplete(true);
     }
-  }, [sectionIndex, gift.sections.length, goToSection]);
+  }, [sectionIndex, filteredSections.length, goToSection]);
 
   const goBack = useCallback(() => {
     if (sectionIndex > 0) {
@@ -204,54 +214,39 @@ export default function GiftRenderer({
     setChoices((prev) => ({ ...prev, [key]: val }));
   }, []);
 
-  // ── Auto-save choices when reaching finalSummary (public preview) ──
+  // ── Auto-save choices when reaching the last section ──
   useEffect(() => {
-    const current = gift.sections[sectionIndex];
     if (
       persistResponses &&
       giftId &&
-      current?.type === SECTION_TYPES.FINAL_SUMMARY
+      sectionIndex === filteredSections.length - 1
     ) {
       saveGiftResponse(giftId, choices).catch((err) =>
         console.warn("Failed to save gift response:", err),
       );
     }
-  }, [sectionIndex, persistResponses, giftId, choices, gift.sections]);
+  }, [sectionIndex, persistResponses, giftId, choices, filteredSections.length]);
 
   // ── Auto-complete if sectionIndex is past the end ──
   useEffect(() => {
-    if (!giftComplete && sectionIndex >= gift.sections.length) {
+    if (!giftComplete && sectionIndex >= filteredSections.length) {
       window.scrollTo({ top: 0, behavior: "instant" });
       setMusicPlaying(false);
       setGiftComplete(true);
     }
-  }, [sectionIndex, gift.sections.length, giftComplete]);
+  }, [sectionIndex, filteredSections.length, giftComplete]);
 
-  // ── Auto-skip unknown section types + finalSummary ──
-  const currentSection = gift.sections[sectionIndex];
+  // ── Auto-skip unknown section types ──
+  const currentSection = filteredSections[sectionIndex];
   const currentType = currentSection?.type;
   const currentEntry = currentType ? SECTION_REGISTRY[currentType] : null;
 
   useEffect(() => {
     if (giftComplete) return;
-
-    // Auto-skip finalSummary — go straight to GiftCompletePage
-    if (currentSection?.type === SECTION_TYPES.FINAL_SUMMARY) {
-      const nextIdx = sectionIndex + 1;
-      if (nextIdx < gift.sections.length) {
-        goToSection(nextIdx);
-      } else {
-        window.scrollTo({ top: 0, behavior: "instant" });
-        setMusicPlaying(false);
-        setGiftComplete(true);
-      }
-      return;
-    }
-
     // Unknown section type — skip it
     if (currentSection && !currentEntry) {
       const nextIdx = sectionIndex + 1;
-      if (nextIdx < gift.sections.length) {
+      if (nextIdx < filteredSections.length) {
         goToSection(nextIdx);
       } else {
         window.scrollTo({ top: 0, behavior: "instant" });
@@ -259,17 +254,17 @@ export default function GiftRenderer({
         setGiftComplete(true);
       }
     }
-  }, [sectionIndex, currentSection, currentEntry, giftComplete, gift.sections.length, goToSection]);
+  }, [sectionIndex, currentSection, currentEntry, giftComplete, filteredSections.length, goToSection]);
 
   // Debug: log what section we're on
   useEffect(() => {
-    console.log(`[GiftRenderer] section ${sectionIndex}/${gift.sections.length}`, {
+    console.log(`[GiftRenderer] section ${sectionIndex}/${filteredSections.length}`, {
       type: currentSection?.type,
       hasEntry: !!currentEntry,
       dataKeys: currentSection?.data ? Object.keys(currentSection.data) : [],
       giftComplete,
     });
-  }, [sectionIndex, currentSection, currentEntry, gift.sections.length, giftComplete]);
+  }, [sectionIndex, currentSection, currentEntry, filteredSections.length, giftComplete]);
 
   // ── Render current section ──────────────────────────────────
 
