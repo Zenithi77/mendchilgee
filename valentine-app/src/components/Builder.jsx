@@ -115,7 +115,6 @@ export default function Builder() {
             data.sections = data.sections.filter(s => s.type !== SECTION_TYPES.FINAL_SUMMARY);
           }
           setGift(data);
-          setGiftTitle(data.title || "");
           if (data.sections?.length > 0)
             setSelectedSectionId(data.sections[0].id);
         } else {
@@ -278,8 +277,6 @@ export default function Builder() {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [giftTitle, setGiftTitle] = useState(gift?.title || "");
 
   // Auto-open upgrade modal when redirected from public view with ?upgrade=true
   const locationObj = useLocation();
@@ -468,34 +465,7 @@ export default function Builder() {
     setShowFullPreviewModal(true);
   }, []);
 
-  const handleSaveWithTitle = useCallback(async () => {
-    if (!user || !gift) return;
-    const updatedGift = { ...gift, title: giftTitle.trim() || "Мэндчилгээ" };
-    setGift(updatedGift);
-    try {
-      setSaving(true);
-      setSaveStatus(null);
-      const tierToSave = getRequiredTier(updatedGift.sections);
-      const giftToSave = { ...updatedGift, requiredTier: tierToSave, status: updatedGift.status || "draft" };
-      const docId = await saveOrUpdateGift(giftToSave, user.uid);
-      setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
-      if (docId && !urlGiftId) {
-        navigate(`/builder/${docId}`, { replace: true });
-      }
-      setPreviewReloadKey((k) => k + 1);
-      setSaveStatus("saved");
-      setShowSaveModal(false);
-      setTimeout(() => setSaveStatus(null), 2500);
-      return docId;
-    } catch (err) {
-      console.error("Save error:", err);
-      setSaveStatus("error");
-      setTimeout(() => setSaveStatus(null), 3000);
-      return null;
-    } finally {
-      setSaving(false);
-    }
-  }, [gift, giftTitle, user, urlGiftId, navigate]);
+
 
   // ── Finish gift creation → show completion modal (NO SAVE yet) ──
   const handleFinish = useCallback(() => {
@@ -663,48 +633,7 @@ export default function Builder() {
         category={gift.category}
       />
 
-      {/* Save Modal with title input */}
-      {showSaveModal && (
-        <>
-          <div className="builder-save-modal-overlay" onClick={() => setShowSaveModal(false)} />
-          <div className="builder-save-modal">
-            <h3 className="builder-save-modal-title">Мэндчилгээг хадгалах</h3>
-            <label className="builder-save-modal-label">Гарчиг</label>
-            <input
-              type="text"
-              className="builder-save-modal-input"
-              value={giftTitle}
-              onChange={(e) => setGiftTitle(e.target.value)}
-              placeholder="Мэндчилгээний нэр..."
-              autoFocus
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSaveWithTitle(); }}
-            />
-            <div className="builder-save-modal-actions">
-              <button
-                type="button"
-                className="builder-btn builder-btn-save"
-                onClick={handleSaveWithTitle}
-                disabled={saving}
-              >
-                {saving ? 'Хадгалж байна...' : <><MdSave /> Хадгалах</>}
-              </button>
-              <button
-                type="button"
-                className="builder-btn builder-btn-outline"
-                onClick={() => setShowSaveModal(false)}
-              >
-                Цуцлах
-              </button>
-            </div>
-            {saveStatus === 'saved' && (
-              <p className="builder-save-modal-status builder-save-ok">✓ Амжилттай хадгалагдлаа</p>
-            )}
-            {saveStatus === 'error' && (
-              <p className="builder-save-modal-status builder-save-err">✗ Хадгалахад алдаа гарлаа</p>
-            )}
-          </div>
-        </>
-      )}
+
 
       <header className="builder-header">
         <div className="builder-header-left">
@@ -729,12 +658,14 @@ export default function Builder() {
 
           <button
             className="builder-btn builder-btn-save-header"
-            onClick={() => setShowSaveModal(true)}
+            onClick={handleSave}
             disabled={saving || gift.sections.length === 0}
           >
             <MdSave />
             <span className="builder-btn-save-txt">{saving ? 'Хадгалж...' : 'Save'}</span>
           </button>
+          {saveStatus === 'saved' && <span className="builder-save-badge builder-save-ok">✓</span>}
+          {saveStatus === 'error' && <span className="builder-save-badge builder-save-err">✗</span>}
 
           <button
             className="builder-btn builder-btn-export"
