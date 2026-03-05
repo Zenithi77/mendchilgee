@@ -15,7 +15,7 @@ function Sparkle({ delay, left }) {
  * Features: animated gradient border, floating sparkles, film-strip
  * thumbnails, custom cinematic controls, swipe navigation, reflection.
  */
-export default function MemoryVideo({ data, onContinue }) {
+export default function MemoryVideo({ data, onContinue, onMusicPause }) {
   const videos = data?.videos || [];
   const [currentIdx, setCurrentIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -97,8 +97,14 @@ export default function MemoryVideo({ data, onContinue }) {
     const v = videoRef.current;
     if (!v) return;
     bumpControls();
-    if (v.paused) v.play().catch(() => {});
-    else v.pause();
+    v.muted = false;
+    if (v.paused) {
+      // Pause background music when video starts playing
+      if (onMusicPause) onMusicPause();
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
   };
 
   const seekTo = (e) => {
@@ -219,7 +225,6 @@ export default function MemoryVideo({ data, onContinue }) {
                     key={current.src}
                     src={current.src}
                     playsInline
-                    muted={muted}
                     className="mv-video"
                   />
 

@@ -140,6 +140,10 @@ export default function GiftRenderer({
       if (target?.type === SECTION_TYPES.MEMORY_GALLERY) {
         setHeartRain(true);
       }
+      // Auto-pause background music when entering video section
+      if (target?.type === SECTION_TYPES.MEMORY_VIDEO) {
+        setMusicPlaying(false);
+      }
     },
     [gift.sections],
   );
@@ -241,7 +245,13 @@ export default function GiftRenderer({
         );
 
       case SECTION_TYPES.MEMORY_VIDEO:
-        return <Component data={currentSection.data} onContinue={goNext} />;
+        return (
+          <Component
+            data={currentSection.data}
+            onContinue={goNext}
+            onMusicPause={() => setMusicPlaying(false)}
+          />
+        );
 
       case SECTION_TYPES.FUN_QUESTIONS:
         return <Component data={currentSection.data} onContinue={goNext} />;
@@ -290,8 +300,8 @@ export default function GiftRenderer({
         />
       )}
 
-      {/* Persistent bottom music bar */}
-      {musicConfig?.url && musicStarted && (
+      {/* Persistent bottom music bar — hide during video section */}
+      {musicConfig?.url && musicStarted && type !== SECTION_TYPES.MEMORY_VIDEO && (
         <div
           className={`persistent-music-bar ${musicPlaying ? "playing" : "paused"}`}
           onClick={toggleMusic}
