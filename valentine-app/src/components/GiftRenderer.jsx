@@ -227,14 +227,29 @@ export default function GiftRenderer({
     }
   }, [sectionIndex, gift.sections.length, giftComplete]);
 
-  // ── Auto-skip unknown section types ──
+  // ── Auto-skip unknown section types + finalSummary ──
   const currentSection = gift.sections[sectionIndex];
   const currentType = currentSection?.type;
   const currentEntry = currentType ? SECTION_REGISTRY[currentType] : null;
 
   useEffect(() => {
-    if (currentSection && !currentEntry && !giftComplete) {
-      // Unknown section type — skip it
+    if (giftComplete) return;
+
+    // Auto-skip finalSummary — go straight to GiftCompletePage
+    if (currentSection?.type === SECTION_TYPES.FINAL_SUMMARY) {
+      const nextIdx = sectionIndex + 1;
+      if (nextIdx < gift.sections.length) {
+        goToSection(nextIdx);
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        setMusicPlaying(false);
+        setGiftComplete(true);
+      }
+      return;
+    }
+
+    // Unknown section type — skip it
+    if (currentSection && !currentEntry) {
       const nextIdx = sectionIndex + 1;
       if (nextIdx < gift.sections.length) {
         goToSection(nextIdx);
