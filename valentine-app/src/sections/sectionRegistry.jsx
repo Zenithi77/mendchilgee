@@ -16,6 +16,8 @@ import FunQuestions from "../components/FunQuestions";
 import SpecialQuestions from "../components/SpecialQuestions";
 import SimpleQuestions from "../components/SimpleQuestions";
 import FinalSummary2 from "../components/FinalSummary2";
+import Question2 from "../components/Question2";
+import StepQuestions2 from "../components/StepQuestions2";
 import { SECTION_TYPES } from "../models/gift";
 import {
   MdCelebration,
@@ -104,6 +106,26 @@ export const SECTION_REGISTRY = {
     icon: <MdChat />,
     iconBg: "#fff0f3",
     iconColor: "#e60023",
+  },
+  [SECTION_TYPES.STEP_QUESTIONS]: {
+    component: StepQuestions2,
+    label: "Step Questions",
+    labelMn: "Алхамт асуулт",
+    descMn: "Сонголттой асуултууд",
+    icon: <MdQuestionAnswer />,
+    iconBg: "#ede9fe",
+    iconColor: "#7c3aed",
+    hidden: true,
+  },
+  [SECTION_TYPES.QUESTION]: {
+    component: Question2,
+    label: "Question",
+    labelMn: "Асуулт",
+    descMn: "Тийм/Үгүй асуулт",
+    icon: <MdAutoAwesome />,
+    iconBg: "#fdf2f8",
+    iconColor: "#db2777",
+    hidden: true,
   },
   [SECTION_TYPES.FINAL_SUMMARY]: {
     component: FinalSummary2,

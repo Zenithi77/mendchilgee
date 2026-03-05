@@ -36,6 +36,7 @@ export const SECTION_TYPES = {
   FINAL_SUMMARY: "finalSummary",
   SPECIAL_QUESTIONS: "specialQuestions",
   SIMPLE_QUESTIONS: "simpleQuestions",
+  STEP_QUESTIONS: "stepQuestions",
 };
 
 // ── ID generation ──

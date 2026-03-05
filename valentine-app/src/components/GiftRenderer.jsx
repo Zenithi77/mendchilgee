@@ -316,6 +316,18 @@ export default function GiftRenderer({
           />
         );
 
+      case SECTION_TYPES.STEP_QUESTIONS:
+        return (
+          <Component
+            steps={currentSection.data?.steps || []}
+            choices={choices}
+            updateChoice={updateChoice}
+            onDone={goNext}
+            onBack={goBack}
+            template={template}
+          />
+        );
+
       default:
         return null;
     }
