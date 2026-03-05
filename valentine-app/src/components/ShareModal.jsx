@@ -33,7 +33,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
     setQrDataUrl(null);
     setGenerating(true);
 
-    generateShapedQR(shareUrl, { size: 600, color: "#e60023", shape })
+    generateShapedQR(shareUrl, { size: 400, color: "#e60023", shape })
       .then((url) => {
         if (!cancelled) { setQrDataUrl(url); setGenerating(false); }
       })

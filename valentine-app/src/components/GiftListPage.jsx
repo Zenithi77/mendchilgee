@@ -84,7 +84,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       }
 
       try {
-        const qr = await generateShapedQR(url, { size: 700, color: "#e60023", shape: shareShape });
+        const qr = await generateShapedQR(url, { size: 400, color: "#e60023", shape: shareShape });
         setSharePanel((prev) =>
           prev?.id === gift.id ? { ...prev, qr, loading: false } : prev,
         );
@@ -105,7 +105,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     if (!sharePanel?.id || !sharePanel?.url) return;
     let cancelled = false;
     setSharePanel((prev) => prev ? { ...prev, loading: true, qr: null } : prev);
-    generateShapedQR(sharePanel.url, { size: 700, color: "#e60023", shape: shareShape })
+    generateShapedQR(sharePanel.url, { size: 400, color: "#e60023", shape: shareShape })
       .then((qr) => { if (!cancelled) setSharePanel((prev) => prev ? { ...prev, qr, loading: false } : prev); })
       .catch(() => { if (!cancelled) setSharePanel((prev) => prev ? { ...prev, loading: false, error: "QR алдаа" } : prev); });
     return () => { cancelled = true; };

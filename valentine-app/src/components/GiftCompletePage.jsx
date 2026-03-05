@@ -31,9 +31,10 @@ export default function GiftCompletePage() {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    requestAnimationFrame(() => setVisible(true));
-    const t = setTimeout(() => setShowContent(true), 600);
-    return () => clearTimeout(t);
+    requestAnimationFrame(() => {
+      setVisible(true);
+      setShowContent(true);
+    });
   }, []);
 
   const emojis = useMemo(
@@ -98,7 +99,7 @@ export default function GiftCompletePage() {
 
         {/* CTA - More info */}
         <p className="gc-cta-text">
-          Та илүү нарийн мэдээлэл авахыг хүсвэл
+          Вэбсайттай холбоотой асуух зүйлийг <br /> та доорх хаягаас асуугарай
         </p>
 
         <a

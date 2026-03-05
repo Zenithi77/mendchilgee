@@ -103,7 +103,7 @@ export default function GiftCompletionModal({
     setQrDataUrl(null);
     setQrGenerating(true);
 
-    generateShapedQR(shareUrl, { size: 600, color: "#e60023", shape })
+    generateShapedQR(shareUrl, { size: 400, color: "#e60023", shape })
       .then((url) => {
         if (!cancelled) {
           setQrDataUrl(url);
