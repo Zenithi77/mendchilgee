@@ -11,6 +11,7 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
+  padding-bottom: 80px; /* Extra space for persistent music bar */
   background: #1a0e12;
   position: relative;
   overflow: hidden;

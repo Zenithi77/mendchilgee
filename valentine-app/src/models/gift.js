@@ -187,6 +187,7 @@ export function giftToTemplate(gift) {
 export function createEmptyGift() {
   return {
     id: null,
+    title: "",
     templateId: null,
     category: null,
     customizer: null,
