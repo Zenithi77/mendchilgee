@@ -106,29 +106,14 @@ export default function SimpleQuestions({ data, onContinue, onAnswersSubmit }) {
     }
   }, [currentIdx]);
 
-  /* ── Done screen ── */
-  if (done) {
-    return (
-      <div className="sq-scene">
-        <Particles />
-        <div className="sq-done sq-anim-scale-in">
-          <div className="sq-done-ring">
-            <div className="sq-done-icon">
-              <svg viewBox="0 0 24 24" fill="none" className="sq-done-check">
-                <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </div>
-          <h2 className="sq-done-title">Баярлалаа!</h2>
-          <p className="sq-done-sub">Хариултууд чинь амжилттай бүртгэгдлээ</p>
-          <button className="sq-btn sq-btn-primary" onClick={onContinue}>
-            <span>{continueBtn}</span>
-            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
-          </button>
-        </div>
-      </div>
-    );
-  }
+  /* ── Auto-continue when done ── */
+  useEffect(() => {
+    if (done && onContinue) {
+      onContinue();
+    }
+  }, [done, onContinue]);
+
+  if (done) return null;
 
   if (!current) return null;
 

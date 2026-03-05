@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 // ═══════════════════════════════════════════════════════════════
 // FunQuestions — Paper-style questions with handwritten feel
@@ -42,27 +42,14 @@ export default function FunQuestions({ data, onContinue }) {
     }
   }, [currentIdx]);
 
-  /* ── Thank you ── */
-  if (showThank) {
-    return (
-      <div className="fq-scene">
-        <div className="fq-paper fq-thank-paper fq-anim-in">
-          <div className="fq-paper-edge" />
-          <div className="fq-paper-inner">
-            <div className="fq-thank-icon">♡</div>
-            <h2 className="fq-thank-title">Баярлалаа</h2>
-            <p className="fq-thank-sub">
-              Хариултууд чинь надад маш их таалагдлаа
-            </p>
-            <div className="fq-thank-line" />
-            <button className="fq-btn fq-btn-primary" onClick={onContinue}>
-              {continueBtn}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  /* ── Auto-continue when done ── */
+  useEffect(() => {
+    if (showThank && onContinue) {
+      onContinue();
+    }
+  }, [showThank, onContinue]);
+
+  if (showThank) return null;
 
   if (!current) return null;
 
