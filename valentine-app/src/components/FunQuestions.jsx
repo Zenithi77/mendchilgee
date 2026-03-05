@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import ContinueArrow from "./ContinueArrow";
 
 // ═══════════════════════════════════════════════════════════════
 // FunQuestions — Paper-style questions with handwritten feel
@@ -7,6 +6,7 @@ import ContinueArrow from "./ContinueArrow";
 
 export default function FunQuestions({ data, onContinue }) {
   const questions = data?.questions || [];
+  const continueBtn = data?.continueButton || "Үргэлжлүүлэх";
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -55,9 +55,11 @@ export default function FunQuestions({ data, onContinue }) {
               Хариултууд чинь надад маш их таалагдлаа
             </p>
             <div className="fq-thank-line" />
+            <button className="fq-btn fq-btn-primary" onClick={onContinue}>
+              {continueBtn}
+            </button>
           </div>
         </div>
-        <ContinueArrow onClick={onContinue} />
       </div>
     );
   }

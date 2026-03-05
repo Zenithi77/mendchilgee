@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import ContinueArrow from './ContinueArrow';
 import { optimizedImageUrl, optimizedVideoUrl } from '../services/cloudinaryService';
 
 
@@ -124,7 +123,9 @@ export default function MemoryGallery({ onContinue }) {
             Бүх дурсамж үнэ цэнэтэй... ✨<br />
             Үргэлжлүүлэя!
           </p>
-          <ContinueArrow onClick={onContinue} />
+          <button className="btn btn-magic" onClick={onContinue}>
+            Үргэлжлүүлэх ➡
+          </button>
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from "react";
-import ContinueArrow from "./ContinueArrow";
 import "./SpecialQuestions.css";
 
 /**
@@ -156,7 +155,9 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
               <h2 className="sq-reveal-text font-script">
                 {q.revealText || "Бүх зүйлд чинь дуртай 💖"}
               </h2>
-              {qIdx >= questions.length - 1 && <ContinueArrow onClick={goNext} />}
+              <button className="sq-next-btn glow" onClick={goNext}>
+                Үргэлжлүүлэх ✨
+              </button>
             </div>
           )}
         </div>
@@ -219,13 +220,9 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
         )}
 
         {answered && (
-          qIdx < questions.length - 1 ? (
-            <button className="sq-next-btn" onClick={goNext}>
-              Дараах ➨
-            </button>
-          ) : (
-            <ContinueArrow onClick={goNext} />
-          )
+          <button className="sq-next-btn" onClick={goNext}>
+            {qIdx < questions.length - 1 ? "Дараах ➨" : "Үргэлжлүүлэх ✨"}
+          </button>
         )}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import ContinueArrow from "./ContinueArrow";
 
 /* ─────────────────────────────────────────────────────
    LoveLetter — Dreamy cinematic envelope → letter reveal
@@ -279,13 +280,9 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
               <div className="ll-letter-decoration ll-deco-bottom">
                 {decorations.bottom || "🌹"}
               </div>
-            </div>
 
-            <button className="ll-close-btn" onClick={handleClose}>
-              <span className="ll-btn-sparkle">✨</span>
-              {letter.closeButtonText || "Уншлаа"}
-              <span className="ll-btn-sparkle">✨</span>
-            </button>
+              <ContinueArrow onClick={handleClose} />
+            </div>
           </div>
         )}
       </div>

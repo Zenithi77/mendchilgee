@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import ContinueArrow from "./ContinueArrow";
 import "./SimpleQuestions.css";
 
 // ═══════════════════════════════════════════════════════════════
@@ -43,6 +42,7 @@ export default function SimpleQuestions({ data, onContinue, onAnswersSubmit }) {
   const questions = data?.questions || [];
   const title = data?.title || "Асуулт хариулт";
   const subtitle = data?.subtitle || "";
+  const continueBtn = data?.continueButton || "Үргэлжлүүлэх";
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -121,8 +121,11 @@ export default function SimpleQuestions({ data, onContinue, onAnswersSubmit }) {
           </div>
           <h2 className="sq-done-title">Баярлалаа!</h2>
           <p className="sq-done-sub">Хариултууд чинь амжилттай бүртгэгдлээ</p>
+          <button className="sq-btn sq-btn-primary" onClick={onContinue}>
+            <span>{continueBtn}</span>
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
+          </button>
         </div>
-        <ContinueArrow onClick={onContinue} />
       </div>
     );
   }
