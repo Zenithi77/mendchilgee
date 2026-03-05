@@ -4,6 +4,7 @@ import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import { saveGiftResponse } from "../services/giftResponseService";
 import HeartRain from "./HeartRain";
 import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
+import GiftCompletePage from "./GiftCompletePage";
 import { MdPause, MdPlayArrow } from "react-icons/md";
 
 /** Build initial choices state. */
@@ -36,6 +37,7 @@ export default function GiftRenderer({
   );
   const [choices, setChoices] = useState(() => buildInitialChoices());
   const [heartRain, setHeartRain] = useState(false);
+  const [giftComplete, setGiftComplete] = useState(false);
 
   // Adjust sectionIndex when initialSectionIndex prop changes (deep-linking)
   if ((initialSectionIndex || 0) !== prevInitialIndex) {
@@ -152,6 +154,11 @@ export default function GiftRenderer({
     const nextIndex = sectionIndex + 1;
     if (nextIndex < gift.sections.length) {
       goToSection(nextIndex);
+    } else {
+      // All sections done → show completion page
+      window.scrollTo({ top: 0, behavior: "instant" });
+      setMusicPlaying(false);
+      setGiftComplete(true);
     }
   }, [sectionIndex, gift.sections.length, goToSection]);
 
@@ -180,6 +187,11 @@ export default function GiftRenderer({
   }, [sectionIndex, persistResponses, giftId, choices, gift.sections]);
 
   // ── Render current section ──────────────────────────────────
+
+  // Show gift completion page when all sections are done
+  if (giftComplete) {
+    return <GiftCompletePage />;
+  }
 
   const currentSection = gift.sections[sectionIndex];
   if (!currentSection) return null;

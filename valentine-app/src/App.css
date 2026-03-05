@@ -4184,17 +4184,16 @@
   background: rgba(0, 0, 0, 0.2);
   transition: opacity 0.4s ease;
   z-index: 3;
+  cursor: pointer;
 }
 .mv-play-overlay.mv-hidden {
   opacity: 0;
   pointer-events: none;
 }
-.mv-play-overlay:hover {
-  opacity: 1 !important;
-  pointer-events: auto;
-}
 .mv-play-ring {
   position: relative;
+  cursor: pointer;
+  z-index: 4;
 }
 .mv-play-ring::before {
   content: '';
@@ -4224,7 +4223,7 @@
     0 8px 32px rgba(0, 0, 0, 0.4),
     0 0 20px rgba(255,133,162,0.15);
 }
-.mv-play-overlay:hover .mv-play-btn {
+.mv-play-ring:hover .mv-play-btn {
   transform: scale(1.12);
   background: linear-gradient(135deg, rgba(255,133,162,0.45), rgba(255,107,157,0.35));
   box-shadow:

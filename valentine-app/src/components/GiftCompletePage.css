@@ -1,0 +1,329 @@
+/* ═══════════════════════════════════════════════════════════════
+   GiftCompletePage — Final farewell after viewing a gift
+   ═══════════════════════════════════════════════════════════════ */
+
+.gc-page {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 133, 162, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(255, 107, 157, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(30, 15, 25, 1) 0%, rgba(15, 8, 18, 1) 100%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.gc-page.gc-visible {
+  opacity: 1;
+}
+
+/* ── Floating emoji layer ── */
+.gc-emoji-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.gc-float-emoji {
+  position: absolute;
+  bottom: -40px;
+  font-size: 1.4rem;
+  opacity: 0;
+  animation: gcEmojiRise linear infinite;
+}
+@keyframes gcEmojiRise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) scale(0.7);
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) rotate(360deg) scale(1);
+  }
+}
+
+/* ── Glowing orbs ── */
+.gc-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
+.gc-orb-1 {
+  width: 300px; height: 300px;
+  background: var(--t-primary, #ff85a2);
+  top: -80px; left: -60px;
+  animation: gcOrbFloat 8s ease-in-out infinite;
+}
+.gc-orb-2 {
+  width: 250px; height: 250px;
+  background: var(--t-secondary, #ff6b9d);
+  bottom: -60px; right: -40px;
+  animation: gcOrbFloat 10s ease-in-out infinite reverse;
+}
+.gc-orb-3 {
+  width: 180px; height: 180px;
+  background: #c084fc;
+  top: 40%; left: 50%;
+  animation: gcOrbFloat 12s ease-in-out infinite 2s;
+}
+@keyframes gcOrbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(20px, -30px); }
+  66% { transform: translate(-15px, 20px); }
+}
+
+/* ── Card ── */
+.gc-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  padding: 40px 28px 32px;
+  text-align: center;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 133, 162, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transform: translateY(30px) scale(0.96);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.gc-card.gc-card-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ── Top decoration ── */
+.gc-top-deco {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.gc-sparkle-icon {
+  animation: gcSparkle 2s ease-in-out infinite;
+}
+.gc-heart-icon {
+  font-size: 2.2rem;
+  animation: gcHeartBeat 1.5s ease-in-out infinite;
+}
+@keyframes gcSparkle {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.6; transform: scale(1.2) rotate(15deg); }
+}
+@keyframes gcHeartBeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+}
+
+/* ── Logo ── */
+.gc-logo {
+  margin: 12px 0 8px;
+}
+.gc-logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--t-primary, #ff85a2),
+    var(--t-secondary, #ff6b9d),
+    #c084fc
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+.gc-logo-dot {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Divider ── */
+.gc-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+.gc-divider-sm {
+  margin: 14px auto;
+  max-width: 180px;
+}
+.gc-div-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 133, 162, 0.3), transparent);
+}
+.gc-div-diamond {
+  color: var(--t-primary, #ff85a2);
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+.gc-div-heart {
+  color: var(--t-primary, #ff85a2);
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+/* ── Title ── */
+.gc-title {
+  font-size: 1.65rem;
+  color: #fff;
+  line-height: 1.4;
+  margin: 0 0 12px;
+  text-shadow: 0 2px 20px rgba(255, 133, 162, 0.25);
+}
+
+/* ── Subtitle ── */
+.gc-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 4px;
+  line-height: 1.5;
+}
+
+/* ── CTA text ── */
+.gc-cta-text {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 14px;
+}
+
+/* ── Instagram button ── */
+.gc-ig-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 60px;
+  text-decoration: none;
+  background: linear-gradient(
+    135deg,
+    #833ab4 0%,
+    #fd1d1d 50%,
+    #fcb045 100%
+  );
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow:
+    0 6px 24px rgba(131, 58, 180, 0.35),
+    0 0 0 0 rgba(253, 29, 29, 0.2);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.25s ease;
+  animation: gcIgGlow 3s ease-in-out infinite;
+}
+.gc-ig-btn:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 8px 32px rgba(131, 58, 180, 0.45),
+    0 0 0 6px rgba(253, 29, 29, 0.1);
+}
+.gc-ig-btn:active {
+  transform: scale(0.97);
+}
+@keyframes gcIgGlow {
+  0%, 100% {
+    box-shadow:
+      0 6px 24px rgba(131, 58, 180, 0.35),
+      0 0 0 0 rgba(253, 29, 29, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 8px 32px rgba(131, 58, 180, 0.45),
+      0 0 0 8px rgba(253, 29, 29, 0.05);
+  }
+}
+.gc-ig-icon {
+  flex-shrink: 0;
+}
+.gc-ig-text {
+  white-space: nowrap;
+}
+.gc-ig-arrow {
+  flex-shrink: 0;
+  opacity: 0.8;
+  animation: gcArrowNudge 2s ease-in-out infinite;
+}
+@keyframes gcArrowNudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+
+/* ── Footer ── */
+.gc-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.gc-footer-text {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 8px;
+}
+.gc-site-link {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: var(--t-primary, #ff85a2);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.gc-site-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ── Bottom decoration ── */
+.gc-bottom-deco {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 4px;
+}
+
+/* ══ Responsive ══ */
+@media (max-width: 480px) {
+  .gc-page {
+    padding: 16px 12px;
+  }
+  .gc-card {
+    padding: 32px 20px 24px;
+    border-radius: 22px;
+  }
+  .gc-title {
+    font-size: 1.4rem;
+  }
+  .gc-ig-btn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+  .gc-orb-1 { width: 200px; height: 200px; }
+  .gc-orb-2 { width: 160px; height: 160px; }
+  .gc-orb-3 { width: 120px; height: 120px; }
+}

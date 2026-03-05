@@ -85,28 +85,42 @@ export default function MemoryVideo({ data, onContinue, onMusicPause }) {
     };
   }, [currentIdx, videos.length, goTo]);
 
-  /* ─── Auto-hide controls ─── */
+  /* ─── Auto-hide controls (YouTube-style) ─── */
   const bumpControls = useCallback(() => {
     setShowControls(true);
     clearTimeout(controlsTimer.current);
     controlsTimer.current = setTimeout(() => {
       if (videoRef.current && !videoRef.current.paused) setShowControls(false);
-    }, 3000);
+    }, 3500);
   }, []);
 
-  const togglePlay = () => {
+  /* Tap on video area → toggle controls visibility (don't toggle play) */
+  const handleVideoTap = useCallback(() => {
+    if (showControls) {
+      // If controls visible and playing, hide them
+      if (videoRef.current && !videoRef.current.paused) {
+        clearTimeout(controlsTimer.current);
+        setShowControls(false);
+      }
+    } else {
+      bumpControls();
+    }
+  }, [showControls, bumpControls]);
+
+  /* Play/pause — only called from the actual buttons */
+  const togglePlay = useCallback((e) => {
+    if (e) e.stopPropagation();
     const v = videoRef.current;
     if (!v) return;
     bumpControls();
     v.muted = false;
     if (v.paused) {
-      // Pause background music when video starts playing
       if (onMusicPause) onMusicPause();
       v.play().catch(() => {});
     } else {
       v.pause();
     }
-  };
+  }, [bumpControls, onMusicPause]);
 
   const seekTo = (e) => {
     const v = videoRef.current;
@@ -213,8 +227,8 @@ export default function MemoryVideo({ data, onContinue, onMusicPause }) {
             onTouchEnd={onTouchEnd}
             onMouseMove={bumpControls}
           >
-            {/* Cinematic player */}
-            <div className="mv-player" onClick={togglePlay}>
+            {/* Cinematic player — tap to show/hide controls */}
+            <div className="mv-player" onClick={handleVideoTap}>
               {current?.src ? (
                 <>
                   {/* Letterbox bars */}
@@ -229,9 +243,9 @@ export default function MemoryVideo({ data, onContinue, onMusicPause }) {
                     className="mv-video"
                   />
 
-                  {/* Play overlay with ripple */}
+                  {/* Play/Pause overlay button — always tappable when visible */}
                   <div className={`mv-play-overlay ${playing && !showControls ? "mv-hidden" : ""}`}>
-                    <div className="mv-play-ring">
+                    <div className="mv-play-ring" onClick={togglePlay}>
                       <div className="mv-play-btn">
                         {playing ? (
                           <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
