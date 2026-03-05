@@ -10,6 +10,21 @@ export default function StepQuestions({
 }) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState("next");
+
+  // Safety: if no steps, auto-advance
+  if (!steps || steps.length === 0) {
+    return (
+      <div className="page page-enter" style={{ textAlign: "center", padding: 40 }}>
+        <div className="glass" style={{ padding: 32 }}>
+          <p style={{ fontSize: "1.2rem", marginBottom: 16 }}>Асуулт алга байна</p>
+          <button className="btn btn-magic" onClick={onDone}>
+            Үргэлжлүүлэх →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const current = steps[step];
   const totalSteps = steps.length;
   const stepUI = template?.stepQuestions || {};

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef, Component as ReactComponent } from "react";
 import { giftToTemplate, SECTION_TYPES } from "../models/gift";
 import { SECTION_REGISTRY } from "../sections/sectionRegistry";
 import { saveGiftResponse } from "../services/giftResponseService";
@@ -6,6 +6,38 @@ import HeartRain from "./HeartRain";
 import YouTubeAudioPlayer from "./YouTubeAudioPlayer";
 import GiftCompletePage from "./GiftCompletePage";
 import { MdPause, MdPlayArrow } from "react-icons/md";
+
+/* ── ErrorBoundary: catches render crashes in section components ── */
+class SectionErrorBoundary extends ReactComponent {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(err, info) {
+    console.error("[GiftRenderer] Section crashed:", err, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="page page-enter" style={{ textAlign: "center", padding: 40 }}>
+          <div className="glass" style={{ padding: 32 }}>
+            <p style={{ fontSize: "1.2rem", marginBottom: 16 }}>Алдаа гарлаа 😔</p>
+            <button
+              className="btn btn-magic"
+              onClick={() => {
+                this.setState({ hasError: false });
+                this.props.onSkip?.();
+              }}
+            >
+              Дараагийнх руу шилжих →
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 /** Build initial choices state. */
 function buildInitialChoices() {
@@ -221,6 +253,15 @@ export default function GiftRenderer({
     return <GiftCompletePage />;
   }
 
+  // Debug: log what section we're on
+  useEffect(() => {
+    console.log(`[GiftRenderer] section ${sectionIndex}/${gift.sections.length}`, {
+      type: currentSection?.type,
+      hasEntry: !!currentEntry,
+      dataKeys: currentSection?.data ? Object.keys(currentSection.data) : [],
+    });
+  }, [sectionIndex, currentSection, currentEntry, gift.sections.length]);
+
   if (!currentSection || !currentEntry) return null;
 
   const { type } = currentSection;
@@ -338,7 +379,9 @@ export default function GiftRenderer({
       {heartRain && (
         <HeartRain active={heartRain} emojis={template?.effects?.heartRain} />
       )}
-      {renderSection()}
+      <SectionErrorBoundary key={sectionIndex} onSkip={goNext}>
+        {renderSection()}
+      </SectionErrorBoundary>
 
       {/* Hidden YouTube audio iframe */}
       {musicConfig?.url && (
