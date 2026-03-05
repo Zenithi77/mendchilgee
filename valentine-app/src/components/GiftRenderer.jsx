@@ -186,6 +186,34 @@ export default function GiftRenderer({
     }
   }, [sectionIndex, persistResponses, giftId, choices, gift.sections]);
 
+  // ── Auto-complete if sectionIndex is past the end ──
+  useEffect(() => {
+    if (!giftComplete && sectionIndex >= gift.sections.length) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      setMusicPlaying(false);
+      setGiftComplete(true);
+    }
+  }, [sectionIndex, gift.sections.length, giftComplete]);
+
+  // ── Auto-skip unknown section types ──
+  const currentSection = gift.sections[sectionIndex];
+  const currentType = currentSection?.type;
+  const currentEntry = currentType ? SECTION_REGISTRY[currentType] : null;
+
+  useEffect(() => {
+    if (currentSection && !currentEntry && !giftComplete) {
+      // Unknown section type — skip it
+      const nextIdx = sectionIndex + 1;
+      if (nextIdx < gift.sections.length) {
+        goToSection(nextIdx);
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        setMusicPlaying(false);
+        setGiftComplete(true);
+      }
+    }
+  }, [sectionIndex, currentSection, currentEntry, giftComplete, gift.sections.length, goToSection]);
+
   // ── Render current section ──────────────────────────────────
 
   // Show gift completion page when all sections are done
@@ -193,20 +221,10 @@ export default function GiftRenderer({
     return <GiftCompletePage />;
   }
 
-  const currentSection = gift.sections[sectionIndex];
-  if (!currentSection) {
-    // No more sections — show completion
-    if (!giftComplete) setGiftComplete(true);
-    return <GiftCompletePage />;
-  }
+  if (!currentSection || !currentEntry) return null;
 
   const { type } = currentSection;
-  const entry = SECTION_REGISTRY[type];
-  if (!entry) {
-    // Unknown section type — skip to next
-    goNext();
-    return null;
-  }
+  const entry = currentEntry;
 
   const Component = entry.component;
 
