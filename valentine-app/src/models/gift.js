@@ -197,6 +197,7 @@ export function createEmptyGift() {
     effects: {},
     sections: [],
     // ── Tier / Payment fields ──
+    status: "draft",
     requiredTier: "free",
     paidTier: "free",
     activatedAt: null,

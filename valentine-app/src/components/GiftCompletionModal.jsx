@@ -79,11 +79,13 @@ export default function GiftCompletionModal({
         .then((docId) => {
           if (!docId) throw new Error("Хадгалахад алдаа гарлаа");
           setSavedGiftId(docId);
-          return consumeCredit(user.uid, docId);
+          // Pass docId through the chain so onGiftReload can use it
+          return consumeCredit(user.uid, docId).then(() => docId);
         })
-        .then(() => {
+        .then((docId) => {
           setStep("activated");
-          onGiftReload?.();
+          // Pass docId explicitly to avoid stale closure issue
+          onGiftReload?.(docId);
         })
         .catch((err) => {
           console.error("Activation failed:", err);
@@ -91,8 +93,15 @@ export default function GiftCompletionModal({
           setStep("no-credits");
         });
     } else {
-      // No credits — don't save anything
+      // No credits — still save as draft so user doesn't lose work
       setStep("no-credits");
+      onSaveGift()
+        .then((docId) => {
+          if (docId) setSavedGiftId(docId);
+        })
+        .catch((err) => {
+          console.error("Draft save failed:", err);
+        });
     }
   }, [open, gift, user, credits, onSaveGift, onGiftReload]);
 

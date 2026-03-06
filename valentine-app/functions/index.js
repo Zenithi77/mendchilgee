@@ -720,11 +720,21 @@ exports.useCredit = onRequest(async (req, res) => {
         return {error: "no_credits"};
       }
 
+      // Check if gift is already activated — prevent double charge
+      const giftRef = db.collection("gifts").doc(giftId);
+      const giftDoc = await tx.get(giftRef);
+      if (giftDoc.exists) {
+        const giftData = giftDoc.data();
+        if (giftData.status === "published" && giftData.creditUsed === true) {
+          // Already activated — don't charge again
+          return {success: true, remainingCredits: credits, alreadyActivated: true};
+        }
+      }
+
       // Deduct 1 credit
       tx.update(userRef, {credits: credits - 1});
 
       // Activate gift — set to premium tier with no expiration
-      const giftRef = db.collection("gifts").doc(giftId);
       tx.update(giftRef, {
         paidTier: "premium",
         status: "published",

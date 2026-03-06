@@ -135,9 +135,21 @@ export default function GiftPreviewPage() {
   }
 
   /* ── Draft gate: block public access to unpublished gifts ── */
-  const isDraft = gift && gift.status === "draft";
+  // A gift is truly a draft only if status is "draft" AND it was never activated.
+  // creditUsed/paidTier check covers gifts that were activated but whose status
+  // was accidentally reverted to "draft" by an earlier save bug.
+  const isActivated = gift && (gift.creditUsed === true || (gift.paidTier && gift.paidTier !== "free"));
+  const isDraft = gift && gift.status === "draft" && !isActivated;
   const isOwner = user && gift && user.uid === gift.userId;
   const isInIframe = window.self !== window.top;
+
+  // Auto-heal: if gift is activated but status is still "draft", fix it
+  if (gift && isActivated && gift.status === "draft") {
+    updateGift(giftId, { status: "published" }).catch((err) =>
+      console.warn("Failed to auto-heal gift status:", err),
+    );
+    gift.status = "published";
+  }
 
   if (isDraft && !isOwner && !isInIframe) {
     return (

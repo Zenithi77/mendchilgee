@@ -439,9 +439,12 @@ export default function Builder() {
       setSaveStatus(null);
       // Compute and persist requiredTier before saving
       const tierToSave = getRequiredTier(gift.sections);
-      const giftToSave = { ...gift, requiredTier: tierToSave, status: gift.status || "draft" };
+      // Never downgrade an activated gift back to "draft"
+      const isActivated = gift.creditUsed === true || (gift.paidTier && gift.paidTier !== "free");
+      const statusToSave = isActivated ? "published" : (gift.status || "draft");
+      const giftToSave = { ...gift, requiredTier: tierToSave, status: statusToSave };
       const docId = await saveOrUpdateGift(giftToSave, user.uid);
-      setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
+      setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave, status: statusToSave }));
       setPreviewReloadKey((k) => k + 1);
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus(null), 2500);
@@ -463,7 +466,10 @@ export default function Builder() {
       setSaving(true);
       setSaveStatus(null);
       const tierToSave = getRequiredTier(gift.sections);
-      const giftToSave = { ...gift, requiredTier: tierToSave, status: gift.status || "draft" };
+      // Never downgrade an activated gift back to "draft"
+      const isActivated = gift.creditUsed === true || (gift.paidTier && gift.paidTier !== "free");
+      const statusToSave = isActivated ? "published" : (gift.status || "draft");
+      const giftToSave = { ...gift, requiredTier: tierToSave, status: statusToSave };
       const docId = await saveOrUpdateGift(giftToSave, user.uid);
       setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
       // Update URL to include giftId if not already present
@@ -643,12 +649,21 @@ export default function Builder() {
           setShowCompletionModal(false);
           setShowPurchaseModal(true);
         }}
-        onGiftReload={async () => {
-          if (gift?.id) {
+        onGiftReload={async (activatedGiftId) => {
+          // Use explicit giftId to avoid stale closure when gift.id
+          // hasn't been updated in local state yet (new gift activation)
+          const id = activatedGiftId || gift?.id;
+          if (id) {
             try {
-              const updated = await getGift(gift.id);
-              if (updated) setGift(updated);
-            } catch {}
+              const updated = await getGift(id);
+              if (updated) {
+                if (!updated.theme?.className) updated.theme = { ...DEFAULT_BUILDER_THEME };
+                if (!updated.effects?.floatingHearts) updated.effects = { ...DEFAULT_EFFECTS };
+                setGift(updated);
+              }
+            } catch (err) {
+              console.error("Gift reload failed:", err);
+            }
           }
         }}
       />
