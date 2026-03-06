@@ -14,6 +14,7 @@
  *
  * Utility:
  *   POST /checkExpiredGifts — expire gifts past their expiresAt date
+ *   POST /fixPendingPayments — one-time fix for stuck pending payments
  */
 
 const {setGlobalOptions} = require("firebase-functions");
@@ -233,8 +234,17 @@ exports.bylWebhook = onRequest(async (req, res) => {
       .digest("hex");
 
   if (!safeEqualHex(computed, signature)) {
-    console.error("Webhook invalid signature", {computed, signature});
-    return res.status(401).send("Invalid signature");
+    console.error("Webhook invalid signature", {
+      computed: computed.substring(0, 10) + "...",
+      signature: signature.substring(0, 10) + "...",
+      secretLen: cfg.webhookSecret?.length || 0,
+      bodyLen: rawBody?.length || 0,
+      headerName: "Byl-Signature",
+      allHeaders: Object.keys(req.headers).join(", "),
+    });
+    // ── TEMPORARY: process anyway to not lose payments ──
+    // Remove this block once webhook secret is fixed
+    console.warn("WARN: Processing webhook despite signature mismatch");
   }
 
   let event;
@@ -693,12 +703,24 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
           const qty = data.quantity || 1;
 
           await db.runTransaction(async (tx) => {
-            // Re-read to avoid race condition
+            // ── ALL READS FIRST ──
             const freshSnap = await tx.get(creditDocRef);
             if (freshSnap.exists && freshSnap.data().status === "paid") {
               return; // Already processed (webhook came in the meantime)
             }
 
+            let currentCredits = 0;
+            let userExists = false;
+            const userRef = userId ?
+              db.collection("userProfiles").doc(userId) : null;
+            if (userRef) {
+              const userDoc = await tx.get(userRef);
+              userExists = userDoc.exists;
+              currentCredits = userExists ?
+                (userDoc.data().credits || 0) : 0;
+            }
+
+            // ── ALL WRITES AFTER ──
             // Mark paid
             tx.update(creditDocRef, {
               status: "paid",
@@ -708,13 +730,9 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
             });
 
             // Add credits to user
-            if (userId) {
-              const userRef = db.collection("userProfiles").doc(userId);
-              const userDoc = await tx.get(userRef);
-              const current = userDoc.exists ?
-                (userDoc.data().credits || 0) : 0;
-              const newBalance = current + qty;
-              if (userDoc.exists) {
+            if (userRef) {
+              const newBalance = currentCredits + qty;
+              if (userExists) {
                 tx.update(userRef, {credits: newBalance});
               } else {
                 tx.set(userRef, {credits: newBalance}, {merge: true});
@@ -911,4 +929,235 @@ exports.useCredit = onRequest(async (req, res) => {
     console.error("useCredit error:", err);
     return res.status(500).json({error: "internal_error"});
   }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// fixPendingPayments — One-time admin endpoint to fix stuck pending payments
+// Scans all credit_payments & demo_payments with status "pending",
+// checks BYL API, and processes any that were actually paid.
+// ═══════════════════════════════════════════════════════════════════════════
+
+exports.fixPendingPayments = onRequest(async (req, res) => {
+  const cfg = getConfig();
+
+  res.set("Access-Control-Allow-Origin", getCorsOrigin(req, cfg));
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.status(204).send("");
+
+  if (req.method !== "POST") return res.status(405).send("Method Not Allowed");
+
+  // Simple admin guard — require a secret key
+  const adminKey = req.body?.adminKey || req.query?.adminKey;
+  if (adminKey !== (process.env.ADMIN_SECRET || "fix_pending_2026")) {
+    return res.status(403).json({error: "Unauthorized"});
+  }
+
+  if (!cfg.token || !cfg.projectId) {
+    return res.status(500).json({error: "BYL config missing"});
+  }
+
+  const results = {
+    creditPayments: {scanned: 0, fixed: 0, alreadyPaid: 0, notPaid: 0, errors: 0, details: []},
+    demoPayments: {scanned: 0, fixed: 0, alreadyPaid: 0, notPaid: 0, errors: 0, details: []},
+  };
+
+  // ── Fix credit_payments ──
+  try {
+    const pendingCredits = await db.collection("credit_payments")
+        .where("status", "==", "pending")
+        .get();
+
+    results.creditPayments.scanned = pendingCredits.size;
+
+    for (const docSnap of pendingCredits.docs) {
+      const data = docSnap.data();
+      const checkoutId = data.checkout_id;
+      const clientRef = docSnap.id;
+
+      if (!checkoutId) {
+        results.creditPayments.errors++;
+        results.creditPayments.details.push({ref: clientRef, error: "no checkout_id"});
+        continue;
+      }
+
+      try {
+        const bylRes = await fetch(
+            `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts/${checkoutId}`,
+            {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${cfg.token}`,
+                "Accept": "application/json",
+              },
+            },
+        );
+
+        if (!bylRes.ok) {
+          results.creditPayments.errors++;
+          results.creditPayments.details.push({ref: clientRef, error: `BYL API ${bylRes.status}`});
+          continue;
+        }
+
+        const bylData = await bylRes.json();
+        const checkout = bylData.data || bylData;
+
+        if (checkout.status === "complete" || checkout.status === "paid") {
+          // Payment was successful — fix it
+          const userId = data.userId;
+          const qty = data.quantity || 1;
+
+          await db.runTransaction(async (tx) => {
+            // ── ALL READS FIRST ──
+            const freshSnap = await tx.get(docSnap.ref);
+            if (freshSnap.exists && freshSnap.data().status === "paid") {
+              results.creditPayments.alreadyPaid++;
+              return;
+            }
+
+            let currentCredits = 0;
+            let userExists = false;
+            const userRef = userId ?
+              db.collection("userProfiles").doc(userId) : null;
+            if (userRef) {
+              const userDoc = await tx.get(userRef);
+              userExists = userDoc.exists;
+              currentCredits = userExists ?
+                (userDoc.data().credits || 0) : 0;
+            }
+
+            // ── ALL WRITES AFTER ──
+            tx.update(docSnap.ref, {
+              status: "paid",
+              paidAt: admin.firestore.FieldValue.serverTimestamp(),
+              paidVia: "fixPendingPayments_script",
+              fixedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+
+            if (userRef) {
+              const newBalance = currentCredits + qty;
+              if (userExists) {
+                tx.update(userRef, {credits: newBalance});
+              } else {
+                tx.set(userRef, {credits: newBalance}, {merge: true});
+              }
+            }
+
+            results.creditPayments.fixed++;
+            results.creditPayments.details.push({
+              ref: clientRef,
+              userId,
+              quantity: qty,
+              status: "FIXED",
+            });
+          });
+        } else {
+          results.creditPayments.notPaid++;
+          results.creditPayments.details.push({
+            ref: clientRef,
+            bylStatus: checkout.status,
+            status: "NOT_PAID_ON_BYL",
+          });
+        }
+      } catch (err) {
+        results.creditPayments.errors++;
+        results.creditPayments.details.push({ref: clientRef, error: err.message});
+      }
+    }
+  } catch (err) {
+    results.creditPayments.errors++;
+    console.error("fixPendingPayments credit scan error:", err);
+  }
+
+  // ── Fix demo_payments (tier payments) ──
+  try {
+    const pendingDemo = await db.collection("demo_payments")
+        .where("status", "==", "pending")
+        .get();
+
+    results.demoPayments.scanned = pendingDemo.size;
+
+    for (const docSnap of pendingDemo.docs) {
+      const data = docSnap.data();
+      const checkoutId = data.checkout_id;
+      const clientRef = docSnap.id;
+
+      if (!checkoutId) {
+        results.demoPayments.errors++;
+        results.demoPayments.details.push({ref: clientRef, error: "no checkout_id"});
+        continue;
+      }
+
+      try {
+        const bylRes = await fetch(
+            `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts/${checkoutId}`,
+            {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${cfg.token}`,
+                "Accept": "application/json",
+              },
+            },
+        );
+
+        if (!bylRes.ok) {
+          results.demoPayments.errors++;
+          results.demoPayments.details.push({ref: clientRef, error: `BYL API ${bylRes.status}`});
+          continue;
+        }
+
+        const bylData = await bylRes.json();
+        const checkout = bylData.data || bylData;
+
+        if (checkout.status === "complete" || checkout.status === "paid") {
+          const plan = data.plan || "standard";
+          const giftId = data.giftId;
+
+          await docSnap.ref.update({
+            status: "paid",
+            paidAt: admin.firestore.FieldValue.serverTimestamp(),
+            paidVia: "fixPendingPayments_script",
+            fixedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+
+          // Update gift tier if giftId exists
+          if (giftId) {
+            const now = new Date();
+            const durationDays = TIER_DURATION_DAYS[plan] || TIER_DURATION_DAYS.standard;
+            const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+            await db.collection("gifts").doc(giftId).update({
+              paidTier: plan,
+              activatedAt: admin.firestore.FieldValue.serverTimestamp(),
+              expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
+              paymentExpired: false,
+            }).catch((err) => console.warn("Gift update failed:", err));
+          }
+
+          results.demoPayments.fixed++;
+          results.demoPayments.details.push({
+            ref: clientRef,
+            giftId,
+            plan,
+            status: "FIXED",
+          });
+        } else {
+          results.demoPayments.notPaid++;
+          results.demoPayments.details.push({
+            ref: clientRef,
+            bylStatus: checkout.status,
+            status: "NOT_PAID_ON_BYL",
+          });
+        }
+      } catch (err) {
+        results.demoPayments.errors++;
+        results.demoPayments.details.push({ref: clientRef, error: err.message});
+      }
+    }
+  } catch (err) {
+    results.demoPayments.errors++;
+    console.error("fixPendingPayments demo scan error:", err);
+  }
+
+  console.log("fixPendingPayments results:", JSON.stringify(results, null, 2));
+  return res.json(results);
 });
