@@ -127,46 +127,26 @@ export default function AdminPromoPanel({ onBack }) {
   }, []);
 
   // ── Live subscription: paid purchases (real money only) ──
+  // Only count credit_payments with status "paid" — these are confirmed BYL payments
+  // Each credit = ₮5,000. demo_payments is the old tier flow, not counted.
   useEffect(() => {
     const CREDIT_PRICE = 5000; // ₮ per credit
 
-    // Credit purchases (credit_payments) — main revenue source
-    const unsub1 = onSnapshot(collection(db, "credit_payments"), (snap) => {
+    const unsub = onSnapshot(collection(db, "credit_payments"), (snap) => {
       const paidDocs = snap.docs
         .map((d) => d.data())
         .filter((d) => d.status === "paid");
-      // Total credits sold (quantity sum)
+      // Total credits sold (sum of quantity from each paid transaction)
       const creditsSold = paidDocs.reduce((sum, d) => sum + (d.quantity || 1), 0);
-      const creditRevenue = creditsSold * CREDIT_PRICE;
+      const totalRevenue = creditsSold * CREDIT_PRICE;
       setStats((prev) => ({
         ...prev,
-        paidSales: creditsSold + (prev._tierSales || 0),
-        totalRevenue: creditRevenue + (prev._tierRevenue || 0),
-        _creditsSold: creditsSold,
-        _creditRevenue: creditRevenue,
+        paidSales: creditsSold,
+        totalRevenue,
       }));
     });
 
-    // Tier upgrades (demo_payments) — direct tier purchases
-    const unsub2 = onSnapshot(collection(db, "demo_payments"), (snap) => {
-      const paidDocs = snap.docs
-        .map((d) => d.data())
-        .filter((d) => d.status === "paid");
-      const tierSales = paidDocs.length;
-      const tierRevenue = paidDocs.reduce((sum, d) => sum + (d.amount || 0), 0);
-      setStats((prev) => ({
-        ...prev,
-        paidSales: (prev._creditsSold || 0) + tierSales,
-        totalRevenue: (prev._creditRevenue || 0) + tierRevenue,
-        _tierSales: tierSales,
-        _tierRevenue: tierRevenue,
-      }));
-    });
-
-    return () => {
-      unsub1();
-      unsub2();
-    };
+    return () => unsub();
   }, []);
 
   // ── Live subscription: userProfiles collection ──
