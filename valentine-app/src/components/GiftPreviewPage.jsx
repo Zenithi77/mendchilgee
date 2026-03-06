@@ -5,7 +5,7 @@ import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import { useAuth } from "../contexts/AuthContext";
 import { isPaymentExpired } from "../utils/tierUtils";
-import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdFavorite } from "react-icons/md";
+import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdFavorite, MdShoppingCart, MdAutoAwesome } from "react-icons/md";
 import "./GiftPreviewPage.css";
 
 /**
@@ -269,6 +269,27 @@ export default function GiftPreviewPage() {
 
   return (
     <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
+      {/* Persistent banner for owner viewing unpaid/draft gift */}
+      {isOwner && isDraft && (
+        <div className="gift-preview-unpaid-banner">
+          <div className="gift-preview-unpaid-banner-content">
+            <MdLock className="gift-preview-unpaid-banner-icon" />
+            <div className="gift-preview-unpaid-banner-text">
+              <strong>Мэндчилгээ идэвхжүүлэгдээгүй</strong>
+              <span>Хуваалцахын тулд эрх худалдаж аваад Export хийнэ үү. Copy link, QR болон линкээр хуваалцах боломжгүй.</span>
+            </div>
+            <div className="gift-preview-unpaid-banner-actions">
+              <button
+                className="gift-preview-unpaid-btn"
+                onClick={() => navigate(`/builder/${giftId}`)}
+              >
+                <MdAutoAwesome /> Builder-д очих
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <GiftRenderer
         gift={gift}
         startDate={startDate}

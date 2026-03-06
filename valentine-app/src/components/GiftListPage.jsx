@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import { generateShapedQR } from "../utils/heartQr";
-import { MdMail, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdFavorite, MdDownload, MdPrint } from "react-icons/md";
+import PurchaseModal from "./PurchaseModal";
+import { MdMail, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdFavorite, MdDownload, MdPrint, MdLock, MdShoppingCart } from "react-icons/md";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -15,6 +16,8 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [sharePanel, setSharePanel] = useState(null);
   const [shareShape, setShareShape] = useState("heart");
+  const [showPurchase, setShowPurchase] = useState(false);
+  const [unpaidPromptId, setUnpaidPromptId] = useState(null);
 
   const fetchGifts = useCallback(async () => {
     if (!user) return;
@@ -56,9 +59,23 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     navigate(`/${giftId}`);
   };
 
+  /** Check if a gift is activated (paid or credit used) */
+  const isGiftActivated = (gift) => {
+    return gift.status === "published" || gift.creditUsed === true;
+  };
+
   const openSharePanel = useCallback(
     async (gift) => {
       if (!gift?.id) return;
+
+      // Block sharing for unpaid/draft gifts
+      if (!isGiftActivated(gift)) {
+        setUnpaidPromptId((prev) => (prev === gift.id ? null : gift.id));
+        setSharePanel(null);
+        return;
+      }
+
+      setUnpaidPromptId(null);
 
       if (sharePanel?.id === gift.id) {
         setSharePanel(null);
@@ -181,6 +198,12 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
 
   return (
     <div className="gift-list-page">
+      <PurchaseModal
+        open={showPurchase}
+        onClose={() => setShowPurchase(false)}
+        onSuccess={() => {}}
+      />
+
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
@@ -215,6 +238,14 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                   </div>
                 </div>
 
+                {/* Unpaid banner */}
+                {!isGiftActivated(gift) && (
+                  <div className="gift-card-unpaid-banner">
+                    <MdLock className="gift-card-unpaid-banner-icon" />
+                    <span>Идэвхжүүлэгдээгүй — Хуваалцахын тулд эрх худалдаж аваад Export хийнэ үү</span>
+                  </div>
+                )}
+
                 <div className="gift-card-actions">
                   <button
                     className="gift-action-btn gift-action-edit"
@@ -235,11 +266,11 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                     <MdSend /> Responses
                   </button>
                   <button
-                    className="gift-action-btn gift-action-share"
+                    className={`gift-action-btn gift-action-share ${!isGiftActivated(gift) ? 'gift-action-locked' : ''}`}
                     data-copy={gift.id}
                     onClick={() => openSharePanel(gift)}
                   >
-                    Copy Link
+                    {isGiftActivated(gift) ? 'Copy Link' : <><MdLock /> Copy Link</>}
                   </button>
                   {confirmDeleteId === gift.id ? (
                     <div className="gift-delete-confirm">
@@ -267,6 +298,42 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                     </button>
                   )}
                 </div>
+
+                {/* Unpaid prompt panel */}
+                {unpaidPromptId === gift.id && (
+                  <div className="gift-unpaid-panel">
+                    <div className="gift-unpaid-panel-header">
+                      <div className="gift-unpaid-icon"><MdLock /></div>
+                      <button
+                        type="button"
+                        className="gift-share-panel-close"
+                        onClick={() => setUnpaidPromptId(null)}
+                        aria-label="Close"
+                      >
+                        <MdClose />
+                      </button>
+                    </div>
+                    <h4 className="gift-unpaid-title">Мэндчилгээ идэвхжүүлэгдээгүй</h4>
+                    <p className="gift-unpaid-text">
+                      Мэндчилгээг хуваалцахын тулд эрх худалдаж аваад Export хийх шаардлагатай.
+                      Copy link, QR код болон линкээр хуваалцах боломжгүй.
+                    </p>
+                    <div className="gift-unpaid-actions">
+                      <button
+                        className="gift-unpaid-buy-btn"
+                        onClick={() => setShowPurchase(true)}
+                      >
+                        <MdShoppingCart /> Эрх худалдаж авах (₮5,000)
+                      </button>
+                      <button
+                        className="gift-unpaid-export-btn"
+                        onClick={() => navigate(`/builder/${gift.id}`)}
+                      >
+                        <MdAutoAwesome /> Builder-д очиж Export хийх
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {sharePanel?.id === gift.id && (
                   <div className="gift-share-panel">

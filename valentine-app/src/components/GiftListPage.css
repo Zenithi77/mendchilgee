@@ -523,3 +523,129 @@
     font-size: 0.82rem;
   }
 }
+
+/* ===== Unpaid Gift Banner on Card ===== */
+.gift-card-unpaid-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.25);
+  color: rgba(255, 193, 7, 0.95);
+  font-size: 0.78rem;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.gift-card-unpaid-banner-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Locked share button style */
+.gift-action-locked {
+  opacity: 0.6;
+  border-color: rgba(255, 152, 0, 0.3) !important;
+  color: rgba(255, 193, 7, 0.8) !important;
+}
+
+.gift-action-locked:hover {
+  border-color: rgba(255, 152, 0, 0.5) !important;
+  color: rgba(255, 193, 7, 1) !important;
+  background: rgba(255, 152, 0, 0.1) !important;
+}
+
+/* ===== Unpaid Prompt Panel (inline, replaces share panel) ===== */
+.gift-unpaid-panel {
+  margin-top: 14px;
+  padding: 20px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.06) 0%, rgba(255, 193, 7, 0.04) 100%);
+  text-align: center;
+}
+
+.gift-unpaid-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.gift-unpaid-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 152, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: rgba(255, 193, 7, 0.9);
+  margin: 0 auto;
+}
+
+.gift-unpaid-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 8px 0 6px;
+}
+
+.gift-unpaid-text {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.gift-unpaid-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.gift-unpaid-buy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  border: none;
+  background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+  color: #1a1a2e;
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gift-unpaid-buy-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 152, 0, 0.3);
+}
+
+.gift-unpaid-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "Cormorant Garamond", "Josefin Sans", serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gift-unpaid-export-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
