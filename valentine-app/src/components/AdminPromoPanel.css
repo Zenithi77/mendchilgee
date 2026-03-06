@@ -8,6 +8,117 @@
   padding: 20px 16px 60px;
 }
 
+/* ── Live Stats Dashboard ───────────────────────────────────── */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.admin-stat-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 14px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.admin-stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+.admin-stat-gifts::before { background: linear-gradient(135deg, #ff6b9d, #ff8fab); }
+.admin-stat-activated::before { background: linear-gradient(135deg, #ffd700, #ffaa00); }
+.admin-stat-revenue::before { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.admin-stat-users::before { background: linear-gradient(135deg, #6bc5ff, #4ba3e3); }
+.admin-stat-views::before { background: linear-gradient(135deg, #a78bfa, #7c5ce0); }
+.admin-stat-promo::before { background: linear-gradient(135deg, #34d399, #10b981); }
+
+.admin-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.admin-stat-gifts .admin-stat-icon { background: linear-gradient(135deg, #ff6b9d, #ff8fab); color: #fff; }
+.admin-stat-activated .admin-stat-icon { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #fff; }
+.admin-stat-revenue .admin-stat-icon { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; font-weight: 800; font-size: 1.1rem; }
+.admin-stat-users .admin-stat-icon { background: linear-gradient(135deg, #6bc5ff, #4ba3e3); color: #fff; }
+.admin-stat-views .admin-stat-icon { background: linear-gradient(135deg, #a78bfa, #7c5ce0); color: #fff; }
+.admin-stat-promo .admin-stat-icon { background: linear-gradient(135deg, #34d399, #10b981); color: #fff; }
+
+.admin-stat-info {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.admin-stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Pulse indicator for loading */
+.admin-stat-pulse {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  animation: statPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes statPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* Section title between stats and promo list */
+.admin-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
 /* Header */
 .admin-promo-header {
   display: flex;

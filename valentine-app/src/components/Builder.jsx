@@ -428,10 +428,40 @@ export default function Builder() {
 
   const handleSave = useCallback(async () => {
     if (!user || !gift) return;
+    // Only allow saving if gift already exists in Firestore (has an id)
+    if (!gift.id) {
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus(null), 3000);
+      return null;
+    }
     try {
       setSaving(true);
       setSaveStatus(null);
       // Compute and persist requiredTier before saving
+      const tierToSave = getRequiredTier(gift.sections);
+      const giftToSave = { ...gift, requiredTier: tierToSave, status: gift.status || "draft" };
+      const docId = await saveOrUpdateGift(giftToSave, user.uid);
+      setGift((prev) => ({ ...prev, id: docId, requiredTier: tierToSave }));
+      setPreviewReloadKey((k) => k + 1);
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus(null), 2500);
+      return docId;
+    } catch (err) {
+      console.error("Save error:", err);
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus(null), 3000);
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  }, [gift, user]);
+
+  // ── Export save: used by GiftCompletionModal to save new gifts (requires credit) ──
+  const handleExportSave = useCallback(async () => {
+    if (!user || !gift) return null;
+    try {
+      setSaving(true);
+      setSaveStatus(null);
       const tierToSave = getRequiredTier(gift.sections);
       const giftToSave = { ...gift, requiredTier: tierToSave, status: gift.status || "draft" };
       const docId = await saveOrUpdateGift(giftToSave, user.uid);
@@ -445,7 +475,7 @@ export default function Builder() {
       setTimeout(() => setSaveStatus(null), 2500);
       return docId;
     } catch (err) {
-      console.error("Save error:", err);
+      console.error("Export save error:", err);
       setSaveStatus("error");
       setTimeout(() => setSaveStatus(null), 3000);
       return null;
@@ -608,7 +638,7 @@ export default function Builder() {
         open={showCompletionModal}
         onClose={() => setShowCompletionModal(false)}
         gift={gift}
-        onSaveGift={handleSave}
+        onSaveGift={handleExportSave}
         onPurchase={() => {
           setShowCompletionModal(false);
           setShowPurchaseModal(true);
@@ -659,7 +689,8 @@ export default function Builder() {
           <button
             className="builder-btn builder-btn-save-header"
             onClick={handleSave}
-            disabled={saving || gift.sections.length === 0}
+            disabled={saving || gift.sections.length === 0 || !gift.id}
+            title={!gift.id ? 'Export хийсний дараа save ашиглах боломжтой' : 'Өөрчлөлтийг хадгалах'}
           >
             <MdSave />
             <span className="builder-btn-save-txt">{saving ? 'Хадгалж...' : 'Save'}</span>

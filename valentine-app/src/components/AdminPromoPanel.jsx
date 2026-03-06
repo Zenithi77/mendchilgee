@@ -2,7 +2,7 @@
 // AdminPromoPanel — Admin create/manage promo codes + QR
 // ═══════════════════════════════════════════════════════════════
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   collection,
   onSnapshot,
@@ -24,11 +24,50 @@ import {
   MdToggleOff,
   MdDownload,
   MdArrowBack,
+  MdCardGiftcard,
+  MdPeople,
+  MdVisibility,
+  MdConfirmationNumber,
+  MdStar,
 } from "react-icons/md";
 import "./AdminPromoPanel.css";
 
 const SITE_URL =
   import.meta.env.VITE_SITE_URL || "https://www.mendchilgee.site";
+
+// ── Animated Counter Component ────────────────────────────────
+function AnimatedCounter({ value, duration = 1200 }) {
+  const [display, setDisplay] = useState(0);
+  const prevValue = useRef(0);
+
+  useEffect(() => {
+    const from = prevValue.current;
+    const to = value;
+    if (from === to) return;
+
+    const startTime = performance.now();
+    let raf;
+
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutExpo
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setDisplay(Math.round(from + (to - from) * eased));
+
+      if (progress < 1) {
+        raf = requestAnimationFrame(animate);
+      } else {
+        prevValue.current = to;
+      }
+    };
+
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+
+  return <span className="admin-stat-number">{display.toLocaleString()}</span>;
+}
 
 export default function AdminPromoPanel({ onBack }) {
   const [promoCodes, setPromoCodes] = useState([]);
@@ -37,6 +76,17 @@ export default function AdminPromoPanel({ onBack }) {
   const [qrModal, setQrModal] = useState(null); // { code, qrDataUrl, url }
   const [qrShape, setQrShape] = useState("heart");
   const [qrLoading, setQrLoading] = useState(false);
+
+  // ── Live Stats ──
+  const [stats, setStats] = useState({
+    totalGifts: 0,
+    paidSales: 0,
+    totalRevenue: 0,
+    totalUsers: 0,
+    totalViews: 0,
+    promoUsed: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   // New promo form
   const [newCode, setNewCode] = useState("");
@@ -56,6 +106,73 @@ export default function AdminPromoPanel({ onBack }) {
       );
       setPromoCodes(codes);
       setLoading(false);
+
+      // Calculate promo usage from this snapshot
+      const promoUsed = codes.reduce((sum, c) => sum + (c.currentUses || 0), 0);
+      setStats((prev) => ({ ...prev, promoUsed }));
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // ── Live subscription: gifts collection ──
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "gifts"), (snap) => {
+      const docs = snap.docs.map((d) => d.data());
+      const totalGifts = docs.length;
+      const totalViews = docs.reduce((sum, g) => sum + (g.viewCount || 0), 0);
+      setStats((prev) => ({ ...prev, totalGifts, totalViews }));
+      setStatsLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // ── Live subscription: paid purchases (real money only) ──
+  useEffect(() => {
+    const CREDIT_PRICE = 5000; // ₮ per credit
+
+    // Credit purchases (credit_payments) — main revenue source
+    const unsub1 = onSnapshot(collection(db, "credit_payments"), (snap) => {
+      const paidDocs = snap.docs
+        .map((d) => d.data())
+        .filter((d) => d.status === "paid");
+      // Total credits sold (quantity sum)
+      const creditsSold = paidDocs.reduce((sum, d) => sum + (d.quantity || 1), 0);
+      const creditRevenue = creditsSold * CREDIT_PRICE;
+      setStats((prev) => ({
+        ...prev,
+        paidSales: creditsSold + (prev._tierSales || 0),
+        totalRevenue: creditRevenue + (prev._tierRevenue || 0),
+        _creditsSold: creditsSold,
+        _creditRevenue: creditRevenue,
+      }));
+    });
+
+    // Tier upgrades (demo_payments) — direct tier purchases
+    const unsub2 = onSnapshot(collection(db, "demo_payments"), (snap) => {
+      const paidDocs = snap.docs
+        .map((d) => d.data())
+        .filter((d) => d.status === "paid");
+      const tierSales = paidDocs.length;
+      const tierRevenue = paidDocs.reduce((sum, d) => sum + (d.amount || 0), 0);
+      setStats((prev) => ({
+        ...prev,
+        paidSales: (prev._creditsSold || 0) + tierSales,
+        totalRevenue: (prev._creditRevenue || 0) + tierRevenue,
+        _tierSales: tierSales,
+        _tierRevenue: tierRevenue,
+      }));
+    });
+
+    return () => {
+      unsub1();
+      unsub2();
+    };
+  }, []);
+
+  // ── Live subscription: userProfiles collection ──
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "userProfiles"), (snap) => {
+      setStats((prev) => ({ ...prev, totalUsers: snap.size }));
     });
     return () => unsubscribe();
   }, []);
@@ -193,7 +310,7 @@ export default function AdminPromoPanel({ onBack }) {
         <button className="admin-back-btn" onClick={onBack}>
           <MdArrowBack /> Буцах
         </button>
-        <h2 className="admin-promo-title">🎟️ Промо кодууд</h2>
+        <h2 className="admin-promo-title">📊 Админ панел</h2>
         <button
           className="admin-create-btn"
           onClick={() => {
@@ -204,6 +321,72 @@ export default function AdminPromoPanel({ onBack }) {
           <MdAdd /> Шинэ код
         </button>
       </div>
+
+      {/* ── Live Stats Dashboard ── */}
+      <div className="admin-stats-grid">
+        <div className="admin-stat-card admin-stat-gifts">
+          <div className="admin-stat-icon">
+            <MdCardGiftcard />
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.totalGifts} />
+            <span className="admin-stat-label">Нийт бэлэг</span>
+          </div>
+          {statsLoading && <span className="admin-stat-pulse" />}
+        </div>
+
+        <div className="admin-stat-card admin-stat-activated">
+          <div className="admin-stat-icon">
+            <MdStar />
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.paidSales} />
+            <span className="admin-stat-label">Борлуулалт</span>
+          </div>
+        </div>
+
+        <div className="admin-stat-card admin-stat-revenue">
+          <div className="admin-stat-icon">
+            ₮
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.totalRevenue} />
+            <span className="admin-stat-label">Нийт орлого ₮</span>
+          </div>
+        </div>
+
+        <div className="admin-stat-card admin-stat-users">
+          <div className="admin-stat-icon">
+            <MdPeople />
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.totalUsers} />
+            <span className="admin-stat-label">Хэрэглэгч</span>
+          </div>
+        </div>
+
+        <div className="admin-stat-card admin-stat-views">
+          <div className="admin-stat-icon">
+            <MdVisibility />
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.totalViews} />
+            <span className="admin-stat-label">Нийт үзэлт</span>
+          </div>
+        </div>
+
+        <div className="admin-stat-card admin-stat-promo">
+          <div className="admin-stat-icon">
+            <MdConfirmationNumber />
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.promoUsed} />
+            <span className="admin-stat-label">Промо ашигласан</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 className="admin-section-title">🎟️ Промо кодууд</h3>
 
       {/* Create form */}
       {showCreate && (
