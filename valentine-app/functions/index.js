@@ -412,10 +412,85 @@ exports.checkPaymentStatus = onRequest(async (req, res) => {
   const ref = req.query.ref;
   if (!ref) return res.status(400).json({error: "missing ref"});
 
-  const doc = await db.collection("demo_payments").doc(ref).get();
-  if (!doc.exists) return res.status(404).json({status: "not_found"});
+  const paymentDocRef = db.collection("demo_payments").doc(ref);
+  const docSnap = await paymentDocRef.get();
+  if (!docSnap.exists) return res.status(404).json({status: "not_found"});
 
-  const data = doc.data();
+  const data = docSnap.data();
+
+  // If already paid, return immediately
+  if (data?.status === "paid") {
+    return res.json({
+      status: "paid",
+      paidAt: data?.paidAt || null,
+      amount: data?.amount || null,
+      plan: data?.plan || null,
+      giftId: data?.giftId || null,
+    });
+  }
+
+  // ── Fallback: if webhook hasn't arrived yet, check BYL API directly ──
+  const checkoutId = data?.checkout_id;
+  if (checkoutId && cfg.token && cfg.projectId) {
+    try {
+      const bylRes = await fetch(
+          `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts/${checkoutId}`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${cfg.token}`,
+              "Accept": "application/json",
+            },
+          },
+      );
+      if (bylRes.ok) {
+        const bylData = await bylRes.json();
+        const checkout = bylData.data || bylData;
+        if (checkout.status === "complete" || checkout.status === "paid") {
+          // Process payment since webhook hasn't arrived
+          const plan = data.plan || "standard";
+          const giftId = data.giftId;
+
+          // Mark paid
+          await paymentDocRef.update({
+            status: "paid",
+            paidAt: admin.firestore.FieldValue.serverTimestamp(),
+            checkoutRaw: checkout,
+            paidVia: "polling_fallback",
+          });
+
+          // Update gift tier if giftId exists
+          if (giftId) {
+            const now = new Date();
+            const durationDays = TIER_DURATION_DAYS[plan] ||
+                TIER_DURATION_DAYS.standard;
+            const expiresAt = new Date(
+                now.getTime() + durationDays * 24 * 60 * 60 * 1000,
+            );
+            await db.collection("gifts").doc(giftId).update({
+              paidTier: plan,
+              activatedAt: admin.firestore.FieldValue.serverTimestamp(),
+              expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
+              paymentExpired: false,
+            }).catch((err) =>
+              console.warn("Failed to update gift tier:", err),
+            );
+          }
+
+          return res.json({
+            status: "paid",
+            paidAt: null,
+            amount: data?.amount || null,
+            plan: data?.plan || null,
+            giftId: data?.giftId || null,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("BYL fallback check failed:", err.message);
+    }
+  }
+
   return res.json({
     status: data?.status || "pending",
     paidAt: data?.paidAt || null,
@@ -580,10 +655,86 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
   const ref = req.query.ref;
   if (!ref) return res.status(400).json({error: "missing ref"});
 
-  const docSnap = await db.collection("credit_payments").doc(ref).get();
+  const creditDocRef = db.collection("credit_payments").doc(ref);
+  const docSnap = await creditDocRef.get();
   if (!docSnap.exists) return res.status(404).json({status: "not_found"});
 
   const data = docSnap.data();
+
+  // If already paid, return immediately
+  if (data?.status === "paid") {
+    return res.json({
+      status: "paid",
+      quantity: data?.quantity || 0,
+      amount: data?.amount || 0,
+    });
+  }
+
+  // ── Fallback: if webhook hasn't arrived yet, check BYL API directly ──
+  const checkoutId = data?.checkout_id;
+  if (checkoutId && cfg.token && cfg.projectId) {
+    try {
+      const bylRes = await fetch(
+          `https://byl.mn/api/v1/projects/${cfg.projectId}/checkouts/${checkoutId}`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Bearer ${cfg.token}`,
+              "Accept": "application/json",
+            },
+          },
+      );
+      if (bylRes.ok) {
+        const bylData = await bylRes.json();
+        const checkout = bylData.data || bylData;
+        if (checkout.status === "complete" || checkout.status === "paid") {
+          // Webhook hasn't arrived yet — process payment now
+          const userId = data.userId;
+          const qty = data.quantity || 1;
+
+          await db.runTransaction(async (tx) => {
+            // Re-read to avoid race condition
+            const freshSnap = await tx.get(creditDocRef);
+            if (freshSnap.exists && freshSnap.data().status === "paid") {
+              return; // Already processed (webhook came in the meantime)
+            }
+
+            // Mark paid
+            tx.update(creditDocRef, {
+              status: "paid",
+              paidAt: admin.firestore.FieldValue.serverTimestamp(),
+              checkoutRaw: checkout,
+              paidVia: "polling_fallback",
+            });
+
+            // Add credits to user
+            if (userId) {
+              const userRef = db.collection("userProfiles").doc(userId);
+              const userDoc = await tx.get(userRef);
+              const current = userDoc.exists ?
+                (userDoc.data().credits || 0) : 0;
+              const newBalance = current + qty;
+              if (userDoc.exists) {
+                tx.update(userRef, {credits: newBalance});
+              } else {
+                tx.set(userRef, {credits: newBalance}, {merge: true});
+              }
+            }
+          });
+
+          return res.json({
+            status: "paid",
+            quantity: data?.quantity || 0,
+            amount: data?.amount || 0,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("BYL fallback check failed:", err.message);
+      // Fall through to return pending status
+    }
+  }
+
   return res.json({
     status: data?.status || "pending",
     quantity: data?.quantity || 0,
