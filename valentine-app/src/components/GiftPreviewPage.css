@@ -350,3 +350,82 @@
     justify-content: center;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Save / Download Floating Action Button
+   ═══════════════════════════════════════════════════════════════ */
+.save-greeting-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(30, 30, 50, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #fff;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.35),
+    0 0 0 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease,
+              background 0.22s ease;
+  animation: saveGreetingFabIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both 1s;
+}
+.save-greeting-fab:hover {
+  transform: scale(1.12);
+  background: rgba(40, 40, 70, 0.85);
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.45),
+    0 0 0 6px rgba(255, 255, 255, 0.06);
+}
+.save-greeting-fab:active {
+  transform: scale(0.95);
+}
+.save-greeting-fab:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.save-greeting-fab-done {
+  border-color: #4caf50;
+  color: #a5d6a7;
+}
+.save-greeting-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: saveGreetingSpin 0.7s linear infinite;
+}
+@keyframes saveGreetingSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes saveGreetingFabIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .save-greeting-fab {
+    width: 46px;
+    height: 46px;
+    bottom: 18px;
+    left: 18px;
+    font-size: 1.2rem;
+  }
+}

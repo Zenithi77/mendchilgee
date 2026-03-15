@@ -163,7 +163,7 @@
 .sq-explanation.wrong {
   background: rgba(168, 130, 255, 0.12);
   border: 1px solid rgba(168, 130, 255, 0.3);
-  color: #FFC4D0;
+  color: var(--t-primary, #FFC4D0);
 }
 
 .sq-explanation-icon {
@@ -516,4 +516,250 @@
     width: 116px;
     height: 139px;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MILITARY THEME OVERRIDES — Navy / Gold / Steel
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Base Military (Navy + Gold) ─── */
+.theme-military .sq-dot.active {
+  background: #2c6fad;
+  box-shadow: 0 0 12px rgba(44, 111, 173, 0.6), 0 0 24px rgba(44, 111, 173, 0.25);
+}
+.theme-military .sq-dot.done {
+  background: #D4A853;
+}
+.theme-military .sq-question {
+  color: #D4A853;
+  text-shadow: 0 0 30px rgba(212, 168, 83, 0.3);
+}
+.theme-military .sq-option {
+  border-color: rgba(44, 111, 173, 0.2);
+  background: rgba(26, 58, 92, 0.15);
+}
+.theme-military .sq-option:hover:not(:disabled) {
+  border-color: #2c6fad;
+  background: rgba(44, 111, 173, 0.15);
+  box-shadow: 0 0 20px rgba(44, 111, 173, 0.15);
+  transform: translateY(-3px);
+}
+.theme-military .sq-option.correct {
+  border-color: #4caf50 !important;
+  background: rgba(76, 175, 80, 0.15) !important;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3), 0 0 40px rgba(76, 175, 80, 0.1);
+}
+.theme-military .sq-option.wrong {
+  border-color: #ef5350 !important;
+  background: rgba(239, 83, 80, 0.12) !important;
+  box-shadow: 0 0 16px rgba(239, 83, 80, 0.2);
+}
+.theme-military .sq-explanation.correct {
+  background: rgba(76, 175, 80, 0.12);
+  border-color: rgba(76, 175, 80, 0.3);
+  color: #81c784;
+}
+.theme-military .sq-explanation.wrong {
+  background: rgba(44, 111, 173, 0.12);
+  border-color: rgba(44, 111, 173, 0.3);
+  color: #90caf9;
+}
+.theme-military .sq-next-btn {
+  background: linear-gradient(135deg, #1a4a7a, #2c6fad, #1a4a7a);
+  box-shadow: 0 6px 24px rgba(44, 111, 173, 0.35);
+  border: 1px solid rgba(212, 165, 74, 0.3);
+}
+.theme-military .sq-next-btn:hover {
+  box-shadow: 0 8px 32px rgba(44, 111, 173, 0.5);
+  transform: translateY(-3px);
+}
+.theme-military .sq-next-btn.glow {
+  animation: sqMilGlow 1.5s ease infinite;
+}
+@keyframes sqMilGlow {
+  0%, 100% { box-shadow: 0 0 16px rgba(44, 111, 173, 0.4), 0 0 0 0 rgba(212, 165, 74, 0.1); }
+  50% { box-shadow: 0 0 32px rgba(44, 111, 173, 0.7), 0 0 60px rgba(44, 111, 173, 0.2), 0 0 8px rgba(212, 165, 74, 0.3); }
+}
+/* Mystery box */
+.theme-military .sq-box-lid {
+  background: linear-gradient(135deg, #1a4a7a, #2c6fad, #1a4a7a);
+  box-shadow: 0 4px 16px rgba(44, 111, 173, 0.3);
+}
+.theme-military .sq-box-body {
+  border-color: rgba(44, 111, 173, 0.3);
+  background: linear-gradient(180deg, rgba(44, 111, 173, 0.12), rgba(26, 58, 92, 0.06));
+}
+.theme-military .sq-box-q {
+  color: #D4A853;
+  animation: sqMilBoxPulse 1.2s ease infinite;
+}
+@keyframes sqMilBoxPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; text-shadow: 0 0 10px rgba(212, 168, 83, 0.3); }
+  50% { transform: scale(1.15); opacity: 1; text-shadow: 0 0 30px rgba(212, 168, 83, 0.6); }
+}
+/* Reveal text */
+.theme-military .sq-reveal-text {
+  color: #D4A853;
+  text-shadow: 0 0 30px rgba(212, 168, 83, 0.5), 0 0 60px rgba(44, 111, 173, 0.3);
+  animation: sqMilTextGlow 2s ease infinite;
+}
+@keyframes sqMilTextGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(212, 168, 83, 0.4), 0 0 40px rgba(44, 111, 173, 0.2); }
+  50% { text-shadow: 0 0 40px rgba(212, 168, 83, 0.8), 0 0 80px rgba(44, 111, 173, 0.4), 0 0 100px rgba(212, 168, 83, 0.2); }
+}
+
+/* ─── Military Gold (Premium Gold) ─── */
+.theme-military-gold .sq-dot.active {
+  background: #d4a54a;
+  box-shadow: 0 0 12px rgba(212, 165, 74, 0.6), 0 0 24px rgba(212, 165, 74, 0.25);
+}
+.theme-military-gold .sq-dot.done {
+  background: #bf8c2c;
+}
+.theme-military-gold .sq-question {
+  color: #E8C86E;
+  text-shadow: 0 0 30px rgba(232, 200, 110, 0.3);
+}
+.theme-military-gold .sq-option {
+  border-color: rgba(191, 140, 44, 0.2);
+  background: rgba(139, 105, 20, 0.1);
+}
+.theme-military-gold .sq-option:hover:not(:disabled) {
+  border-color: #d4a54a;
+  background: rgba(212, 165, 74, 0.12);
+  box-shadow: 0 0 20px rgba(212, 165, 74, 0.15);
+  transform: translateY(-3px);
+}
+.theme-military-gold .sq-option.correct {
+  border-color: #66bb6a !important;
+  background: rgba(102, 187, 106, 0.15) !important;
+  box-shadow: 0 0 20px rgba(102, 187, 106, 0.3);
+}
+.theme-military-gold .sq-option.wrong {
+  border-color: #ef5350 !important;
+  background: rgba(239, 83, 80, 0.12) !important;
+}
+.theme-military-gold .sq-explanation.correct {
+  background: rgba(102, 187, 106, 0.12);
+  border-color: rgba(102, 187, 106, 0.3);
+  color: #a5d6a7;
+}
+.theme-military-gold .sq-explanation.wrong {
+  background: rgba(212, 165, 74, 0.12);
+  border-color: rgba(212, 165, 74, 0.3);
+  color: #E8C86E;
+}
+.theme-military-gold .sq-next-btn {
+  background: linear-gradient(135deg, #8b6914, #bf8c2c, #d4a54a, #bf8c2c, #8b6914);
+  box-shadow: 0 6px 24px rgba(191, 140, 44, 0.35);
+  border: 1px solid rgba(232, 200, 110, 0.3);
+}
+.theme-military-gold .sq-next-btn:hover {
+  box-shadow: 0 8px 32px rgba(191, 140, 44, 0.5);
+  transform: translateY(-3px);
+}
+.theme-military-gold .sq-next-btn.glow {
+  animation: sqGoldGlow 1.5s ease infinite;
+}
+@keyframes sqGoldGlow {
+  0%, 100% { box-shadow: 0 0 16px rgba(191, 140, 44, 0.4); }
+  50% { box-shadow: 0 0 32px rgba(191, 140, 44, 0.7), 0 0 60px rgba(212, 165, 74, 0.3); }
+}
+.theme-military-gold .sq-box-lid {
+  background: linear-gradient(135deg, #8b6914, #bf8c2c, #d4a54a);
+  box-shadow: 0 4px 16px rgba(191, 140, 44, 0.3);
+}
+.theme-military-gold .sq-box-body {
+  border-color: rgba(191, 140, 44, 0.3);
+  background: linear-gradient(180deg, rgba(191, 140, 44, 0.1), rgba(139, 105, 20, 0.05));
+}
+.theme-military-gold .sq-box-q {
+  color: #E8C86E;
+}
+.theme-military-gold .sq-reveal-text {
+  color: #E8C86E;
+  text-shadow: 0 0 30px rgba(232, 200, 110, 0.5), 0 0 60px rgba(191, 140, 44, 0.3);
+  animation: sqGoldTextGlow 2s ease infinite;
+}
+@keyframes sqGoldTextGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(232, 200, 110, 0.4); }
+  50% { text-shadow: 0 0 40px rgba(232, 200, 110, 0.8), 0 0 80px rgba(191, 140, 44, 0.4); }
+}
+
+/* ─── Military Steel (Dark Steel) ─── */
+.theme-military-steel .sq-dot.active {
+  background: #78909c;
+  box-shadow: 0 0 12px rgba(120, 144, 156, 0.5), 0 0 24px rgba(120, 144, 156, 0.2);
+}
+.theme-military-steel .sq-dot.done {
+  background: #546e7a;
+}
+.theme-military-steel .sq-question {
+  color: #B0BEC5;
+  text-shadow: 0 0 30px rgba(176, 190, 197, 0.25);
+}
+.theme-military-steel .sq-option {
+  border-color: rgba(120, 144, 156, 0.2);
+  background: rgba(84, 110, 122, 0.1);
+}
+.theme-military-steel .sq-option:hover:not(:disabled) {
+  border-color: #78909c;
+  background: rgba(120, 144, 156, 0.12);
+  box-shadow: 0 0 20px rgba(120, 144, 156, 0.12);
+  transform: translateY(-3px);
+}
+.theme-military-steel .sq-option.correct {
+  border-color: #66bb6a !important;
+  background: rgba(102, 187, 106, 0.15) !important;
+  box-shadow: 0 0 20px rgba(102, 187, 106, 0.25);
+}
+.theme-military-steel .sq-option.wrong {
+  border-color: #ef5350 !important;
+  background: rgba(239, 83, 80, 0.12) !important;
+}
+.theme-military-steel .sq-explanation.correct {
+  background: rgba(102, 187, 106, 0.1);
+  border-color: rgba(102, 187, 106, 0.25);
+  color: #a5d6a7;
+}
+.theme-military-steel .sq-explanation.wrong {
+  background: rgba(120, 144, 156, 0.12);
+  border-color: rgba(120, 144, 156, 0.3);
+  color: #B0BEC5;
+}
+.theme-military-steel .sq-next-btn {
+  background: linear-gradient(135deg, #37474f, #546e7a, #78909c, #546e7a, #37474f);
+  box-shadow: 0 6px 24px rgba(84, 110, 122, 0.3);
+  border: 1px solid rgba(176, 190, 197, 0.2);
+}
+.theme-military-steel .sq-next-btn:hover {
+  box-shadow: 0 8px 32px rgba(84, 110, 122, 0.45);
+  transform: translateY(-3px);
+}
+.theme-military-steel .sq-next-btn.glow {
+  animation: sqSteelGlow 1.5s ease infinite;
+}
+@keyframes sqSteelGlow {
+  0%, 100% { box-shadow: 0 0 16px rgba(84, 110, 122, 0.4); }
+  50% { box-shadow: 0 0 32px rgba(120, 144, 156, 0.6), 0 0 60px rgba(84, 110, 122, 0.2); }
+}
+.theme-military-steel .sq-box-lid {
+  background: linear-gradient(135deg, #37474f, #546e7a, #78909c);
+  box-shadow: 0 4px 16px rgba(84, 110, 122, 0.25);
+}
+.theme-military-steel .sq-box-body {
+  border-color: rgba(120, 144, 156, 0.25);
+  background: linear-gradient(180deg, rgba(120, 144, 156, 0.08), rgba(84, 110, 122, 0.04));
+}
+.theme-military-steel .sq-box-q {
+  color: #B0BEC5;
+}
+.theme-military-steel .sq-reveal-text {
+  color: #B0BEC5;
+  text-shadow: 0 0 30px rgba(176, 190, 197, 0.4), 0 0 60px rgba(120, 144, 156, 0.2);
+  animation: sqSteelTextGlow 2s ease infinite;
+}
+@keyframes sqSteelTextGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(176, 190, 197, 0.3); }
+  50% { text-shadow: 0 0 40px rgba(176, 190, 197, 0.6), 0 0 80px rgba(120, 144, 156, 0.3); }
 }

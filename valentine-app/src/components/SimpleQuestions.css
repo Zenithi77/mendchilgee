@@ -534,3 +534,322 @@
     padding: 12px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MILITARY THEME OVERRIDES — Navy / Gold / Steel
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Scene bg ── */
+.theme-military .sq-scene,
+.theme-military-gold .sq-scene,
+.theme-military-steel .sq-scene { background: #080c14; }
+
+/* ── Orbs ── */
+.theme-military .sq-orb-1 { background: radial-gradient(circle, rgba(44, 111, 173, 0.15), transparent 70%); }
+.theme-military .sq-orb-2 { background: radial-gradient(circle, rgba(212, 165, 74, 0.10), transparent 70%); }
+.theme-military .sq-orb-3 { background: radial-gradient(circle, rgba(26, 74, 122, 0.08), transparent 70%); }
+
+.theme-military-gold .sq-orb-1 { background: radial-gradient(circle, rgba(191, 140, 44, 0.14), transparent 70%); }
+.theme-military-gold .sq-orb-2 { background: radial-gradient(circle, rgba(139, 105, 20, 0.10), transparent 70%); }
+.theme-military-gold .sq-orb-3 { background: radial-gradient(circle, rgba(232, 200, 110, 0.07), transparent 70%); }
+
+.theme-military-steel .sq-orb-1 { background: radial-gradient(circle, rgba(84, 110, 122, 0.14), transparent 70%); }
+.theme-military-steel .sq-orb-2 { background: radial-gradient(circle, rgba(55, 71, 79, 0.10), transparent 70%); }
+.theme-military-steel .sq-orb-3 { background: radial-gradient(circle, rgba(120, 144, 156, 0.07), transparent 70%); }
+
+/* ── Particles ── */
+.theme-military .sq-particle { background: #4a90d9; }
+.theme-military-gold .sq-particle { background: #d4a54a; }
+.theme-military-steel .sq-particle { background: #78909c; }
+
+/* ── Title / subtitle ── */
+.theme-military .sq-title { text-shadow: 0 0 40px rgba(44, 111, 173, 0.3); }
+.theme-military .sq-subtitle { color: rgba(107, 174, 214, 0.45); }
+
+.theme-military-gold .sq-title { text-shadow: 0 0 40px rgba(212, 165, 74, 0.3); }
+.theme-military-gold .sq-subtitle { color: rgba(212, 165, 74, 0.45); }
+
+.theme-military-steel .sq-title { text-shadow: 0 0 40px rgba(120, 144, 156, 0.3); }
+.theme-military-steel .sq-subtitle { color: rgba(176, 190, 197, 0.45); }
+
+/* ── Progress bar ── */
+.theme-military .sq-progress-bar { background: rgba(44, 111, 173, 0.08); }
+.theme-military .sq-progress-fill {
+  background: linear-gradient(90deg, #1a4a7a, #2c6fad, #4a90d9);
+  box-shadow: 0 0 12px rgba(44, 111, 173, 0.4);
+}
+.theme-military .sq-progress-glow {
+  background: #4a90d9;
+  box-shadow: 0 0 12px 4px rgba(44, 111, 173, 0.5);
+}
+.theme-military .sq-step-dot { background: rgba(44, 111, 173, 0.1); }
+.theme-military .sq-step-dot.sq-step-done {
+  background: rgba(44, 111, 173, 0.6);
+  box-shadow: 0 0 6px rgba(44, 111, 173, 0.3);
+}
+.theme-military .sq-step-dot.sq-step-current {
+  background: #4a90d9;
+  box-shadow: 0 0 10px rgba(44, 111, 173, 0.5);
+}
+
+.theme-military-gold .sq-progress-bar { background: rgba(191, 140, 44, 0.08); }
+.theme-military-gold .sq-progress-fill {
+  background: linear-gradient(90deg, #8b6914, #bf8c2c, #d4a54a);
+  box-shadow: 0 0 12px rgba(191, 140, 44, 0.4);
+}
+.theme-military-gold .sq-progress-glow {
+  background: #d4a54a;
+  box-shadow: 0 0 12px 4px rgba(212, 165, 74, 0.5);
+}
+.theme-military-gold .sq-step-dot { background: rgba(191, 140, 44, 0.1); }
+.theme-military-gold .sq-step-dot.sq-step-done {
+  background: rgba(191, 140, 44, 0.6);
+  box-shadow: 0 0 6px rgba(191, 140, 44, 0.3);
+}
+.theme-military-gold .sq-step-dot.sq-step-current {
+  background: #d4a54a;
+  box-shadow: 0 0 10px rgba(212, 165, 74, 0.5);
+}
+
+.theme-military-steel .sq-progress-bar { background: rgba(84, 110, 122, 0.08); }
+.theme-military-steel .sq-progress-fill {
+  background: linear-gradient(90deg, #37474f, #546e7a, #78909c);
+  box-shadow: 0 0 12px rgba(84, 110, 122, 0.4);
+}
+.theme-military-steel .sq-progress-glow {
+  background: #78909c;
+  box-shadow: 0 0 12px 4px rgba(120, 144, 156, 0.5);
+}
+.theme-military-steel .sq-step-dot { background: rgba(84, 110, 122, 0.1); }
+.theme-military-steel .sq-step-dot.sq-step-done {
+  background: rgba(84, 110, 122, 0.6);
+  box-shadow: 0 0 6px rgba(84, 110, 122, 0.3);
+}
+.theme-military-steel .sq-step-dot.sq-step-current {
+  background: #78909c;
+  box-shadow: 0 0 10px rgba(120, 144, 156, 0.5);
+}
+
+/* ── Card ── */
+.theme-military .sq-card {
+  background: linear-gradient(145deg, rgba(44, 111, 173, 0.06), rgba(26, 74, 122, 0.04), rgba(44, 111, 173, 0.06));
+  border-color: rgba(44, 111, 173, 0.12);
+  box-shadow: 0 0 0 1px rgba(44, 111, 173, 0.05), 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.theme-military .sq-card::before {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.3), transparent 40%, transparent 60%, rgba(212, 165, 74, 0.15));
+}
+
+.theme-military-gold .sq-card {
+  background: linear-gradient(145deg, rgba(191, 140, 44, 0.06), rgba(139, 105, 20, 0.04), rgba(191, 140, 44, 0.06));
+  border-color: rgba(191, 140, 44, 0.12);
+  box-shadow: 0 0 0 1px rgba(191, 140, 44, 0.05), 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.theme-military-gold .sq-card::before {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.3), transparent 40%, transparent 60%, rgba(232, 200, 110, 0.15));
+}
+
+.theme-military-steel .sq-card {
+  background: linear-gradient(145deg, rgba(84, 110, 122, 0.06), rgba(55, 71, 79, 0.04), rgba(84, 110, 122, 0.06));
+  border-color: rgba(84, 110, 122, 0.12);
+  box-shadow: 0 0 0 1px rgba(84, 110, 122, 0.05), 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.theme-military-steel .sq-card::before {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.3), transparent 40%, transparent 60%, rgba(176, 190, 197, 0.15));
+}
+
+/* ── Card badge ── */
+.theme-military .sq-card-badge {
+  background: linear-gradient(135deg, #2c6fad, #1a4a7a);
+  box-shadow: 0 4px 16px rgba(44, 111, 173, 0.25);
+}
+.theme-military-gold .sq-card-badge {
+  background: linear-gradient(135deg, #d4a54a, #8b6914);
+  box-shadow: 0 4px 16px rgba(139, 105, 20, 0.25);
+}
+.theme-military-steel .sq-card-badge {
+  background: linear-gradient(135deg, #78909c, #37474f);
+  box-shadow: 0 4px 16px rgba(55, 71, 79, 0.25);
+}
+
+/* ── Input ── */
+.theme-military .sq-card-input {
+  background: rgba(44, 111, 173, 0.05);
+  border-color: rgba(44, 111, 173, 0.12);
+  color: #b0d4f1;
+}
+.theme-military .sq-card-input::placeholder { color: rgba(107, 174, 214, 0.25); }
+.theme-military .sq-card-input:focus {
+  border-color: rgba(44, 111, 173, 0.35);
+  background: rgba(44, 111, 173, 0.08);
+  box-shadow: 0 0 0 4px rgba(44, 111, 173, 0.06), 0 0 24px rgba(44, 111, 173, 0.08);
+}
+.theme-military .sq-card-input-border {
+  background: linear-gradient(90deg, transparent, #4a90d9, transparent);
+}
+
+.theme-military-gold .sq-card-input {
+  background: rgba(191, 140, 44, 0.05);
+  border-color: rgba(191, 140, 44, 0.12);
+  color: #f0d78a;
+}
+.theme-military-gold .sq-card-input::placeholder { color: rgba(212, 165, 74, 0.25); }
+.theme-military-gold .sq-card-input:focus {
+  border-color: rgba(191, 140, 44, 0.35);
+  background: rgba(191, 140, 44, 0.08);
+  box-shadow: 0 0 0 4px rgba(191, 140, 44, 0.06), 0 0 24px rgba(191, 140, 44, 0.08);
+}
+.theme-military-gold .sq-card-input-border {
+  background: linear-gradient(90deg, transparent, #d4a54a, transparent);
+}
+
+.theme-military-steel .sq-card-input {
+  background: rgba(84, 110, 122, 0.05);
+  border-color: rgba(84, 110, 122, 0.12);
+  color: #b0bec5;
+}
+.theme-military-steel .sq-card-input::placeholder { color: rgba(176, 190, 197, 0.25); }
+.theme-military-steel .sq-card-input:focus {
+  border-color: rgba(84, 110, 122, 0.35);
+  background: rgba(84, 110, 122, 0.08);
+  box-shadow: 0 0 0 4px rgba(84, 110, 122, 0.06), 0 0 24px rgba(84, 110, 122, 0.08);
+}
+.theme-military-steel .sq-card-input-border {
+  background: linear-gradient(90deg, transparent, #78909c, transparent);
+}
+
+/* ── Navigation buttons ── */
+.theme-military .sq-btn-back {
+  background: rgba(44, 111, 173, 0.06);
+  color: rgba(107, 174, 214, 0.5);
+  border-color: rgba(44, 111, 173, 0.08);
+}
+.theme-military .sq-btn-back:hover {
+  background: rgba(44, 111, 173, 0.12);
+  color: rgba(107, 174, 214, 0.8);
+  border-color: rgba(44, 111, 173, 0.15);
+}
+.theme-military .sq-btn-next {
+  background: rgba(44, 111, 173, 0.08);
+  color: rgba(44, 111, 173, 0.35);
+  border-color: rgba(44, 111, 173, 0.06);
+}
+.theme-military .sq-btn-next.sq-btn-active {
+  background: linear-gradient(135deg, #2c6fad, #1a4a7a);
+  border-color: rgba(212, 165, 74, 0.2);
+  box-shadow: 0 4px 20px rgba(44, 111, 173, 0.3), 0 0 40px rgba(44, 111, 173, 0.12);
+}
+.theme-military .sq-btn-next.sq-btn-active:hover {
+  box-shadow: 0 8px 28px rgba(44, 111, 173, 0.4), 0 0 60px rgba(44, 111, 173, 0.18);
+}
+.theme-military .sq-btn-primary {
+  background: linear-gradient(135deg, #2c6fad, #1a4a7a);
+  box-shadow: 0 4px 20px rgba(44, 111, 173, 0.3), 0 0 40px rgba(44, 111, 173, 0.12);
+}
+.theme-military .sq-btn-primary:hover {
+  box-shadow: 0 8px 28px rgba(44, 111, 173, 0.45), 0 0 60px rgba(44, 111, 173, 0.2);
+}
+
+.theme-military-gold .sq-btn-back {
+  background: rgba(191, 140, 44, 0.06);
+  color: rgba(212, 165, 74, 0.5);
+  border-color: rgba(191, 140, 44, 0.08);
+}
+.theme-military-gold .sq-btn-back:hover {
+  background: rgba(191, 140, 44, 0.12);
+  color: rgba(212, 165, 74, 0.8);
+  border-color: rgba(191, 140, 44, 0.15);
+}
+.theme-military-gold .sq-btn-next {
+  background: rgba(191, 140, 44, 0.08);
+  color: rgba(191, 140, 44, 0.35);
+  border-color: rgba(191, 140, 44, 0.06);
+}
+.theme-military-gold .sq-btn-next.sq-btn-active {
+  background: linear-gradient(135deg, #d4a54a, #8b6914);
+  border-color: rgba(232, 200, 110, 0.2);
+  box-shadow: 0 4px 20px rgba(139, 105, 20, 0.3), 0 0 40px rgba(191, 140, 44, 0.12);
+}
+.theme-military-gold .sq-btn-primary {
+  background: linear-gradient(135deg, #d4a54a, #8b6914);
+  box-shadow: 0 4px 20px rgba(139, 105, 20, 0.3), 0 0 40px rgba(191, 140, 44, 0.12);
+}
+
+.theme-military-steel .sq-btn-back {
+  background: rgba(84, 110, 122, 0.06);
+  color: rgba(176, 190, 197, 0.5);
+  border-color: rgba(84, 110, 122, 0.08);
+}
+.theme-military-steel .sq-btn-back:hover {
+  background: rgba(84, 110, 122, 0.12);
+  color: rgba(176, 190, 197, 0.8);
+  border-color: rgba(84, 110, 122, 0.15);
+}
+.theme-military-steel .sq-btn-next {
+  background: rgba(84, 110, 122, 0.08);
+  color: rgba(84, 110, 122, 0.35);
+  border-color: rgba(84, 110, 122, 0.06);
+}
+.theme-military-steel .sq-btn-next.sq-btn-active {
+  background: linear-gradient(135deg, #78909c, #37474f);
+  border-color: rgba(176, 190, 197, 0.2);
+  box-shadow: 0 4px 20px rgba(55, 71, 79, 0.3), 0 0 40px rgba(84, 110, 122, 0.12);
+}
+.theme-military-steel .sq-btn-primary {
+  background: linear-gradient(135deg, #78909c, #37474f);
+  box-shadow: 0 4px 20px rgba(55, 71, 79, 0.3), 0 0 40px rgba(84, 110, 122, 0.12);
+}
+
+/* ── Done screen ── */
+.theme-military .sq-done-ring {
+  background: rgba(44, 111, 173, 0.06);
+}
+.theme-military .sq-done-ring::before {
+  border-top-color: #4a90d9;
+  border-right-color: #2c6fad;
+}
+.theme-military .sq-done-icon {
+  background: linear-gradient(135deg, #2c6fad, #1a4a7a);
+  box-shadow: 0 8px 32px rgba(44, 111, 173, 0.35);
+}
+.theme-military .sq-done-title { text-shadow: 0 0 40px rgba(44, 111, 173, 0.3); }
+.theme-military .sq-done-sub { color: rgba(107, 174, 214, 0.45); }
+
+.theme-military-gold .sq-done-ring { background: rgba(191, 140, 44, 0.06); }
+.theme-military-gold .sq-done-ring::before {
+  border-top-color: #d4a54a;
+  border-right-color: #bf8c2c;
+}
+.theme-military-gold .sq-done-icon {
+  background: linear-gradient(135deg, #d4a54a, #8b6914);
+  box-shadow: 0 8px 32px rgba(139, 105, 20, 0.35);
+}
+.theme-military-gold .sq-done-title { text-shadow: 0 0 40px rgba(212, 165, 74, 0.3); }
+.theme-military-gold .sq-done-sub { color: rgba(212, 165, 74, 0.45); }
+
+.theme-military-steel .sq-done-ring { background: rgba(84, 110, 122, 0.06); }
+.theme-military-steel .sq-done-ring::before {
+  border-top-color: #78909c;
+  border-right-color: #546e7a;
+}
+.theme-military-steel .sq-done-icon {
+  background: linear-gradient(135deg, #78909c, #37474f);
+  box-shadow: 0 8px 32px rgba(55, 71, 79, 0.35);
+}
+.theme-military-steel .sq-done-title { text-shadow: 0 0 40px rgba(120, 144, 156, 0.3); }
+.theme-military-steel .sq-done-sub { color: rgba(176, 190, 197, 0.45); }
+
+/* ── Glow-pulse keyframe override ── */
+@keyframes sq-glow-pulse-mil  { 0%, 100% { box-shadow: 0 0 12px 4px rgba(44, 111, 173, 0.5); } 50% { box-shadow: 0 0 20px 8px rgba(44, 111, 173, 0.7); } }
+@keyframes sq-glow-pulse-gold { 0%, 100% { box-shadow: 0 0 12px 4px rgba(212, 165, 74, 0.5); } 50% { box-shadow: 0 0 20px 8px rgba(212, 165, 74, 0.7); } }
+@keyframes sq-glow-pulse-stl  { 0%, 100% { box-shadow: 0 0 12px 4px rgba(120, 144, 156, 0.5); } 50% { box-shadow: 0 0 20px 8px rgba(120, 144, 156, 0.7); } }
+.theme-military .sq-progress-glow       { animation: sq-glow-pulse-mil  2s ease-in-out infinite; }
+.theme-military-gold .sq-progress-glow  { animation: sq-glow-pulse-gold 2s ease-in-out infinite; }
+.theme-military-steel .sq-progress-glow { animation: sq-glow-pulse-stl  2s ease-in-out infinite; }
+
+@keyframes sq-ring-pulse-mil  { 0%, 100% { box-shadow: 0 0 0 0 rgba(44, 111, 173, 0.2); } 50% { box-shadow: 0 0 0 16px rgba(44, 111, 173, 0); } }
+@keyframes sq-ring-pulse-gold { 0%, 100% { box-shadow: 0 0 0 0 rgba(191, 140, 44, 0.2); } 50% { box-shadow: 0 0 0 16px rgba(191, 140, 44, 0); } }
+@keyframes sq-ring-pulse-stl  { 0%, 100% { box-shadow: 0 0 0 0 rgba(84, 110, 122, 0.2); } 50% { box-shadow: 0 0 0 16px rgba(84, 110, 122, 0); } }
+.theme-military .sq-done-ring       { animation: sq-ring-pulse-mil  3s ease-in-out infinite; }
+.theme-military-gold .sq-done-ring  { animation: sq-ring-pulse-gold 3s ease-in-out infinite; }
+.theme-military-steel .sq-done-ring { animation: sq-ring-pulse-stl  3s ease-in-out infinite; }

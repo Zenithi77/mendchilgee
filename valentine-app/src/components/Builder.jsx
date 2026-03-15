@@ -609,8 +609,10 @@ export default function Builder() {
     );
   }
 
+  const isMilitary = gift?.category === "soldiers-day";
+
   return (
-    <div className="builder">
+    <div className={`builder${isMilitary ? " builder-military" : ""}`}>
       <AddSectionModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}

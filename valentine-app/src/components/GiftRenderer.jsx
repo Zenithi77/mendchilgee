@@ -270,7 +270,7 @@ export default function GiftRenderer({
 
   // Show gift completion page when all sections are done
   if (giftComplete) {
-    return <GiftCompletePage />;
+    return <GiftCompletePage category={category} />;
   }
 
   if (!currentSection || !currentEntry) return null;
@@ -298,11 +298,12 @@ export default function GiftRenderer({
             letter={template.loveLetter}
             onClose={goNext}
             onMusicStart={startMusic}
+            category={category}
           />
         );
 
       case SECTION_TYPES.QUESTION:
-        return <Component onYes={goNext} template={template} />;
+        return <Component onYes={goNext} template={template} category={category} />;
 
       case SECTION_TYPES.MOVIE_SELECTION:
         return (
@@ -320,6 +321,7 @@ export default function GiftRenderer({
             memories={template.memoryGallery?.memories || []}
             onContinue={goNext}
             template={template}
+            category={category}
             musicPlaying={musicPlaying}
             onMusicPause={() => setMusicPlaying(false)}
           />
@@ -348,13 +350,14 @@ export default function GiftRenderer({
         return <Component data={currentSection.data} onContinue={goNext} />;
 
       case SECTION_TYPES.SPECIAL_QUESTIONS:
-        return <Component data={currentSection.data} onContinue={goNext} />;
+        return <Component data={currentSection.data} onContinue={goNext} category={category} />;
 
       case SECTION_TYPES.SIMPLE_QUESTIONS:
         return (
           <Component
             data={currentSection.data}
             onContinue={goNext}
+            category={category}
             onAnswersSubmit={(pairs) => {
               const key = `simpleQuestions_${sectionIndex}`;
               updateChoice(key, pairs);
@@ -377,6 +380,7 @@ export default function GiftRenderer({
             onDone={goNext}
             onBack={goBack}
             template={template}
+            category={category}
           />
         );
 

@@ -3,17 +3,80 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 3, 13);
+    // ── Helper: check if current user is admin ──
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // ── userProfiles ──
+    match /userProfiles/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      // Admin can read/write any profile
+      allow read, write: if isAdmin();
+    }
+
+    // ── gifts ──
+    match /gifts/{giftId} {
+      // Owner can read/write their own gifts
+      allow read, write: if request.auth != null
+        && resource != null
+        && resource.data.userId == request.auth.uid;
+      // Allow create if authenticated
+      allow create: if request.auth != null;
+      // Anyone can read a gift (for sharing links)
+      allow read: if true;
+      // Admin full access
+      allow read, write: if isAdmin();
+    }
+
+    // ── giftResponses ──
+    match /giftResponses/{responseId} {
+      allow read, write: if true;
+    }
+
+    // ── termsAgreements ──
+    match /termsAgreements/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── payments ──
+    match /payments/{paymentId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null;
+      allow read, write: if isAdmin();
+    }
+
+    // ── credit_payments (BYL credit purchases) ──
+    match /credit_payments/{paymentId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null;
+      allow read, write: if isAdmin();
+    }
+
+    // ── promoCodes (admin only write, authenticated read for redemption) ──
+    match /promoCodes/{codeId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // ── promoRedemptions ──
+    match /promoRedemptions/{redemptionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+
+    // ── analytics / stats (admin read, server write) ──
+    match /analytics/{docId} {
+      allow read: if isAdmin();
+    }
+
+    // ── demo_payments (legacy) ──
+    match /demo_payments/{paymentId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow read, write: if isAdmin();
     }
   }
 }

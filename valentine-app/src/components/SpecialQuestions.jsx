@@ -8,8 +8,9 @@ import "./SpecialQuestions.css";
  * Асуулт 4:   Бүх хариулт "буруу" (улаан). Бүгдийг сонгоход нийлж нэг нууц
  *             хайрцаг болно → дарахад "Бүх зүйлд чинь дуртай" гарч ирнэ.
  */
-export default function SpecialQuestions({ data, onContinue }) {
-  const questions = useMemo(() => data?.questions || DEFAULT_QUESTIONS, [data]);
+export default function SpecialQuestions({ data, onContinue, category }) {
+  const isMilitary = category === "soldiers-day";
+  const questions = useMemo(() => data?.questions || (isMilitary ? DEFAULT_QUESTIONS_MILITARY : DEFAULT_QUESTIONS), [data, isMilitary]);
   const [qIdx, setQIdx] = useState(0);
 
   // Wrap per-question state in an inner component controlled by key
@@ -125,19 +126,19 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
             <div className="sq-mystery-box-wrap" onClick={handleBoxClick}>
               <div className={`sq-mystery-box ${boxOpened ? "opening" : ""}`}>
                 <div className="sq-box-lid">
-                  <span className="sq-box-ribbon">🎀</span>
+                  <span className="sq-box-ribbon">{isMilitary ? "🎖️" : "🎀"}</span>
                 </div>
                 <div className="sq-box-body">
                   <span className="sq-box-q">?</span>
                 </div>
                 <div className="sq-box-sparkles">
                   <span className="sq-sparkle s1">✨</span>
-                  <span className="sq-sparkle s2">💖</span>
+                  <span className="sq-sparkle s2">{isMilitary ? "⭐" : "💖"}</span>
                   <span className="sq-sparkle s3">⭐</span>
                   <span className="sq-sparkle s4">✨</span>
                 </div>
               </div>
-              <p className="sq-box-hint">Нууц хайрцгийг нээгээрэй 💝</p>
+              <p className="sq-box-hint">{isMilitary ? "Нууц хайрцгийг нээгээрэй 🎖️" : "Нууц хайрцгийг нээгээрэй 💝"}</p>
             </div>
           )}
 
@@ -147,13 +148,13 @@ function QuestionStep({ questions, qIdx, setQIdx, onContinue }) {
               <div className="sq-firework-burst">
                 <span className="sq-fw fw1">🎆</span>
                 <span className="sq-fw fw2">✨</span>
-                <span className="sq-fw fw3">💖</span>
+                <span className="sq-fw fw3">{isMilitary ? "🎖️" : "💖"}</span>
                 <span className="sq-fw fw4">🎇</span>
                 <span className="sq-fw fw5">✨</span>
                 <span className="sq-fw fw6">⭐</span>
               </div>
               <h2 className="sq-reveal-text font-script">
-                {q.revealText || "Бүх зүйлд чинь дуртай 💖"}
+                {q.revealText || (isMilitary ? "Баатар шүү чи 🎖️" : "Бүх зүйлд чинь дуртай 💖")}
               </h2>
               <button className="sq-next-btn glow" onClick={goNext}>
                 Үргэлжлүүлэх ✨
@@ -275,5 +276,53 @@ const DEFAULT_QUESTIONS = [
       { emoji: "💄", name: "Чиний гоо үзэсгэлэн" },
     ],
     revealText: "Бүх зүйлд чинь дуртай 💖",
+  },
+];
+
+/* ── Military-themed default questions ── */
+const DEFAULT_QUESTIONS_MILITARY = [
+  {
+    text: "Цэргийн алба хэдэн жил хааж байсан бэ?",
+    options: [
+      { emoji: "1️⃣", name: "1 жил" },
+      { emoji: "2️⃣", name: "2 жил" },
+      { emoji: "3️⃣", name: "3 жил" },
+      { emoji: "4️⃣", name: "4+ жил" },
+    ],
+    correctIndex: 0,
+    explanation: "Эх орныхоо төлөө зүтгэсэн он жилүүд ⭐",
+  },
+  {
+    text: "Цэргийн албанд хамгийн их юу сурсан бэ?",
+    options: [
+      { emoji: "💪", name: "Тэвчээр" },
+      { emoji: "🛡️", name: "Зориг" },
+      { emoji: "🤝", name: "Нөхөрлөл" },
+      { emoji: "⭐", name: "Бүгдийг" },
+    ],
+    correctIndex: 3,
+    explanation: "Цэргийн алба бол жинхэнэ эрийн сургууль 🎖️",
+  },
+  {
+    text: "Цэргийн баяраар юу хамгийн их хүсдэг вэ?",
+    options: [
+      { emoji: "🎖️", name: "Хүндэтгэл" },
+      { emoji: "🏅", name: "Бахархал" },
+      { emoji: "🤗", name: "Гэр бүлтэйгээ" },
+      { emoji: "🎖️", name: "Бүгд" },
+    ],
+    correctIndex: 3,
+    explanation: "Бүгд л чухал 🇲🇳⭐",
+  },
+  {
+    text: "Чиний хамгийн гайхалтай чанар юу вэ?",
+    allWrong: true,
+    options: [
+      { emoji: "💪", name: "Хүч чадал" },
+      { emoji: "🛡️", name: "Зоригтой" },
+      { emoji: "🎖️", name: "Хатуужил" },
+      { emoji: "🦅", name: "Эрэлхэг зан" },
+    ],
+    revealText: "Баатар шүү чи 🎖️",
   },
 ];

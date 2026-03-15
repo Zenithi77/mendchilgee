@@ -153,3 +153,25 @@
     font-size: 11px !important;
   }
 }
+
+/* ================================================
+   MILITARY — Watermark override (remove pink)
+   ================================================ */
+.theme-military .watermark-banner-brand {
+  color: #42a5f5 !important;
+}
+.theme-military .watermark-banner-cta {
+  background: linear-gradient(135deg, #1565c0, #2c6fad) !important;
+}
+.theme-military-gold .watermark-banner-brand {
+  color: #D4A853 !important;
+}
+.theme-military-gold .watermark-banner-cta {
+  background: linear-gradient(135deg, #bf8c2c, #D4A853) !important;
+}
+.theme-military-steel .watermark-banner-brand {
+  color: #B0BEC5 !important;
+}
+.theme-military-steel .watermark-banner-cta {
+  background: linear-gradient(135deg, #37474f, #546e7a) !important;
+}

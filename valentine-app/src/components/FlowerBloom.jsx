@@ -87,7 +87,7 @@ export default function FlowerBloom({
               "--ps": `${3 + Math.random() * 4}s`,
             }}
           >
-            🌸
+            {flowerData[i % flowerData.length]?.emoji || "🌸"}
           </div>
         ))}
     </div>

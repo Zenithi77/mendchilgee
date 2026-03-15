@@ -281,6 +281,60 @@
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* ── Save / Download button ── */
+.gc-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  margin: 16px 0 0;
+  border-radius: 60px;
+  border: 1px solid var(--t-primary, rgba(255, 133, 162, 0.35));
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s ease,
+              background 0.22s ease,
+              border-color 0.22s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.gc-save-btn:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.3);
+  border-color: var(--t-primary, rgba(255, 133, 162, 0.5));
+}
+.gc-save-btn:active {
+  transform: scale(0.97);
+}
+.gc-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.gc-save-btn-done {
+  border-color: #4caf50;
+  color: #a5d6a7;
+}
+.gc-save-btn svg {
+  font-size: 1.2rem;
+}
+.gc-save-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: gcSaveSpin 0.7s linear infinite;
+}
+@keyframes gcSaveSpin {
+  to { transform: rotate(360deg); }
+}
 .gc-footer-text {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.45);
@@ -326,4 +380,131 @@
   .gc-orb-1 { width: 200px; height: 200px; }
   .gc-orb-2 { width: 160px; height: 160px; }
   .gc-orb-3 { width: 120px; height: 120px; }
+}
+
+/* ═══ MILITARY THEME OVERRIDES ═══ */
+.theme-military .gc-page {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(44, 111, 173, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(26, 74, 122, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(8, 12, 20, 1) 0%, rgba(5, 8, 15, 1) 100%);
+}
+.theme-military .gc-card {
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(44, 111, 173, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-military .gc-div-line {
+  background: linear-gradient(90deg, transparent, rgba(44, 111, 173, 0.3), transparent);
+}
+.theme-military .gc-title {
+  text-shadow: 0 2px 20px rgba(44, 111, 173, 0.25);
+}
+.theme-military .gc-orb-3 { background: #2c6fad; }
+
+.theme-military-gold .gc-page {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(191, 140, 44, 0.14) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(139, 105, 20, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(10, 8, 5, 1) 0%, rgba(5, 4, 2, 1) 100%);
+}
+.theme-military-gold .gc-card {
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(191, 140, 44, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-military-gold .gc-div-line {
+  background: linear-gradient(90deg, transparent, rgba(191, 140, 44, 0.3), transparent);
+}
+.theme-military-gold .gc-title {
+  text-shadow: 0 2px 20px rgba(191, 140, 44, 0.25);
+}
+.theme-military-gold .gc-orb-3 { background: #d4a54a; }
+
+.theme-military-steel .gc-page {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(84, 110, 122, 0.14) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(55, 71, 79, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(8, 10, 13, 1) 0%, rgba(5, 6, 8, 1) 100%);
+}
+.theme-military-steel .gc-card {
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(84, 110, 122, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-military-steel .gc-div-line {
+  background: linear-gradient(90deg, transparent, rgba(84, 110, 122, 0.3), transparent);
+}
+.theme-military-steel .gc-title {
+  text-shadow: 0 2px 20px rgba(84, 110, 122, 0.25);
+}
+.theme-military-steel .gc-orb-3 { background: #78909c; }
+
+/* ═══ MILITARY SAVE BUTTON OVERRIDES ═══ */
+.theme-military .gc-save-btn { border-color: rgba(44, 111, 173, 0.35); }
+.theme-military .gc-save-btn:hover { border-color: rgba(44, 111, 173, 0.5); }
+.theme-military-gold .gc-save-btn { border-color: rgba(191, 140, 44, 0.35); }
+.theme-military-gold .gc-save-btn:hover { border-color: rgba(191, 140, 44, 0.5); }
+.theme-military-steel .gc-save-btn { border-color: rgba(84, 110, 122, 0.35); }
+.theme-military-steel .gc-save-btn:hover { border-color: rgba(84, 110, 122, 0.5); }
+
+/* ═══ MILITARY LOGO TEXT GRADIENT OVERRIDES ═══ */
+.theme-military .gc-logo-text {
+  background: linear-gradient(135deg, #2c6fad, #D4A853, #2c6fad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.theme-military-gold .gc-logo-text {
+  background: linear-gradient(135deg, #bf8c2c, #E8C86E, #d4a54a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.theme-military-steel .gc-logo-text {
+  background: linear-gradient(135deg, #546e7a, #B0BEC5, #78909c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ═══ MILITARY ORB COLOR OVERRIDES ═══ */
+.theme-military .gc-orb-1 { background: #2c6fad; }
+.theme-military .gc-orb-2 { background: #1a4a7a; }
+.theme-military-gold .gc-orb-1 { background: #d4a54a; }
+.theme-military-gold .gc-orb-2 { background: #bf8c2c; }
+.theme-military-steel .gc-orb-1 { background: #78909c; }
+.theme-military-steel .gc-orb-2 { background: #546e7a; }
+
+/* ═══ MILITARY DIVIDER AND ACCENT OVERRIDES ═══ */
+.theme-military .gc-div-diamond,
+.theme-military .gc-div-heart { color: #D4A853; }
+.theme-military-gold .gc-div-diamond,
+.theme-military-gold .gc-div-heart { color: #E8C86E; }
+.theme-military-steel .gc-div-diamond,
+.theme-military-steel .gc-div-heart { color: #90a4ae; }
+
+/* ═══ MILITARY SITE LINK OVERRIDES ═══ */
+.theme-military .gc-site-link { color: #2c6fad; }
+.theme-military-gold .gc-site-link { color: #d4a54a; }
+.theme-military-steel .gc-site-link { color: #78909c; }
+
+/* ═══ MILITARY CARD BORDER GLOW ═══ */
+.theme-military .gc-card {
+  border: 1px solid rgba(44, 111, 173, 0.12);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(44, 111, 173, 0.08),
+    0 0 60px rgba(44, 111, 173, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-military-gold .gc-card {
+  border: 1px solid rgba(191, 140, 44, 0.12);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(191, 140, 44, 0.08),
+    0 0 60px rgba(191, 140, 44, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-military-steel .gc-card {
+  border: 1px solid rgba(84, 110, 122, 0.1);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(84, 110, 122, 0.08),
+    0 0 60px rgba(84, 110, 122, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }

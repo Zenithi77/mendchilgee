@@ -4,7 +4,19 @@ import ContinueArrow from "./ContinueArrow";
 /* ─────────────────────────────────────────────────────
    LoveLetter — Dreamy cinematic envelope → letter reveal
    ───────────────────────────────────────────────────── */
-export default function LoveLetter({ letter, onClose, onMusicStart }) {
+/* ── Emoji sets by category ── */
+const EMOJI_SETS = {
+  default: {
+    particles: ["✨", "💕", "🌸", "💫", "⭐", "🦋", "🌹", "💖", "🩷", "💐", "🎀", "🪷"],
+    petals: ["🌸", "🩷", "💮", "🪻"],
+  },
+  "soldiers-day": {
+    particles: ["⭐", "🎖️", "✨", "🏅", "💫", "🛡️", "🦅", "⚔️", "🌟", "🎗️", "🏆", "💪"],
+    petals: ["⭐", "🎖️", "🌟", "✨"],
+  },
+};
+
+export default function LoveLetter({ letter, onClose, onMusicStart, category }) {
   const [phase, setPhase] = useState("envelope");
   // envelope → glow → sealBreak → flap → rise → letterIn
   const [letterVisible, setLetterVisible] = useState(false);
@@ -12,9 +24,11 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
   const [showLightBurst, setShowLightBurst] = useState(false);
   const [contentRevealed, setContentRevealed] = useState(false);
 
+  const emojiSet = EMOJI_SETS[category] || EMOJI_SETS.default;
+
   /* ── Burst particles (emoji confetti on open) ── */
   const particles = useMemo(() => {
-    const emojis = ["✨", "💕", "🌸", "💫", "⭐", "🦋", "🌹", "💖", "🩷", "💐", "🎀", "🪷"];
+    const emojis = emojiSet.particles;
     return Array.from({ length: 32 }, (_, i) => ({
       id: i,
       emoji: emojis[i % emojis.length],
@@ -27,19 +41,19 @@ export default function LoveLetter({ letter, onClose, onMusicStart }) {
       dy: -160 + Math.random() * 80,
       rot: Math.random() * 520 - 260,
     }));
-  }, []);
+  }, [emojiSet]);
 
   /* ── Falling petals (continuous ambient) ── */
   const petals = useMemo(() =>
     Array.from({ length: 18 }, (_, i) => ({
       id: i,
-      emoji: ["🌸", "🩷", "💮", "🪻"][i % 4],
+      emoji: emojiSet.petals[i % emojiSet.petals.length],
       left: Math.random() * 100,
       delay: Math.random() * 8,
       dur: 6 + Math.random() * 7,
       size: 0.6 + Math.random() * 0.6,
       sway: 30 + Math.random() * 60,
-    })), []);
+    })), [emojiSet]);
 
   /* ── Phase machine ── */
   useEffect(() => {

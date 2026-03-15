@@ -2,8 +2,8 @@ import { useState } from "react";
 import { CATEGORIES } from "../templateConfigs";
 import { MdAutoAwesome, MdCheck, MdArrowForward, MdAccessTime } from "react-icons/md";
 
-// Only march8 is available for now
-const AVAILABLE_CATEGORIES = new Set(["march8"]);
+// Available holiday categories
+const AVAILABLE_CATEGORIES = new Set(["march8", "soldiers-day"]);
 
 export default function CategorySelector({ onSelect, onOpenBuilder }) {
   const [hovered, setHovered] = useState(null);

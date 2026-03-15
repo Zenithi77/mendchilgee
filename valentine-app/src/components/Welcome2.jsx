@@ -1,6 +1,7 @@
-export default function Welcome2({ startDate, onOpen, template }) {
+export default function Welcome2({ startDate, onOpen, template, category }) {
   const welcome = template?.welcome || {};
   const character = welcome.character || {};
+  const isMilitary = category === "soldiers-day";
 
   return (
     <div className="page page-enter">
@@ -49,9 +50,12 @@ export default function Welcome2({ startDate, onOpen, template }) {
           className="font-script"
           style={{
             fontSize: "2.4rem",
-            color: "#FF85A2",
+            color: isMilitary ? "#D4A853" : "#FF85A2",
             marginBottom: 8,
-            textShadow: "0 0 40px rgba(255,133,162,0.5)",
+            textShadow: isMilitary
+              ? "0 0 40px rgba(212,168,83,0.5), 0 2px 60px rgba(44,111,173,0.3)"
+              : "0 0 40px rgba(255,133,162,0.5)",
+            letterSpacing: isMilitary ? "1px" : "normal",
           }}
         >
           {welcome.title || "Мэндчилгээ 🎉"}
@@ -59,10 +63,11 @@ export default function Welcome2({ startDate, onOpen, template }) {
         <p
           style={{
             fontSize: "0.92rem",
-            color: "#FFC4D0",
+            color: isMilitary ? "#B8C4D0" : "#FFC4D0",
             marginBottom: 28,
             lineHeight: 1.7,
             whiteSpace: "pre-line",
+            textShadow: isMilitary ? "0 0 20px rgba(184, 196, 208, 0.15)" : "none",
           }}
         >
           {welcome.subtitle ||

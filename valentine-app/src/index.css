@@ -35,3 +35,8 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,196,208,0.3); border-radius: 3px; }
+
+/* Military scrollbar — blue/gold/steel instead of pink */
+.theme-military ::-webkit-scrollbar-thumb { background: rgba(44, 111, 173, 0.3); }
+.theme-military-gold ::-webkit-scrollbar-thumb { background: rgba(191, 140, 44, 0.3); }
+.theme-military-steel ::-webkit-scrollbar-thumb { background: rgba(84, 110, 122, 0.3); }

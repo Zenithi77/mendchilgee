@@ -29,6 +29,10 @@ import {
   MdVisibility,
   MdConfirmationNumber,
   MdStar,
+  MdShoppingCart,
+  MdFilterList,
+  MdExpandMore,
+  MdExpandLess,
 } from "react-icons/md";
 import "./AdminPromoPanel.css";
 
@@ -87,6 +91,12 @@ export default function AdminPromoPanel({ onBack }) {
     promoUsed: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
+
+  // ── Top Buyers ──
+  const [topBuyers, setTopBuyers] = useState([]);
+  const [buyersLoading, setBuyersLoading] = useState(true);
+  const [buyerMinCount, setBuyerMinCount] = useState(1); // filter: minimum purchase count
+  const [buyersExpanded, setBuyersExpanded] = useState(false);
 
   // New promo form
   const [newCode, setNewCode] = useState("");
@@ -155,6 +165,38 @@ export default function AdminPromoPanel({ onBack }) {
       setStats((prev) => ({ ...prev, totalUsers: snap.size }));
     });
     return () => unsubscribe();
+  }, []);
+
+  // ── Live subscription: top buyers (grouped credit_payments by userId) ──
+  useEffect(() => {
+    const CREDIT_PRICE = 5000;
+    const unsub = onSnapshot(collection(db, "credit_payments"), (snap) => {
+      const paidDocs = snap.docs
+        .map((d) => d.data())
+        .filter((d) => d.status === "paid");
+
+      // Group by userId
+      const userMap = {};
+      paidDocs.forEach((d) => {
+        const uid = d.userId || "unknown";
+        if (!userMap[uid]) {
+          userMap[uid] = { userId: uid, purchases: 0, totalCredits: 0, totalSpent: 0, lastPurchase: null };
+        }
+        userMap[uid].purchases += 1;
+        userMap[uid].totalCredits += d.quantity || 1;
+        userMap[uid].totalSpent += (d.quantity || 1) * CREDIT_PRICE;
+        const paidAt = d.paidAt?.toMillis?.() || 0;
+        if (!userMap[uid].lastPurchase || paidAt > userMap[uid].lastPurchase) {
+          userMap[uid].lastPurchase = paidAt;
+        }
+      });
+
+      // Sort by purchase count descending
+      const sorted = Object.values(userMap).sort((a, b) => b.purchases - a.purchases);
+      setTopBuyers(sorted);
+      setBuyersLoading(false);
+    });
+    return () => unsub();
   }, []);
 
   // Generate random code
@@ -365,6 +407,88 @@ export default function AdminPromoPanel({ onBack }) {
           </div>
         </div>
       </div>
+
+      {/* ── Top Buyers Section ── */}
+      <div className="admin-section-header">
+        <h3 className="admin-section-title">
+          🛒 Топ худалдан авагчид
+        </h3>
+        <button
+          className="admin-toggle-section-btn"
+          onClick={() => setBuyersExpanded((p) => !p)}
+        >
+          {buyersExpanded ? <MdExpandLess /> : <MdExpandMore />}
+          {buyersExpanded ? "Хураах" : "Дэлгэх"}
+        </button>
+      </div>
+
+      {buyersExpanded && (
+        <div className="admin-top-buyers">
+          {/* Filter */}
+          <div className="admin-buyers-filter">
+            <MdFilterList />
+            <label>Хамгийн багадаа</label>
+            <select
+              value={buyerMinCount}
+              onChange={(e) => setBuyerMinCount(Number(e.target.value))}
+              className="admin-buyers-select"
+            >
+              <option value={1}>1+ удаа</option>
+              <option value={2}>2+ удаа</option>
+              <option value={3}>3+ удаа</option>
+              <option value={5}>5+ удаа</option>
+              <option value={10}>10+ удаа</option>
+            </select>
+            <span className="admin-buyers-count">
+              {topBuyers.filter((b) => b.purchases >= buyerMinCount).length} хэрэглэгч
+            </span>
+          </div>
+
+          {buyersLoading ? (
+            <div className="admin-loading">Ачааллаж байна...</div>
+          ) : topBuyers.filter((b) => b.purchases >= buyerMinCount).length === 0 ? (
+            <div className="admin-empty">
+              <span>🛒</span>
+              <p>Худалдан авалт байхгүй</p>
+            </div>
+          ) : (
+            <div className="admin-buyers-list">
+              {topBuyers
+                .filter((b) => b.purchases >= buyerMinCount)
+                .map((buyer, idx) => (
+                  <div key={buyer.userId} className="admin-buyer-card">
+                    <div className="admin-buyer-rank">
+                      {idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : `#${idx + 1}`}
+                    </div>
+                    <div className="admin-buyer-info">
+                      <span className="admin-buyer-uid" title={buyer.userId}>
+                        {buyer.userId.length > 12
+                          ? buyer.userId.slice(0, 6) + "..." + buyer.userId.slice(-4)
+                          : buyer.userId}
+                      </span>
+                      {buyer.lastPurchase > 0 && (
+                        <span className="admin-buyer-date">
+                          Сүүлд: {new Date(buyer.lastPurchase).toLocaleDateString("mn-MN")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="admin-buyer-stats">
+                      <span className="admin-buyer-badge admin-buyer-purchases">
+                        <MdShoppingCart /> {buyer.purchases} удаа
+                      </span>
+                      <span className="admin-buyer-badge admin-buyer-credits">
+                        {buyer.totalCredits} эрх
+                      </span>
+                      <span className="admin-buyer-badge admin-buyer-spent">
+                        ₮{buyer.totalSpent.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <h3 className="admin-section-title">🎟️ Промо кодууд</h3>
 

@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { MdDownload, MdCheck } from "react-icons/md";
+import { saveGreetingAsImage } from "../utils/saveGreeting";
 import "./GiftCompletePage.css";
 
 /* ─────────────────────────────────────────────────────
@@ -7,7 +9,8 @@ import "./GiftCompletePage.css";
    with branding + Instagram link.
    ───────────────────────────────────────────────────── */
 
-const FLOATING_EMOJIS = ["💌", "✨", "🌸", "💕", "🎀", "🌹", "💖", "🦋", "🌷", "💐"];
+const FLOATING_EMOJIS_DEFAULT = ["💌", "✨", "🌸", "💕", "🎀", "🌹", "💖", "🦋", "🌷", "💐"];
+const FLOATING_EMOJIS_MILITARY = ["⭐", "🎖️", "✨", "🏅", "💫", "🛡️", "🦅", "⚔️", "🌟", "🎗️"];
 
 function FloatingEmoji({ emoji, delay, left, dur }) {
   return (
@@ -26,9 +29,14 @@ const EMOJI_RANDOMS = Array.from({ length: 14 }, () => ({
   durExtra: Math.random() * 4,
 }));
 
-export default function GiftCompletePage() {
+export default function GiftCompletePage({ category }) {
+  const isMilitary = category === "soldiers-day";
+  const FLOATING_EMOJIS = isMilitary ? FLOATING_EMOJIS_MILITARY : FLOATING_EMOJIS_DEFAULT;
   const [visible, setVisible] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const pageRef = useRef(null);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -36,6 +44,20 @@ export default function GiftCompletePage() {
       setShowContent(true);
     });
   }, []);
+
+  const handleSave = useCallback(async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await saveGreetingAsImage(pageRef.current, "mendchilgee-greeting");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error("[GiftCompletePage] Save failed:", err);
+    } finally {
+      setSaving(false);
+    }
+  }, [saving]);
 
   const emojis = useMemo(
     () =>
@@ -49,7 +71,7 @@ export default function GiftCompletePage() {
   );
 
   return (
-    <div className={`gc-page ${visible ? "gc-visible" : ""}`}>
+    <div ref={pageRef} className={`gc-page ${visible ? "gc-visible" : ""}`}>
       {/* Floating emoji layer */}
       <div className="gc-emoji-layer">
         {emojis.map((e, i) => (
@@ -66,7 +88,7 @@ export default function GiftCompletePage() {
         {/* Top decoration */}
         <div className="gc-top-deco">
           <span className="gc-sparkle-icon">✨</span>
-          <span className="gc-heart-icon">💌</span>
+          <span className="gc-heart-icon">{isMilitary ? "🎖️" : "💌"}</span>
           <span className="gc-sparkle-icon">✨</span>
         </div>
 
@@ -88,12 +110,14 @@ export default function GiftCompletePage() {
         </h1>
 
         <p className="gc-subtitle">
-          Танд мэндчилгээ таалагдсан гэж найдаж байна 💕
+          {isMilitary
+            ? "Танд энэ мэндчилгээ таалагдсан гэж найдаж байна ⭐"
+            : "Танд мэндчилгээ таалагдсан гэж найдаж байна 💕"}
         </p>
 
         <div className="gc-divider gc-divider-sm">
           <span className="gc-div-line" />
-          <span className="gc-div-heart">♥</span>
+          <span className="gc-div-heart">{isMilitary ? "★" : "♥"}</span>
           <span className="gc-div-line" />
         </div>
 
@@ -117,10 +141,36 @@ export default function GiftCompletePage() {
           </svg>
         </a>
 
+        {/* Save / Download greeting button */}
+        <button
+          className={`gc-save-btn ${saved ? "gc-save-btn-done" : ""}`}
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? (
+            <>
+              <span className="gc-save-spinner" />
+              <span>Хадгалж байна...</span>
+            </>
+          ) : saved ? (
+            <>
+              <MdCheck />
+              <span>Хадгалагдлаа!</span>
+            </>
+          ) : (
+            <>
+              <MdDownload />
+              <span>Мэндчилгээ хадгалах</span>
+            </>
+          )}
+        </button>
+
         {/* Footer */}
         <div className="gc-footer">
           <p className="gc-footer-text">
-            Хайр дүүрэн мэндчилгээ илгээгээрэй 💖
+            {isMilitary
+              ? "Мэндчилгээ илгээгээрэй ⭐"
+              : "Хайр дүүрэн мэндчилгээ илгээгээрэй 💖"}
           </p>
           <a
             href="https://www.mendchilgee.site"
@@ -134,7 +184,7 @@ export default function GiftCompletePage() {
 
         {/* Bottom decoration */}
         <div className="gc-bottom-deco">
-          🌸 · 💕 · 🌸
+          {isMilitary ? "⭐ · 🎖️ · ⭐" : "🌸 · 💕 · 🌸"}
         </div>
       </div>
     </div>

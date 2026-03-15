@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getGift, incrementViewCount } from "../services/giftService";
 import { updateGift } from "../services/giftService";
 import GiftRenderer from "./GiftRenderer";
 import { useAuth } from "../contexts/AuthContext";
 import { isPaymentExpired } from "../utils/tierUtils";
-import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdFavorite, MdShoppingCart, MdAutoAwesome } from "react-icons/md";
+import { saveGreetingAsImage } from "../utils/saveGreeting";
+import { MdSentimentDissatisfied, MdLock, MdLightbulb, MdFavorite, MdShoppingCart, MdAutoAwesome, MdDownload, MdCheck } from "react-icons/md";
 import "./GiftPreviewPage.css";
 
 /**
@@ -28,6 +29,24 @@ export default function GiftPreviewPage() {
   const [pwDigits, setPwDigits] = useState(["", "", "", ""]);
   const [pwError, setPwError] = useState(false);
   const digitRefs = [useRef(), useRef(), useRef(), useRef()];
+  const pageRef = useRef(null);
+  const [savingImg, setSavingImg] = useState(false);
+  const [savedImg, setSavedImg] = useState(false);
+
+  const handleSaveGreeting = useCallback(async () => {
+    if (savingImg) return;
+    setSavingImg(true);
+    try {
+      const target = pageRef.current || document.querySelector(".gift-preview-page");
+      await saveGreetingAsImage(target, `mendchilgee-${giftId}`);
+      setSavedImg(true);
+      setTimeout(() => setSavedImg(false), 3000);
+    } catch (err) {
+      console.error("[GiftPreviewPage] Save failed:", err);
+    } finally {
+      setSavingImg(false);
+    }
+  }, [savingImg, giftId]);
 
   /* Restore unlock from sessionStorage if previously entered */
   useEffect(() => {
@@ -280,7 +299,23 @@ export default function GiftPreviewPage() {
   }
 
   return (
-    <div className={`gift-preview-page app ${gift.theme?.className || ""}`}>
+    <div ref={pageRef} className={`gift-preview-page app ${gift.theme?.className || ""}`}>
+      {/* Floating save button */}
+      <button
+        className={`save-greeting-fab ${savedImg ? "save-greeting-fab-done" : ""}`}
+        onClick={handleSaveGreeting}
+        disabled={savingImg}
+        title="Мэндчилгээ хадгалах"
+      >
+        {savingImg ? (
+          <span className="save-greeting-spinner" />
+        ) : savedImg ? (
+          <MdCheck />
+        ) : (
+          <MdDownload />
+        )}
+      </button>
+
       {/* Persistent banner for owner viewing unpaid/draft gift */}
       {isOwner && isDraft && (
         <div className="gift-preview-unpaid-banner">

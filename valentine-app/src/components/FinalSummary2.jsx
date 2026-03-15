@@ -4,9 +4,10 @@ import Fireworks from "./Fireworks";
 import FlowerBloom from "./FlowerBloom";
 import StickerAnimation from "./StickerAnimation";
 
-export default function FinalSummary2({ choices, template, onContinue }) {
+export default function FinalSummary2({ choices, template, onContinue, category }) {
   const final = template?.finalSummary || {};
   const effects = template?.effects || {};
+  const isMilitary = category === "soldiers-day";
   const baseSummaryFields = final.summaryFields || [];
 
   const mergedFields = [...baseSummaryFields];
@@ -183,23 +184,35 @@ export default function FinalSummary2({ choices, template, onContinue }) {
         {onContinue && (
           <button
             onClick={onContinue}
+            className={isMilitary ? 'final-btn-military' : ''}
             style={{
               marginTop: 24,
               padding: '14px 36px',
               borderRadius: 60,
-              border: 'none',
-              background: 'linear-gradient(135deg, var(--t-primary, #ff85a2), var(--t-secondary, #ff6b9d))',
+              border: isMilitary ? '1px solid rgba(212, 165, 74, 0.3)' : 'none',
+              background: isMilitary
+                ? 'linear-gradient(135deg, #1a4a7a, #2c6fad, #1a4a7a)'
+                : 'linear-gradient(135deg, var(--t-primary, #ff85a2), var(--t-secondary, #ff6b9d))',
               color: '#fff',
               fontWeight: 600,
               fontSize: '1rem',
               cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(255,107,157,0.35)',
+              boxShadow: isMilitary
+                ? '0 4px 24px rgba(44, 111, 173, 0.4)'
+                : '0 4px 20px rgba(255,107,157,0.35)',
               transition: 'transform 0.2s, box-shadow 0.2s',
+              letterSpacing: isMilitary ? '0.5px' : 'normal',
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+              if (isMilitary) e.currentTarget.style.boxShadow = '0 8px 36px rgba(44, 111, 173, 0.55)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1)';
+              if (isMilitary) e.currentTarget.style.boxShadow = '0 4px 24px rgba(44, 111, 173, 0.4)';
+            }}
           >
-            Дуусгах ✨
+            {isMilitary ? 'Дуусгах ⭐' : 'Дуусгах ✨'}
           </button>
         )}
       </div>

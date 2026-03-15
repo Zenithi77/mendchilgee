@@ -160,6 +160,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  overflow: visible;
 }
 
 .header-right {
@@ -6240,4 +6242,1495 @@
   min-width: 120px;
   font-size: 0.78rem !important;
   padding: 8px 10px !important;
+}
+
+/* ================================================
+   MILITARY / Цэргийн баяр THEME — Bold, Dark, Honorable
+   ================================================ */
+.theme-military {
+  --pink: #4a90d9;
+  --hot-pink: #2c6fad;
+  --purple: #d4a54a;
+  --deep-purple: #bf8c2c;
+  --rose: #6baed6;
+  --light-pink: #c2d9ef;
+  --bg-dark: #070b14;
+  --bg-mid: #0c1220;
+  --glass: rgba(44, 111, 173, 0.06);
+  --glass-border: rgba(44, 111, 173, 0.18);
+}
+
+.theme-military .btn-love {
+  background: linear-gradient(135deg, #1a4a7a, #2c6fad, #1a4a7a);
+  box-shadow: 0 10px 40px rgba(44, 111, 173, 0.35);
+  border: 1px solid rgba(212, 165, 74, 0.3);
+}
+
+.theme-military .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(44, 111, 173, 0.5);
+  border-color: rgba(212, 165, 74, 0.5);
+}
+
+.theme-military .btn-magic {
+  background: linear-gradient(135deg, #2c3e50, #d4a54a, #2c3e50);
+  box-shadow: 0 10px 40px rgba(212, 165, 74, 0.25);
+  border: 1px solid rgba(212, 165, 74, 0.3);
+}
+
+.theme-military .btn-magic:hover {
+  box-shadow: 0 16px 50px rgba(212, 165, 74, 0.4);
+}
+
+.theme-military .yes-btn {
+  background: linear-gradient(135deg, #1a4a7a, #2c6fad);
+  box-shadow: 0 8px 30px rgba(44, 111, 173, 0.4);
+  border: 1px solid rgba(212, 165, 74, 0.25);
+}
+
+.theme-military .timer-box {
+  background: rgba(44, 111, 173, 0.08);
+  border-color: rgba(44, 111, 173, 0.2);
+}
+
+.theme-military .timer-num {
+  color: #6baed6;
+}
+
+.theme-military .step-option.selected {
+  border-color: #d4a54a;
+  background: rgba(212, 165, 74, 0.1);
+  box-shadow: 0 0 24px rgba(212, 165, 74, 0.12);
+}
+
+.theme-military .time-chip.selected {
+  border-color: #d4a54a;
+  background: rgba(212, 165, 74, 0.1);
+  box-shadow: 0 0 20px rgba(212, 165, 74, 0.12);
+}
+
+.theme-military .step-dot.active {
+  background: #d4a54a;
+  box-shadow: 0 0 12px rgba(212, 165, 74, 0.5);
+}
+
+.theme-military .step-dot.done {
+  background: #4a90d9;
+}
+
+.theme-military .meter-fill {
+  background: linear-gradient(90deg, #1a4a7a, #2c6fad, #d4a54a, #bf8c2c);
+}
+
+.theme-military .summary-box {
+  background: rgba(44, 111, 173, 0.06);
+  border-color: rgba(44, 111, 173, 0.15);
+}
+
+.theme-military .sr-val {
+  color: #6baed6;
+}
+
+.theme-military .welcome-timer-box {
+  background: linear-gradient(
+    135deg,
+    rgba(44, 111, 173, 0.12),
+    rgba(212, 165, 74, 0.08)
+  );
+  border-color: rgba(44, 111, 173, 0.25);
+}
+
+.theme-military .multi-check.checked {
+  background: linear-gradient(135deg, #2c6fad, #d4a54a);
+}
+
+.theme-military .wb {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.1), rgba(212, 165, 74, 0.06));
+  border-color: rgba(44, 111, 173, 0.2);
+}
+
+.theme-military .music-box-dot.active {
+  background: #d4a54a;
+  box-shadow: 0 0 10px rgba(212, 165, 74, 0.5);
+}
+
+.theme-military .sr-tag {
+  background: rgba(44, 111, 173, 0.12);
+  border-color: rgba(44, 111, 173, 0.2);
+  color: #6baed6;
+}
+
+/* ── Military Background Orbs ── */
+.theme-military .bg-orb {
+  background: radial-gradient(circle, rgba(44, 111, 173, 0.08) 0%, transparent 70%);
+}
+
+.theme-military .bg-orb:nth-child(2) {
+  background: radial-gradient(circle, rgba(212, 165, 74, 0.06) 0%, transparent 70%);
+}
+
+.theme-military .bg-orb:nth-child(3) {
+  background: radial-gradient(circle, rgba(26, 74, 122, 0.07) 0%, transparent 70%);
+}
+
+/* ================================================
+   MILITARY GOLD THEME — Premium Variant
+   ================================================ */
+.theme-military-gold {
+  --pink: #d4a54a;
+  --hot-pink: #bf8c2c;
+  --purple: #e8c86e;
+  --deep-purple: #8b6914;
+  --rose: #f0d78a;
+  --light-pink: #fdf5e0;
+  --bg-dark: #0a0805;
+  --bg-mid: #161008;
+  --glass: rgba(191, 140, 44, 0.06);
+  --glass-border: rgba(191, 140, 44, 0.18);
+}
+
+.theme-military-gold .btn-love {
+  background: linear-gradient(135deg, #8b6914, #bf8c2c, #d4a54a);
+  box-shadow: 0 10px 40px rgba(191, 140, 44, 0.35);
+  border: 1px solid rgba(232, 200, 110, 0.3);
+}
+
+.theme-military-gold .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(191, 140, 44, 0.5);
+}
+
+.theme-military-gold .btn-magic {
+  background: linear-gradient(135deg, #8b6914, #d4a54a, #e8c86e);
+  box-shadow: 0 10px 40px rgba(212, 165, 74, 0.25);
+}
+
+.theme-military-gold .btn-magic:hover {
+  box-shadow: 0 16px 50px rgba(212, 165, 74, 0.4);
+}
+
+.theme-military-gold .yes-btn {
+  background: linear-gradient(135deg, #8b6914, #bf8c2c);
+  box-shadow: 0 8px 30px rgba(191, 140, 44, 0.4);
+}
+
+.theme-military-gold .timer-box {
+  background: rgba(191, 140, 44, 0.08);
+  border-color: rgba(191, 140, 44, 0.2);
+}
+
+.theme-military-gold .timer-num {
+  color: #d4a54a;
+}
+
+.theme-military-gold .step-option.selected {
+  border-color: #d4a54a;
+  background: rgba(212, 165, 74, 0.12);
+  box-shadow: 0 0 24px rgba(212, 165, 74, 0.15);
+}
+
+.theme-military-gold .step-dot.active {
+  background: #d4a54a;
+  box-shadow: 0 0 12px rgba(212, 165, 74, 0.5);
+}
+
+.theme-military-gold .step-dot.done {
+  background: #e8c86e;
+}
+
+.theme-military-gold .meter-fill {
+  background: linear-gradient(90deg, #8b6914, #bf8c2c, #d4a54a, #e8c86e);
+}
+
+.theme-military-gold .summary-box {
+  background: rgba(191, 140, 44, 0.07);
+  border-color: rgba(191, 140, 44, 0.15);
+}
+
+.theme-military-gold .sr-val {
+  color: #d4a54a;
+}
+
+.theme-military-gold .welcome-timer-box {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.12), rgba(139, 105, 20, 0.08));
+  border-color: rgba(191, 140, 44, 0.25);
+}
+
+.theme-military-gold .sr-tag {
+  background: rgba(191, 140, 44, 0.12);
+  border-color: rgba(191, 140, 44, 0.2);
+  color: #d4a54a;
+}
+
+.theme-military-gold .bg-orb {
+  background: radial-gradient(circle, rgba(191, 140, 44, 0.07) 0%, transparent 70%);
+}
+
+.theme-military-gold .bg-orb:nth-child(2) {
+  background: radial-gradient(circle, rgba(139, 105, 20, 0.06) 0%, transparent 70%);
+}
+
+/* ================================================
+   MILITARY DARK STEEL THEME
+   ================================================ */
+.theme-military-steel {
+  --pink: #78909c;
+  --hot-pink: #546e7a;
+  --purple: #90a4ae;
+  --deep-purple: #37474f;
+  --rose: #b0bec5;
+  --light-pink: #eceff1;
+  --bg-dark: #080a0d;
+  --bg-mid: #0f1318;
+  --glass: rgba(84, 110, 122, 0.06);
+  --glass-border: rgba(84, 110, 122, 0.18);
+}
+
+.theme-military-steel .btn-love {
+  background: linear-gradient(135deg, #37474f, #546e7a, #455a64);
+  box-shadow: 0 10px 40px rgba(84, 110, 122, 0.3);
+  border: 1px solid rgba(176, 190, 197, 0.2);
+}
+
+.theme-military-steel .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(84, 110, 122, 0.45);
+  border-color: rgba(176, 190, 197, 0.35);
+}
+
+.theme-military-steel .btn-magic {
+  background: linear-gradient(135deg, #37474f, #78909c, #37474f);
+  box-shadow: 0 10px 40px rgba(120, 144, 156, 0.2);
+}
+
+.theme-military-steel .yes-btn {
+  background: linear-gradient(135deg, #37474f, #546e7a);
+  box-shadow: 0 8px 30px rgba(84, 110, 122, 0.4);
+}
+
+.theme-military-steel .timer-box {
+  background: rgba(84, 110, 122, 0.08);
+  border-color: rgba(84, 110, 122, 0.2);
+}
+
+.theme-military-steel .timer-num {
+  color: #90a4ae;
+}
+
+.theme-military-steel .step-option.selected {
+  border-color: #78909c;
+  background: rgba(120, 144, 156, 0.1);
+  box-shadow: 0 0 24px rgba(120, 144, 156, 0.12);
+}
+
+.theme-military-steel .step-dot.active {
+  background: #78909c;
+  box-shadow: 0 0 12px rgba(120, 144, 156, 0.5);
+}
+
+.theme-military-steel .step-dot.done {
+  background: #b0bec5;
+}
+
+.theme-military-steel .meter-fill {
+  background: linear-gradient(90deg, #37474f, #546e7a, #78909c, #b0bec5);
+}
+
+.theme-military-steel .summary-box {
+  background: rgba(84, 110, 122, 0.07);
+  border-color: rgba(84, 110, 122, 0.15);
+}
+
+.theme-military-steel .sr-val {
+  color: #90a4ae;
+}
+
+.theme-military-steel .welcome-timer-box {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.12), rgba(55, 71, 79, 0.08));
+  border-color: rgba(84, 110, 122, 0.25);
+}
+
+.theme-military-steel .sr-tag {
+  background: rgba(84, 110, 122, 0.12);
+  border-color: rgba(84, 110, 122, 0.2);
+  color: #90a4ae;
+}
+
+.theme-military-steel .bg-orb {
+  background: radial-gradient(circle, rgba(84, 110, 122, 0.06) 0%, transparent 70%);
+}
+
+/* ================================================
+   MILITARY LOVE LETTER OVERRIDES
+   All three military themes — completely recolor the
+   envelope, letter, overlay, seal, particles
+   ================================================ */
+
+/* ── Overlay: deep navy/dark steel instead of pink aurora ── */
+.theme-military .love-letter-overlay,
+.theme-military-gold .love-letter-overlay,
+.theme-military-steel .love-letter-overlay {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(20, 50, 90, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(44, 111, 173, 0.2) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(15, 35, 65, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at center, rgba(5, 10, 20, 0.9), rgba(0, 0, 0, 0.97));
+}
+
+.theme-military-gold .love-letter-overlay {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(90, 65, 15, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(191, 140, 44, 0.15) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(50, 35, 10, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at center, rgba(10, 8, 5, 0.92), rgba(0, 0, 0, 0.97));
+}
+
+/* ── Envelope: Navy blue / dark with gold accent ── */
+.theme-military .ll-env-back {
+  background: linear-gradient(155deg, #1a3a5c, #1e4874, #172e4a, #122040);
+  box-shadow:
+    0 24px 70px rgba(20, 50, 90, 0.5),
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(212, 165, 74, 0.15),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.theme-military .ll-env-front {
+  background: linear-gradient(165deg, #1d4470, #1a3a5c, #15305a);
+  box-shadow:
+    0 -2px 10px rgba(0, 0, 0, 0.12),
+    inset 0 3px 6px rgba(212, 165, 74, 0.08);
+}
+
+.theme-military .ll-env-flap {
+  background: linear-gradient(180deg, #1e4874, #1a3a5c);
+}
+
+.theme-military .ll-env-flap-inner {
+  background: linear-gradient(180deg, rgba(212, 165, 74, 0.06), transparent 60%);
+}
+
+.theme-military .ll-env-side-l {
+  background: linear-gradient(135deg, #15305a, #1d4470 60%);
+}
+
+.theme-military .ll-env-side-r {
+  background: linear-gradient(225deg, #15305a, #1d4470 60%);
+}
+
+.theme-military .ll-ribbon-left,
+.theme-military .ll-ribbon-right {
+  background: linear-gradient(135deg, #d4a54a, #bf8c2c);
+}
+
+.theme-military .ll-env-watermark {
+  color: rgba(212, 165, 74, 0.06);
+  font-size: 4rem;
+}
+
+.theme-military .ll-env-watermark::after {
+  content: "★";
+}
+
+/* ── Wax Seal: Gold/Bronze military look ── */
+.theme-military .ll-wax-seal {
+  background: radial-gradient(circle at 35% 35%,
+    #d4a54a, #bf8c2c 40%, #8b6914 80%, #6b5210 100%);
+  box-shadow:
+    0 4px 20px rgba(139, 105, 20, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 6px rgba(232, 200, 110, 0.25),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.25);
+  animation: milSealPulse 2.5s ease-in-out infinite;
+}
+
+.theme-military .ll-seal-ring {
+  border-color: rgba(212, 165, 74, 0.25);
+}
+
+.theme-military .ll-seal-glowing {
+  animation: milSealGlow 0.5s ease-out forwards !important;
+}
+
+@keyframes milSealPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(139, 105, 20, 0.55), 0 0 0 0 rgba(212, 165, 74, 0.3); }
+  50%      { box-shadow: 0 4px 20px rgba(139, 105, 20, 0.55), 0 0 0 14px rgba(212, 165, 74, 0); }
+}
+
+@keyframes milSealGlow {
+  0%   { box-shadow: 0 4px 20px rgba(139, 105, 20, 0.55), 0 0 0 0 rgba(212, 165, 74, 0); }
+  50%  { box-shadow: 0 4px 20px rgba(139, 105, 20, 0.55), 0 0 30px 10px rgba(212, 165, 74, 0.5); }
+  100% { box-shadow: 0 4px 20px rgba(139, 105, 20, 0.55), 0 0 50px 20px rgba(212, 165, 74, 0.3); }
+}
+
+/* ── Glow: navy/gold halo ── */
+.theme-military .ll-env-glow {
+  background: radial-gradient(ellipse,
+    rgba(44, 111, 173, 0.15) 0%,
+    rgba(212, 165, 74, 0.08) 40%,
+    transparent 70%);
+}
+
+.theme-military .ll-glowing .ll-env-glow {
+  animation: milGlowIntense 0.5s ease-out forwards;
+}
+
+@keyframes milGlowIntense {
+  0%   { opacity: 0.6; transform: translate(-50%, -55%) scale(1); }
+  50%  { opacity: 1; transform: translate(-50%, -55%) scale(1.3); background: radial-gradient(ellipse, rgba(212,165,74,0.3) 0%, rgba(44,111,173,0.1) 40%, transparent 70%); }
+  100% { opacity: 0; transform: translate(-50%, -55%) scale(1.6); }
+}
+
+/* ── Light burst: gold flash ── */
+.theme-military .ll-light-burst {
+  background: radial-gradient(circle,
+    rgba(212, 165, 74, 0.5) 0%,
+    rgba(191, 140, 44, 0.2) 30%,
+    rgba(139, 105, 20, 0.1) 50%,
+    transparent 70%);
+}
+
+/* ── Tap text: lighter ── */
+.theme-military .ll-env-tap-text,
+.theme-military-gold .ll-env-tap-text,
+.theme-military-steel .ll-env-tap-text {
+  text-shadow: 0 0 20px rgba(44, 111, 173, 0.3);
+}
+
+/* ── Letter paper: aged parchment with military paper feel ── */
+.theme-military .ll-letter-paper,
+.theme-military-gold .ll-letter-paper {
+  background-color: #f0e8d4;
+  background-image:
+    radial-gradient(ellipse at 78% 82%, rgba(139, 105, 20, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 25%, rgba(100, 80, 40, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 92% 18%, rgba(120, 90, 40, 0.10) 0%, transparent 35%),
+    radial-gradient(ellipse at 8% 88%, rgba(110, 85, 35, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(100, 75, 30, 0.18) 100%);
+  box-shadow:
+    inset 0 0 60px rgba(100, 75, 30, 0.3),
+    inset 0 0 120px rgba(80, 55, 15, 0.1),
+    0 30px 90px rgba(0, 0, 0, 0.4),
+    0 5px 15px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(139, 105, 20, 0.2);
+}
+
+.theme-military-steel .ll-letter-paper {
+  background-color: #e8e8e8;
+  background-image:
+    radial-gradient(ellipse at 78% 82%, rgba(84, 110, 122, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 25%, rgba(55, 71, 79, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(84, 110, 122, 0.12) 100%);
+  box-shadow:
+    inset 0 0 60px rgba(84, 110, 122, 0.2),
+    0 30px 90px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(84, 110, 122, 0.2);
+}
+
+/* ── Letter title: military colors ── */
+.theme-military .ll-letter-title,
+.theme-military-gold .ll-letter-title {
+  color: #5a3a18;
+}
+
+.theme-military-steel .ll-letter-title {
+  color: #37474f;
+}
+
+/* ── Letter content: darker ink ── */
+.theme-military .ll-letter-content,
+.theme-military-gold .ll-letter-content {
+  color: #3a2810;
+}
+
+.theme-military-steel .ll-letter-content {
+  color: #263238;
+}
+
+/* ── Ornate border: gold tint ── */
+.theme-military .ll-ornate-border,
+.theme-military-gold .ll-ornate-border {
+  border-color: rgba(139, 105, 20, 0.2);
+}
+
+.theme-military .ll-ornate-border::before,
+.theme-military-gold .ll-ornate-border::before {
+  border-color: rgba(139, 105, 20, 0.1);
+}
+
+/* ── Corner flourishes: gold ── */
+.theme-military .ll-corner,
+.theme-military-gold .ll-corner {
+  color: rgba(139, 105, 20, 0.25);
+}
+
+/* ── Divider: gold line ── */
+.theme-military .ll-divider-line,
+.theme-military-gold .ll-divider-line {
+  background: linear-gradient(90deg, transparent, #bf8c2c, transparent);
+}
+
+.theme-military .ll-divider-line-l,
+.theme-military-gold .ll-divider-line-l {
+  background: linear-gradient(90deg, transparent, #bf8c2c);
+}
+
+.theme-military .ll-divider-line-r,
+.theme-military-gold .ll-divider-line-r {
+  background: linear-gradient(90deg, #bf8c2c, transparent);
+}
+
+.theme-military .ll-divider-diamond,
+.theme-military-gold .ll-divider-diamond {
+  color: rgba(191, 140, 44, 0.4);
+}
+
+.theme-military .ll-divider-icon,
+.theme-military-gold .ll-divider-icon {
+  color: #bf8c2c;
+}
+
+/* ── Signature line: gold ── */
+.theme-military .ll-sig-line,
+.theme-military-gold .ll-sig-line {
+  background: linear-gradient(90deg, transparent, rgba(191, 140, 44, 0.4), transparent);
+}
+
+/* ── Particle/petal filters: cool tone ── */
+.theme-military .ll-particle,
+.theme-military-gold .ll-particle,
+.theme-military-steel .ll-particle {
+  filter: drop-shadow(0 0 4px rgba(44, 111, 173, 0.4));
+}
+
+/* ── Petals become military-themed falling elements ── */
+.theme-military .ll-petal,
+.theme-military-gold .ll-petal,
+.theme-military-steel .ll-petal {
+  filter: drop-shadow(0 0 3px rgba(44, 111, 173, 0.3));
+}
+
+/* ══ MILITARY-GOLD Envelope Overrides ══ */
+.theme-military-gold .ll-env-back {
+  background: linear-gradient(155deg, #3a2a10, #4d3818, #3a2a10, #2d1f0c);
+  box-shadow:
+    0 24px 70px rgba(61, 42, 16, 0.5),
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(232, 200, 110, 0.15),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.theme-military-gold .ll-env-front {
+  background: linear-gradient(165deg, #4d3818, #3a2a10, #352510);
+  box-shadow:
+    0 -2px 10px rgba(0, 0, 0, 0.12),
+    inset 0 3px 6px rgba(232, 200, 110, 0.08);
+}
+
+.theme-military-gold .ll-env-flap {
+  background: linear-gradient(180deg, #4d3818, #3a2a10);
+}
+
+.theme-military-gold .ll-env-side-l {
+  background: linear-gradient(135deg, #352510, #4d3818 60%);
+}
+
+.theme-military-gold .ll-env-side-r {
+  background: linear-gradient(225deg, #352510, #4d3818 60%);
+}
+
+.theme-military-gold .ll-ribbon-left,
+.theme-military-gold .ll-ribbon-right {
+  background: linear-gradient(135deg, #d4a54a, #e8c86e);
+}
+
+.theme-military-gold .ll-wax-seal {
+  background: radial-gradient(circle at 35% 35%,
+    #e8c86e, #d4a54a 40%, #bf8c2c 80%, #8b6914 100%);
+  box-shadow:
+    0 4px 20px rgba(139, 105, 20, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 6px rgba(248, 232, 176, 0.3),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.theme-military-gold .ll-env-glow {
+  background: radial-gradient(ellipse,
+    rgba(212, 165, 74, 0.15) 0%,
+    rgba(191, 140, 44, 0.08) 40%,
+    transparent 70%);
+}
+
+.theme-military-gold .ll-light-burst {
+  background: radial-gradient(circle,
+    rgba(232, 200, 110, 0.5) 0%,
+    rgba(212, 165, 74, 0.25) 30%,
+    rgba(191, 140, 44, 0.1) 50%,
+    transparent 70%);
+}
+
+/* ══ MILITARY-STEEL Envelope Overrides ══ */
+.theme-military-steel .ll-env-back {
+  background: linear-gradient(155deg, #2c3e50, #34495e, #2c3e50, #1a252f);
+  box-shadow:
+    0 24px 70px rgba(44, 62, 80, 0.5),
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(176, 190, 197, 0.1),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.theme-military-steel .ll-env-front {
+  background: linear-gradient(165deg, #34495e, #2c3e50, #243342);
+}
+
+.theme-military-steel .ll-env-flap {
+  background: linear-gradient(180deg, #34495e, #2c3e50);
+}
+
+.theme-military-steel .ll-env-side-l {
+  background: linear-gradient(135deg, #243342, #34495e 60%);
+}
+
+.theme-military-steel .ll-env-side-r {
+  background: linear-gradient(225deg, #243342, #34495e 60%);
+}
+
+.theme-military-steel .ll-ribbon-left,
+.theme-military-steel .ll-ribbon-right {
+  background: linear-gradient(135deg, #78909c, #90a4ae);
+}
+
+.theme-military-steel .ll-wax-seal {
+  background: radial-gradient(circle at 35% 35%,
+    #90a4ae, #78909c 40%, #546e7a 80%, #37474f 100%);
+  box-shadow:
+    0 4px 20px rgba(84, 110, 122, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 6px rgba(176, 190, 197, 0.25),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.theme-military-steel .ll-env-glow {
+  background: radial-gradient(ellipse,
+    rgba(84, 110, 122, 0.15) 0%,
+    rgba(55, 71, 79, 0.08) 40%,
+    transparent 70%);
+}
+
+.theme-military-steel .ll-light-burst {
+  background: radial-gradient(circle,
+    rgba(176, 190, 197, 0.4) 0%,
+    rgba(120, 144, 156, 0.2) 30%,
+    rgba(84, 110, 122, 0.1) 50%,
+    transparent 70%);
+}
+
+/* ================================================
+   MILITARY — Extra component overrides
+   (pulse-ring, music-box, bear-blush, memory, etc.)
+   ================================================ */
+
+/* ── Pulse ring ── */
+.theme-military .pulse-ring-pink,
+.theme-military-gold .pulse-ring-pink,
+.theme-military-steel .pulse-ring-pink {
+  border-color: rgba(44, 111, 173, 0.25) !important;
+}
+
+/* ── Bear blush (hide on military) ── */
+.theme-military .bear-blush,
+.theme-military-gold .bear-blush,
+.theme-military-steel .bear-blush {
+  background: rgba(44, 111, 173, 0.3) !important;
+}
+
+/* ── Music box ── */
+.theme-military .music-box-title {
+  text-shadow: 0 0 20px rgba(44, 111, 173, 0.25);
+}
+.theme-military .music-box-frame {
+  box-shadow: 0 4px 20px rgba(44, 111, 173, 0.1) !important;
+}
+.theme-military-gold .music-box-title {
+  text-shadow: 0 0 20px rgba(191, 140, 44, 0.25);
+}
+.theme-military-gold .music-box-frame {
+  box-shadow: 0 4px 20px rgba(191, 140, 44, 0.1) !important;
+}
+.theme-military-steel .music-box-title {
+  text-shadow: 0 0 20px rgba(84, 110, 122, 0.25);
+}
+.theme-military-steel .music-box-frame {
+  box-shadow: 0 4px 20px rgba(84, 110, 122, 0.1) !important;
+}
+
+/* ── Memory gallery cards ── */
+.theme-military .memory-card {
+  box-shadow: 0 5px 20px rgba(44, 111, 173, 0.15);
+}
+.theme-military-gold .memory-card {
+  box-shadow: 0 5px 20px rgba(191, 140, 44, 0.15);
+}
+.theme-military-steel .memory-card {
+  box-shadow: 0 5px 20px rgba(84, 110, 122, 0.15);
+}
+
+/* ── Gift renderer layout shadow ── */
+.theme-military .gift-renderer {
+  box-shadow: none;
+}
+
+/* ── Glass card box-shadow (base .glass has hardcoded pink) ── */
+.theme-military .glass {
+  box-shadow:
+    0 24px 80px rgba(44, 111, 173, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.theme-military-gold .glass {
+  box-shadow:
+    0 24px 80px rgba(191, 140, 44, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.theme-military-steel .glass {
+  box-shadow:
+    0 24px 80px rgba(84, 110, 122, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ── Font-script heading color override ── */
+.theme-military .font-script {
+  color: #D4A853 !important;
+  text-shadow: 0 0 40px rgba(44, 111, 173, 0.4) !important;
+}
+.theme-military-gold .font-script {
+  color: #E8C86E !important;
+  text-shadow: 0 0 40px rgba(191, 140, 44, 0.4) !important;
+}
+.theme-military-steel .font-script {
+  color: #B0BEC5 !important;
+  text-shadow: 0 0 40px rgba(84, 110, 122, 0.4) !important;
+}
+
+/* ================================================
+   MILITARY — Welcome character enhanced animations
+   ================================================ */
+
+/* Moon/star body glow recolor for military themes */
+.theme-military .moon-char .moon-body {
+  filter: drop-shadow(0 0 25px rgba(44, 111, 173, 0.5));
+  animation: milStarGlow 3s ease-in-out infinite;
+}
+.theme-military-gold .moon-char .moon-body {
+  filter: drop-shadow(0 0 25px rgba(212, 165, 74, 0.5));
+  animation: milGoldStarGlow 3s ease-in-out infinite;
+}
+.theme-military-steel .moon-char .moon-body {
+  filter: drop-shadow(0 0 25px rgba(120, 144, 156, 0.5));
+  animation: milSteelStarGlow 3s ease-in-out infinite;
+}
+
+@keyframes milStarGlow {
+  0%, 100% {
+    transform: scale(1) rotate(-5deg);
+    filter: drop-shadow(0 0 20px rgba(44, 111, 173, 0.4));
+  }
+  50% {
+    transform: scale(1.12) rotate(5deg);
+    filter: drop-shadow(0 0 45px rgba(44, 111, 173, 0.7))
+           drop-shadow(0 0 15px rgba(212, 165, 74, 0.3));
+  }
+}
+
+@keyframes milGoldStarGlow {
+  0%, 100% {
+    transform: scale(1) rotate(-5deg);
+    filter: drop-shadow(0 0 20px rgba(212, 165, 74, 0.4));
+  }
+  50% {
+    transform: scale(1.12) rotate(5deg);
+    filter: drop-shadow(0 0 45px rgba(212, 165, 74, 0.7))
+           drop-shadow(0 0 15px rgba(191, 140, 44, 0.3));
+  }
+}
+
+@keyframes milSteelStarGlow {
+  0%, 100% {
+    transform: scale(1) rotate(-5deg);
+    filter: drop-shadow(0 0 20px rgba(120, 144, 156, 0.4));
+  }
+  50% {
+    transform: scale(1.12) rotate(5deg);
+    filter: drop-shadow(0 0 45px rgba(120, 144, 156, 0.6))
+           drop-shadow(0 0 15px rgba(176, 190, 197, 0.3));
+  }
+}
+
+/* Moon star twinkle: recolor for military */
+.theme-military .moon-star {
+  filter: drop-shadow(0 0 6px rgba(44, 111, 173, 0.6));
+}
+.theme-military-gold .moon-star {
+  filter: drop-shadow(0 0 6px rgba(212, 165, 74, 0.6));
+}
+.theme-military-steel .moon-star {
+  filter: drop-shadow(0 0 6px rgba(120, 144, 156, 0.6));
+}
+
+/* ── Welcome glass card: subtle military tinted border ── */
+.theme-military .page .glass {
+  border: 1px solid rgba(44, 111, 173, 0.2);
+  background: rgba(10, 18, 32, 0.85);
+  backdrop-filter: blur(20px);
+}
+.theme-military-gold .page .glass {
+  border: 1px solid rgba(212, 165, 74, 0.2);
+  background: rgba(16, 12, 5, 0.85);
+  backdrop-filter: blur(20px);
+}
+.theme-military-steel .page .glass {
+  border: 1px solid rgba(120, 144, 156, 0.15);
+  background: rgba(12, 15, 20, 0.85);
+  backdrop-filter: blur(20px);
+}
+
+/* ── btn-love: ensure proper theme colors on welcome ── */
+.theme-military .btn-love {
+  background: linear-gradient(135deg, #1a4a7a, #2c6fad, #1a4a7a);
+  box-shadow: 0 10px 40px rgba(44, 111, 173, 0.35);
+  border: 1px solid rgba(212, 165, 74, 0.3);
+  letter-spacing: 0.5px;
+}
+.theme-military .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(44, 111, 173, 0.55);
+  border-color: rgba(212, 165, 74, 0.5);
+  transform: translateY(-2px);
+}
+
+/* ── btn-love: gold & steel themes ── */
+.theme-military-gold .btn-love {
+  background: linear-gradient(135deg, #8b6914, #bf8c2c, #d4a54a, #bf8c2c, #8b6914);
+  box-shadow: 0 10px 40px rgba(191, 140, 44, 0.35);
+  border: 1px solid rgba(232, 200, 110, 0.3);
+  letter-spacing: 0.5px;
+}
+.theme-military-gold .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(191, 140, 44, 0.55);
+  border-color: rgba(232, 200, 110, 0.5);
+  transform: translateY(-2px);
+}
+.theme-military-steel .btn-love {
+  background: linear-gradient(135deg, #37474f, #546e7a, #78909c, #546e7a, #37474f);
+  box-shadow: 0 10px 40px rgba(84, 110, 122, 0.3);
+  border: 1px solid rgba(176, 190, 197, 0.25);
+  letter-spacing: 0.5px;
+}
+.theme-military-steel .btn-love:hover {
+  box-shadow: 0 16px 50px rgba(84, 110, 122, 0.5);
+  border-color: rgba(176, 190, 197, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ================================================
+   MILITARY — Enhanced background orb animations
+   ================================================ */
+.theme-military .bg-orb {
+  animation: milOrbFloat 18s ease-in-out infinite;
+}
+.theme-military-gold .bg-orb {
+  animation: milGoldOrbFloat 18s ease-in-out infinite;
+}
+.theme-military-steel .bg-orb {
+  animation: milSteelOrbFloat 18s ease-in-out infinite;
+}
+
+@keyframes milOrbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+  25% { transform: translate(40px, -40px) scale(1.15); opacity: 0.22; }
+  50% { transform: translate(-20px, 30px) scale(0.95); opacity: 0.12; }
+  75% { transform: translate(25px, -15px) scale(1.08); opacity: 0.2; }
+}
+@keyframes milGoldOrbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.12; }
+  25% { transform: translate(35px, -35px) scale(1.12); opacity: 0.2; }
+  50% { transform: translate(-25px, 25px) scale(0.9); opacity: 0.1; }
+  75% { transform: translate(30px, -20px) scale(1.1); opacity: 0.18; }
+}
+@keyframes milSteelOrbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+  25% { transform: translate(30px, -25px) scale(1.1); opacity: 0.18; }
+  50% { transform: translate(-15px, 20px) scale(0.92); opacity: 0.08; }
+  75% { transform: translate(20px, -10px) scale(1.05); opacity: 0.15; }
+}
+
+/* ================================================
+   MILITARY — Page enter animation (more dramatic)
+   ================================================ */
+.theme-military .page-enter {
+  animation: milPageEnter 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.theme-military-gold .page-enter {
+  animation: milGoldPageEnter 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.theme-military-steel .page-enter {
+  animation: milSteelPageEnter 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes milPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.94);
+    filter: brightness(0.6);
+  }
+  60% {
+    filter: brightness(1.08);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+@keyframes milGoldPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.94);
+    filter: brightness(0.5) sepia(0.2);
+  }
+  60% {
+    filter: brightness(1.1) sepia(0.05);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1) sepia(0);
+  }
+}
+@keyframes milSteelPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.94);
+    filter: brightness(0.6) saturate(0.5);
+  }
+  60% {
+    filter: brightness(1.05) saturate(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1) saturate(1);
+  }
+}
+
+/* ================================================
+   MILITARY — Glass card shimmer border effect
+   ================================================ */
+.theme-military .glass {
+  position: relative;
+  overflow: hidden;
+}
+.theme-military .glass::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(44, 111, 173, 0.08) 10%,
+    transparent 20%,
+    rgba(212, 165, 74, 0.06) 30%,
+    transparent 40%
+  );
+  animation: milGlassShimmer 8s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes milGlassShimmer {
+  to { transform: rotate(360deg); }
+}
+
+.theme-military-gold .glass {
+  position: relative;
+  overflow: hidden;
+}
+.theme-military-gold .glass::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(212, 165, 74, 0.1) 10%,
+    transparent 20%,
+    rgba(191, 140, 44, 0.06) 30%,
+    transparent 40%
+  );
+  animation: milGlassShimmer 8s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.theme-military-steel .glass {
+  position: relative;
+  overflow: hidden;
+}
+.theme-military-steel .glass::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(120, 144, 156, 0.07) 10%,
+    transparent 20%,
+    rgba(176, 190, 197, 0.04) 30%,
+    transparent 40%
+  );
+  animation: milGlassShimmer 10s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ================================================
+   MILITARY — Enhanced floating hearts (more dramatic)
+   ================================================ */
+.theme-military .float-heart {
+  filter: drop-shadow(0 0 6px rgba(44, 111, 173, 0.4));
+}
+.theme-military-gold .float-heart {
+  filter: drop-shadow(0 0 6px rgba(212, 165, 74, 0.4));
+}
+.theme-military-steel .float-heart {
+  filter: drop-shadow(0 0 4px rgba(120, 144, 156, 0.3));
+}
+
+/* ================================================
+   MILITARY — Music box gallery enhancements
+   ================================================ */
+.theme-military .music-box-gallery {
+  border: 1px solid rgba(44, 111, 173, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(44, 111, 173, 0.05);
+}
+.theme-military .music-box-title {
+  text-shadow: 0 0 30px rgba(44, 111, 173, 0.4);
+}
+.theme-military .music-box-header-icon {
+  filter: drop-shadow(0 0 12px rgba(44, 111, 173, 0.5));
+}
+.theme-military .music-box-footer-text {
+  color: rgba(212, 165, 74, 0.6);
+  text-shadow: 0 0 20px rgba(212, 165, 74, 0.15);
+}
+
+.theme-military-gold .music-box-gallery {
+  border: 1px solid rgba(212, 165, 74, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(212, 165, 74, 0.04);
+}
+.theme-military-gold .music-box-title {
+  text-shadow: 0 0 30px rgba(212, 165, 74, 0.4);
+}
+.theme-military-gold .music-box-header-icon {
+  filter: drop-shadow(0 0 12px rgba(212, 165, 74, 0.5));
+}
+.theme-military-gold .music-box-footer-text {
+  color: rgba(232, 200, 110, 0.6);
+  text-shadow: 0 0 20px rgba(232, 200, 110, 0.15);
+}
+
+.theme-military-steel .music-box-gallery {
+  border: 1px solid rgba(120, 144, 156, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(120, 144, 156, 0.03);
+}
+.theme-military-steel .music-box-title {
+  text-shadow: 0 0 30px rgba(120, 144, 156, 0.3);
+}
+.theme-military-steel .music-box-header-icon {
+  filter: drop-shadow(0 0 12px rgba(120, 144, 156, 0.4));
+}
+.theme-military-steel .music-box-footer-text {
+  color: rgba(176, 190, 197, 0.5);
+}
+
+/* ================================================
+   MILITARY — btn-magic gold/steel overrides
+   ================================================ */
+.theme-military-gold .btn-magic {
+  background: linear-gradient(135deg, #8b6914, #bf8c2c, #d4a54a, #bf8c2c, #8b6914);
+  box-shadow: 0 10px 40px rgba(191, 140, 44, 0.3);
+  border: 1px solid rgba(232, 200, 110, 0.3);
+}
+.theme-military-gold .btn-magic:hover {
+  box-shadow: 0 16px 50px rgba(191, 140, 44, 0.45);
+}
+.theme-military-steel .btn-magic {
+  background: linear-gradient(135deg, #37474f, #546e7a, #78909c, #546e7a, #37474f);
+  box-shadow: 0 10px 40px rgba(84, 110, 122, 0.25);
+  border: 1px solid rgba(176, 190, 197, 0.2);
+}
+.theme-military-steel .btn-magic:hover {
+  box-shadow: 0 16px 50px rgba(84, 110, 122, 0.4);
+}
+
+/* ================================================
+   MILITARY — Summary box / Final card polish
+   ================================================ */
+.theme-military .final-card {
+  border: 1px solid rgba(44, 111, 173, 0.15) !important;
+}
+.theme-military .final-heart {
+  filter: drop-shadow(0 0 16px rgba(44, 111, 173, 0.5));
+  animation: milFinalHeartPulse 2s ease-in-out infinite;
+}
+.theme-military-gold .final-card {
+  border: 1px solid rgba(191, 140, 44, 0.12) !important;
+}
+.theme-military-gold .final-heart {
+  filter: drop-shadow(0 0 16px rgba(212, 165, 74, 0.5));
+  animation: milGoldFinalPulse 2s ease-in-out infinite;
+}
+.theme-military-steel .final-card {
+  border: 1px solid rgba(84, 110, 122, 0.1) !important;
+}
+.theme-military-steel .final-heart {
+  filter: drop-shadow(0 0 12px rgba(120, 144, 156, 0.4));
+  animation: milSteelFinalPulse 2s ease-in-out infinite;
+}
+
+@keyframes milFinalHeartPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 16px rgba(44, 111, 173, 0.4)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 28px rgba(44, 111, 173, 0.7)) drop-shadow(0 0 8px rgba(212, 165, 74, 0.3)); }
+}
+@keyframes milGoldFinalPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 16px rgba(212, 165, 74, 0.4)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 28px rgba(212, 165, 74, 0.7)) drop-shadow(0 0 8px rgba(191, 140, 44, 0.3)); }
+}
+@keyframes milSteelFinalPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(120, 144, 156, 0.3)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 24px rgba(120, 144, 156, 0.5)) drop-shadow(0 0 6px rgba(176, 190, 197, 0.2)); }
+}
+
+/* ── Military meter-fill bar glow ── */
+.theme-military .meter-fill {
+  box-shadow: 0 0 20px rgba(44, 111, 173, 0.5), 0 0 40px rgba(44, 111, 173, 0.2);
+}
+.theme-military-gold .meter-fill {
+  box-shadow: 0 0 20px rgba(212, 165, 74, 0.5), 0 0 40px rgba(191, 140, 44, 0.2);
+}
+.theme-military-steel .meter-fill {
+  box-shadow: 0 0 20px rgba(120, 144, 156, 0.4), 0 0 40px rgba(84, 110, 122, 0.15);
+}
+
+/* ── Military summary row icon glow ── */
+.theme-military .sr-icon {
+  filter: drop-shadow(0 0 8px rgba(44, 111, 173, 0.3));
+}
+.theme-military-gold .sr-icon {
+  filter: drop-shadow(0 0 8px rgba(212, 165, 74, 0.3));
+}
+.theme-military-steel .sr-icon {
+  filter: drop-shadow(0 0 6px rgba(120, 144, 156, 0.25));
+}
+
+/* ── Military final-msg quote glow ── */
+.theme-military .final-msg {
+  color: rgba(212, 165, 74, 0.8);
+  text-shadow: 0 0 20px rgba(212, 165, 74, 0.2);
+}
+.theme-military-gold .final-msg {
+  color: rgba(232, 200, 110, 0.8);
+  text-shadow: 0 0 20px rgba(232, 200, 110, 0.2);
+}
+.theme-military-steel .final-msg {
+  color: rgba(176, 190, 197, 0.7);
+  text-shadow: 0 0 20px rgba(176, 190, 197, 0.15);
+}
+
+/* ================================================
+   MILITARY — Enhanced music-box-frame glow on play
+   ================================================ */
+.theme-military .music-box-frame.playing {
+  box-shadow: 0 4px 20px rgba(44, 111, 173, 0.15),
+              0 0 40px rgba(44, 111, 173, 0.08),
+              0 0 80px rgba(44, 111, 173, 0.04) !important;
+}
+.theme-military-gold .music-box-frame.playing {
+  box-shadow: 0 4px 20px rgba(212, 165, 74, 0.12),
+              0 0 40px rgba(212, 165, 74, 0.06),
+              0 0 80px rgba(191, 140, 44, 0.03) !important;
+}
+.theme-military-steel .music-box-frame.playing {
+  box-shadow: 0 4px 20px rgba(120, 144, 156, 0.1),
+              0 0 40px rgba(84, 110, 122, 0.05) !important;
+}
+
+/* ================================================
+   MILITARY — Waveform bars color
+   ================================================ */
+.theme-military .music-box-waveform .wb {
+  background: linear-gradient(to top, #1a4a7a, #2c6fad, #D4A853);
+}
+.theme-military-gold .music-box-waveform .wb {
+  background: linear-gradient(to top, #8b6914, #bf8c2c, #E8C86E);
+}
+.theme-military-steel .music-box-waveform .wb {
+  background: linear-gradient(to top, #37474f, #546e7a, #B0BEC5);
+}
+
+/* ================================================
+   MILITARY — Music box dots active
+   ================================================ */
+.theme-military .music-box-dot.active {
+  background: #2c6fad !important;
+  box-shadow: 0 0 8px rgba(44, 111, 173, 0.5);
+}
+.theme-military-gold .music-box-dot.active {
+  background: #d4a54a !important;
+  box-shadow: 0 0 8px rgba(212, 165, 74, 0.5);
+}
+.theme-military-steel .music-box-dot.active {
+  background: #78909c !important;
+  box-shadow: 0 0 8px rgba(120, 144, 156, 0.4);
+}
+
+/* ================================================
+   MILITARY — Arrow navigation buttons in gallery
+   ================================================ */
+.theme-military .music-box-arrow {
+  background: rgba(44, 111, 173, 0.25);
+  border: 1px solid rgba(44, 111, 173, 0.3);
+}
+.theme-military .music-box-arrow:hover {
+  background: rgba(44, 111, 173, 0.4);
+}
+.theme-military-gold .music-box-arrow {
+  background: rgba(191, 140, 44, 0.2);
+  border: 1px solid rgba(191, 140, 44, 0.25);
+}
+.theme-military-gold .music-box-arrow:hover {
+  background: rgba(191, 140, 44, 0.35);
+}
+.theme-military-steel .music-box-arrow {
+  background: rgba(84, 110, 122, 0.2);
+  border: 1px solid rgba(84, 110, 122, 0.2);
+}
+.theme-military-steel .music-box-arrow:hover {
+  background: rgba(84, 110, 122, 0.35);
+}
+
+/* ================================================
+   MILITARY — Music box badge "now playing"
+   ================================================ */
+.theme-military .music-box-badge {
+  background: rgba(44, 111, 173, 0.2);
+  border: 1px solid rgba(44, 111, 173, 0.3);
+  box-shadow: 0 4px 16px rgba(44, 111, 173, 0.2);
+}
+.theme-military-gold .music-box-badge {
+  background: rgba(191, 140, 44, 0.15);
+  border: 1px solid rgba(191, 140, 44, 0.25);
+  box-shadow: 0 4px 16px rgba(191, 140, 44, 0.15);
+}
+.theme-military-steel .music-box-badge {
+  background: rgba(84, 110, 122, 0.15);
+  border: 1px solid rgba(84, 110, 122, 0.2);
+  box-shadow: 0 4px 16px rgba(84, 110, 122, 0.12);
+}
+
+/* ================================================
+   MILITARY — Music box caption overlay
+   ================================================ */
+.theme-military .music-box-caption {
+  color: #D4A853;
+  text-shadow: 0 0 12px rgba(212, 168, 83, 0.4);
+}
+.theme-military-gold .music-box-caption {
+  color: #E8C86E;
+  text-shadow: 0 0 12px rgba(232, 200, 110, 0.4);
+}
+.theme-military-steel .music-box-caption {
+  color: #B0BEC5;
+  text-shadow: 0 0 12px rgba(176, 190, 197, 0.3);
+}
+
+/* ================================================
+   MILITARY — Yes button hover (remove pink glow)
+   ================================================ */
+.theme-military .yes-btn:hover {
+  box-shadow: 0 14px 40px rgba(44, 111, 173, 0.45);
+}
+.theme-military-gold .yes-btn:hover {
+  box-shadow: 0 14px 40px rgba(191, 140, 44, 0.4);
+}
+.theme-military-steel .yes-btn:hover {
+  box-shadow: 0 14px 40px rgba(84, 110, 122, 0.4);
+}
+
+/* ================================================
+   MILITARY — Quiz option selected (remove pink bg/glow)
+   ================================================ */
+.theme-military .quiz-option.selected {
+  border-color: #2c6fad;
+  background: rgba(44, 111, 173, 0.12);
+  box-shadow: 0 0 20px rgba(44, 111, 173, 0.15), inset 0 0 0 1px rgba(44, 111, 173, 0.1);
+}
+.theme-military-gold .quiz-option.selected {
+  border-color: #bf8c2c;
+  background: rgba(191, 140, 44, 0.12);
+  box-shadow: 0 0 20px rgba(191, 140, 44, 0.12), inset 0 0 0 1px rgba(191, 140, 44, 0.1);
+}
+.theme-military-steel .quiz-option.selected {
+  border-color: #546e7a;
+  background: rgba(84, 110, 122, 0.12);
+  box-shadow: 0 0 20px rgba(84, 110, 122, 0.12), inset 0 0 0 1px rgba(84, 110, 122, 0.1);
+}
+
+/* ================================================
+   MILITARY — Quiz next button (remove pink shadow)
+   ================================================ */
+.theme-military .quiz-next-btn {
+  box-shadow: 0 8px 28px rgba(44, 111, 173, 0.3);
+}
+.theme-military .quiz-next-btn:hover {
+  box-shadow: 0 12px 35px rgba(44, 111, 173, 0.45);
+}
+.theme-military-gold .quiz-next-btn {
+  box-shadow: 0 8px 28px rgba(191, 140, 44, 0.25);
+}
+.theme-military-gold .quiz-next-btn:hover {
+  box-shadow: 0 12px 35px rgba(191, 140, 44, 0.4);
+}
+.theme-military-steel .quiz-next-btn {
+  box-shadow: 0 8px 28px rgba(84, 110, 122, 0.25);
+}
+.theme-military-steel .quiz-next-btn:hover {
+  box-shadow: 0 12px 35px rgba(84, 110, 122, 0.4);
+}
+
+/* ================================================
+   MILITARY — Love letter close button (remove pink glow)
+   ================================================ */
+.theme-military .ll-close-btn {
+  box-shadow: 0 8px 30px rgba(44, 111, 173, 0.35), 0 0 0 0 rgba(44, 111, 173, 0);
+}
+.theme-military .ll-close-btn:hover {
+  box-shadow: 0 14px 40px rgba(44, 111, 173, 0.5), 0 0 20px rgba(44, 111, 173, 0.2);
+}
+.theme-military-gold .ll-close-btn {
+  box-shadow: 0 8px 30px rgba(191, 140, 44, 0.3), 0 0 0 0 rgba(191, 140, 44, 0);
+}
+.theme-military-gold .ll-close-btn:hover {
+  box-shadow: 0 14px 40px rgba(191, 140, 44, 0.45), 0 0 20px rgba(191, 140, 44, 0.15);
+}
+.theme-military-steel .ll-close-btn {
+  box-shadow: 0 8px 30px rgba(84, 110, 122, 0.3), 0 0 0 0 rgba(84, 110, 122, 0);
+}
+.theme-military-steel .ll-close-btn:hover {
+  box-shadow: 0 14px 40px rgba(84, 110, 122, 0.4), 0 0 20px rgba(84, 110, 122, 0.15);
+}
+
+/* ================================================
+   MILITARY — Music box placeholder (remove pink tint)
+   ================================================ */
+.theme-military .music-box-placeholder {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.07), rgba(21, 101, 192, 0.05));
+}
+.theme-military-gold .music-box-placeholder {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.07), rgba(212, 168, 83, 0.05));
+}
+.theme-military-steel .music-box-placeholder {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.07), rgba(55, 71, 79, 0.05));
+}
+
+/* ================================================
+   MILITARY — Movie/Video section (remove ALL pink)
+   ================================================ */
+.theme-military .mv-film-icon {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.12), rgba(21, 101, 192, 0.08));
+  border: 1px solid rgba(44, 111, 173, 0.15);
+  box-shadow: 0 4px 20px rgba(44, 111, 173, 0.15);
+}
+.theme-military .mv-header-title {
+  text-shadow: 0 2px 16px rgba(44, 111, 173, 0.3);
+  background: linear-gradient(135deg, #42a5f5, #2c6fad, #90caf9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.theme-military .mv-play-btn {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.3), rgba(21, 101, 192, 0.2));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(44, 111, 173, 0.15);
+}
+.theme-military .mv-play-ring:hover .mv-play-btn {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.45), rgba(21, 101, 192, 0.35));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(44, 111, 173, 0.25);
+}
+.theme-military .mv-thumb.active {
+  background: rgba(44, 111, 173, 0.1);
+  box-shadow: 0 0 12px rgba(44, 111, 173, 0.2);
+}
+.theme-military .mv-thumb.active::before {
+  background: linear-gradient(135deg, rgba(44, 111, 173, 0.08), rgba(21, 101, 192, 0.04));
+}
+
+/* ── Military Gold — Movie ── */
+.theme-military-gold .mv-film-icon {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.12), rgba(212, 168, 83, 0.08));
+  border: 1px solid rgba(191, 140, 44, 0.15);
+  box-shadow: 0 4px 20px rgba(191, 140, 44, 0.15);
+}
+.theme-military-gold .mv-header-title {
+  text-shadow: 0 2px 16px rgba(191, 140, 44, 0.3);
+  background: linear-gradient(135deg, #D4A853, #bf8c2c, #E8C86E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.theme-military-gold .mv-play-btn {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.3), rgba(212, 168, 83, 0.2));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(191, 140, 44, 0.15);
+}
+.theme-military-gold .mv-play-ring:hover .mv-play-btn {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.45), rgba(212, 168, 83, 0.35));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(191, 140, 44, 0.25);
+}
+.theme-military-gold .mv-thumb.active {
+  background: rgba(191, 140, 44, 0.1);
+  box-shadow: 0 0 12px rgba(191, 140, 44, 0.2);
+}
+.theme-military-gold .mv-thumb.active::before {
+  background: linear-gradient(135deg, rgba(191, 140, 44, 0.08), rgba(212, 168, 83, 0.04));
+}
+
+/* ── Military Steel — Movie ── */
+.theme-military-steel .mv-film-icon {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.12), rgba(55, 71, 79, 0.08));
+  border: 1px solid rgba(84, 110, 122, 0.15);
+  box-shadow: 0 4px 20px rgba(84, 110, 122, 0.12);
+}
+.theme-military-steel .mv-header-title {
+  text-shadow: 0 2px 16px rgba(84, 110, 122, 0.3);
+  background: linear-gradient(135deg, #B0BEC5, #78909c, #eceff1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.theme-military-steel .mv-play-btn {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.3), rgba(55, 71, 79, 0.2));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(84, 110, 122, 0.12);
+}
+.theme-military-steel .mv-play-ring:hover .mv-play-btn {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.45), rgba(55, 71, 79, 0.35));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(84, 110, 122, 0.2);
+}
+.theme-military-steel .mv-thumb.active {
+  background: rgba(84, 110, 122, 0.1);
+  box-shadow: 0 0 12px rgba(84, 110, 122, 0.15);
+}
+.theme-military-steel .mv-thumb.active::before {
+  background: linear-gradient(135deg, rgba(84, 110, 122, 0.08), rgba(55, 71, 79, 0.04));
 }

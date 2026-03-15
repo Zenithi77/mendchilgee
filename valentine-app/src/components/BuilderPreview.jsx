@@ -59,15 +59,19 @@ export default function BuilderPreview() {
     );
   }
 
+  const themeClass = gift.theme?.className || "";
+
   return (
-    <GiftRenderer
-      gift={gift}
-      startDate={gift.startDate}
-      category={gift.category}
-      initialSectionIndex={sectionIndex}
-      giftId={gift.id || "preview"}
-      persistResponses={false}
-      key={`preview-${sectionIndex}`}
-    />
+    <div className={`gift-preview-page app ${themeClass}`}>
+      <GiftRenderer
+        gift={gift}
+        startDate={gift.startDate}
+        category={gift.category}
+        initialSectionIndex={sectionIndex}
+        giftId={gift.id || "preview"}
+        persistResponses={false}
+        key={`preview-${sectionIndex}`}
+      />
+    </div>
   );
 }

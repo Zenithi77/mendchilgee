@@ -101,3 +101,34 @@
     font-size: 22px;
   }
 }
+
+/* ═══ MILITARY THEME OVERRIDES ═══ */
+.theme-military .continue-arrow-fab {
+  box-shadow: 0 4px 20px rgba(44, 111, 173, 0.45), 0 0 0 0 rgba(44, 111, 173, 0.25);
+}
+.theme-military .continue-arrow-fab:hover {
+  box-shadow: 0 6px 28px rgba(44, 111, 173, 0.55), 0 0 0 8px rgba(44, 111, 173, 0.1);
+}
+.theme-military .continue-arrow-fab:active {
+  box-shadow: 0 2px 12px rgba(44, 111, 173, 0.4);
+}
+
+.theme-military-gold .continue-arrow-fab {
+  box-shadow: 0 4px 20px rgba(191, 140, 44, 0.45), 0 0 0 0 rgba(191, 140, 44, 0.25);
+}
+.theme-military-gold .continue-arrow-fab:hover {
+  box-shadow: 0 6px 28px rgba(191, 140, 44, 0.55), 0 0 0 8px rgba(191, 140, 44, 0.1);
+}
+.theme-military-gold .continue-arrow-fab:active {
+  box-shadow: 0 2px 12px rgba(191, 140, 44, 0.4);
+}
+
+.theme-military-steel .continue-arrow-fab {
+  box-shadow: 0 4px 20px rgba(84, 110, 122, 0.45), 0 0 0 0 rgba(84, 110, 122, 0.25);
+}
+.theme-military-steel .continue-arrow-fab:hover {
+  box-shadow: 0 6px 28px rgba(84, 110, 122, 0.55), 0 0 0 8px rgba(84, 110, 122, 0.1);
+}
+.theme-military-steel .continue-arrow-fab:active {
+  box-shadow: 0 2px 12px rgba(84, 110, 122, 0.4);
+}
