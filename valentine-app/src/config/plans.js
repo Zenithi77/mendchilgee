@@ -2,9 +2,9 @@
 // Pricing Configuration — Simple pay-per-gift
 // ═══════════════════════════════════════════════════════════════
 //
-// Base price: ₮5,000
+// Base price: ₮5,000 (includes 15 seconds of video)
 // Every image: ₮500 each
-// Video: ₮500 per 10 seconds
+// Video over 15 seconds: ₮500 per 10 seconds
 // Max video duration: 60 seconds (1 minute)
 // ═══════════════════════════════════════════════════════════════
 
@@ -17,7 +17,10 @@ export const INCLUDED_IMAGES = 0;
 /** Price per image */
 export const EXTRA_IMAGE_PRICE = 500;
 
-/** Price per 10-second video chunk */
+/** Video seconds included in the base price */
+export const INCLUDED_VIDEO_SECONDS = 15;
+
+/** Price per 10-second video chunk (above included seconds) */
 export const EXTRA_VIDEO_PRICE = 500;
 
 /** Seconds per video pricing chunk */
@@ -52,17 +55,22 @@ export function countGiftMedia(gift) {
  * Calculate the total price for a gift based on its content.
  * @param {number} imageCount — total uploaded images
  * @param {number} totalVideoSeconds — total video duration in seconds
- * @returns {{ base, imageCount, imgCost, videoChunks, vidCost, totalVideoSeconds, total }}
+ * @returns {{ base, imageCount, imgCost, includedVideoSeconds, extraVideoSeconds, videoChunks, vidCost, totalVideoSeconds, total }}
  */
 export function calcGiftPrice(imageCount, totalVideoSeconds = 0) {
   const imgCost = imageCount * EXTRA_IMAGE_PRICE;
-  const videoChunks = totalVideoSeconds > 0 ? Math.ceil(totalVideoSeconds / VIDEO_CHUNK_SECONDS) : 0;
+
+  // First INCLUDED_VIDEO_SECONDS are free, then charge per VIDEO_CHUNK_SECONDS
+  const extraVideoSeconds = Math.max(0, totalVideoSeconds - INCLUDED_VIDEO_SECONDS);
+  const videoChunks = extraVideoSeconds > 0 ? Math.ceil(extraVideoSeconds / VIDEO_CHUNK_SECONDS) : 0;
   const vidCost = videoChunks * EXTRA_VIDEO_PRICE;
 
   return {
     base: BASE_PRICE,
     imageCount,
     imgCost,
+    includedVideoSeconds: INCLUDED_VIDEO_SECONDS,
+    extraVideoSeconds,
     videoChunks,
     totalVideoSeconds,
     vidCost,

@@ -675,6 +675,7 @@ const INCLUDED_IMAGES = 0; // every image costs extra
 const EXTRA_IMG_PRICE = 500; // per image
 const EXTRA_VID_PRICE = 500; // per 10-second video chunk
 const VIDEO_CHUNK_SECONDS = 10; // seconds per video pricing chunk
+const INCLUDED_VIDEO_SECONDS = 15; // seconds included free in base price
 const GIFT_DURATION_DAYS = 14; // how long a paid gift stays active
 
 // Legacy plan pricing (kept for backward compat)
@@ -741,7 +742,8 @@ exports.createCreditCheckout = onRequest(async (req, res) => {
     const extraImages = Math.max(0, imageCount - INCLUDED_IMAGES);
     const imgCost = extraImages * EXTRA_IMG_PRICE;
     const totalVideoSeconds = Math.max(0, parseInt(body.totalVideoSeconds) || 0);
-    const videoChunks = totalVideoSeconds > 0 ? Math.ceil(totalVideoSeconds / VIDEO_CHUNK_SECONDS) : 0;
+    const extraVideoSeconds = Math.max(0, totalVideoSeconds - INCLUDED_VIDEO_SECONDS);
+    const videoChunks = extraVideoSeconds > 0 ? Math.ceil(extraVideoSeconds / VIDEO_CHUNK_SECONDS) : 0;
     const vidCost = videoChunks * EXTRA_VID_PRICE;
     amount = BASE_GIFT_PRICE + imgCost + vidCost;
 

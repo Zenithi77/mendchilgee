@@ -18,6 +18,7 @@ import {
   EXTRA_IMAGE_PRICE,
   EXTRA_VIDEO_PRICE,
   VIDEO_CHUNK_SECONDS,
+  INCLUDED_VIDEO_SECONDS,
   countGiftMedia,
   calcGiftPrice,
 } from "../config/plans";
@@ -271,25 +272,34 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
               </div>
 
               <div className="gc-price-row">
-                <span>🎁 Мэндчилгээ суурь</span>
+                <span>🎁 Мэндчилгээ суурь ({INCLUDED_VIDEO_SECONDS} сек бичлэг орсон)</span>
                 <span>₮{BASE_PRICE.toLocaleString()}</span>
               </div>
 
               {pricing.imageCount > 0 && (
                 <div className="gc-price-row gc-price-extra">
                   <span>
-                    <MdPhotoCamera /> Зураг ×{pricing.imageCount}
+                    <MdPhotoCamera /> Зураг ×{pricing.imageCount} (₮{EXTRA_IMAGE_PRICE}/зураг)
                   </span>
-                  <span>₮{pricing.imgCost.toLocaleString()}</span>
+                  <span>+₮{pricing.imgCost.toLocaleString()}</span>
                 </div>
               )}
 
-              {pricing.videoChunks > 0 && (
+              {pricing.totalVideoSeconds > 0 && pricing.totalVideoSeconds <= INCLUDED_VIDEO_SECONDS && (
+                <div className="gc-price-row gc-price-extra" style={{ color: "#10b981" }}>
+                  <span>
+                    <MdVideocam /> Бичлэг {pricing.totalVideoSeconds} сек
+                  </span>
+                  <span>Үнэгүй</span>
+                </div>
+              )}
+
+              {pricing.extraVideoSeconds > 0 && (
                 <div className="gc-price-row gc-price-extra">
                   <span>
-                    <MdVideocam /> Бичлэг {pricing.totalVideoSeconds}сек ({pricing.videoChunks}×{VIDEO_CHUNK_SECONDS}с)
+                    <MdVideocam /> Нэмэлт бичлэг +{pricing.extraVideoSeconds} сек ({pricing.videoChunks}×{VIDEO_CHUNK_SECONDS}с = ₮{EXTRA_VIDEO_PRICE}/блок)
                   </span>
-                  <span>₮{pricing.vidCost.toLocaleString()}</span>
+                  <span>+₮{pricing.vidCost.toLocaleString()}</span>
                 </div>
               )}
 

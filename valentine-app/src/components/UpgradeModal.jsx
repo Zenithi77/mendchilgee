@@ -10,6 +10,7 @@ import {
   EXTRA_IMAGE_PRICE,
   EXTRA_VIDEO_PRICE,
   VIDEO_CHUNK_SECONDS,
+  INCLUDED_VIDEO_SECONDS,
   countGiftMedia,
   calcGiftPrice,
 } from "../config/plans";
@@ -108,23 +109,32 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onActivated 
         {/* Price breakdown */}
         <div className="upgrade-plan-box">
           <div className="upgrade-plan-row">
-            <span className="upgrade-plan-label">🎁 Мэндчилгээ суурь</span>
+            <span className="upgrade-plan-label">🎁 Мэндчилгээ суурь ({INCLUDED_VIDEO_SECONDS} сек бичлэг орсон)</span>
             <span className="upgrade-plan-value">₮{BASE_PRICE.toLocaleString()}</span>
           </div>
           {pricing.imageCount > 0 && (
             <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#64748b" }}>
               <span className="upgrade-plan-label">
                 <MdPhotoCamera style={{ verticalAlign: "middle", marginRight: 4 }} />
-                Зураг ×{pricing.imageCount}
+                Зураг ×{pricing.imageCount} (₮{EXTRA_IMAGE_PRICE}/зураг)
               </span>
               <span className="upgrade-plan-value">+₮{pricing.imgCost.toLocaleString()}</span>
             </div>
           )}
-          {pricing.videoChunks > 0 && (
+          {pricing.totalVideoSeconds > 0 && pricing.totalVideoSeconds <= INCLUDED_VIDEO_SECONDS && (
+            <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#10b981" }}>
+              <span className="upgrade-plan-label">
+                <MdVideocam style={{ verticalAlign: "middle", marginRight: 4 }} />
+                Бичлэг {pricing.totalVideoSeconds} сек
+              </span>
+              <span className="upgrade-plan-value">Үнэгүй</span>
+            </div>
+          )}
+          {pricing.extraVideoSeconds > 0 && (
             <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#64748b" }}>
               <span className="upgrade-plan-label">
                 <MdVideocam style={{ verticalAlign: "middle", marginRight: 4 }} />
-                Бичлэг {pricing.totalVideoSeconds}сек ({pricing.videoChunks}×{VIDEO_CHUNK_SECONDS}с)
+                Нэмэлт бичлэг +{pricing.extraVideoSeconds} сек ({pricing.videoChunks}×{VIDEO_CHUNK_SECONDS}с)
               </span>
               <span className="upgrade-plan-value">+₮{pricing.vidCost.toLocaleString()}</span>
             </div>

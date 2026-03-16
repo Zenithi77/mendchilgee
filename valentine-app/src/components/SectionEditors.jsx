@@ -8,7 +8,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { getSectionLimits } from "../config/featureRegistry";
 import { TIERS, TIER_META } from "../config/tiers";
-import { EXTRA_IMAGE_PRICE, EXTRA_VIDEO_PRICE, VIDEO_CHUNK_SECONDS } from "../config/plans";
+import { EXTRA_IMAGE_PRICE, EXTRA_VIDEO_PRICE, VIDEO_CHUNK_SECONDS, INCLUDED_VIDEO_SECONDS } from "../config/plans";
 import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 import "./SectionEditors.css";
 
@@ -1387,21 +1387,31 @@ export function MemoryVideoEditor({ section, onUpdate }) {
         </div>
 
         {/* Video pricing info */}
-        {videos.filter(v => v.src).length > 0 && (
-          <div
-            className="se-image-limit-info"
-            style={{
-              marginBottom: 8,
-              fontSize: 13,
-              color: "#a855f7",
-            }}
-          >
-            <MdVideocam /> {videos.filter(v => v.src).reduce((s, v) => s + (v.duration || 0), 0)} сек
-            <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
-              <MdStar style={{color:'#9C27B0'}} /> ₮{EXTRA_VIDEO_PRICE}/{VIDEO_CHUNK_SECONDS} секунд
-            </span>
-          </div>
-        )}
+        {videos.filter(v => v.src).length > 0 && (() => {
+          const totalSec = videos.filter(v => v.src).reduce((s, v) => s + (v.duration || 0), 0);
+          const extraSec = Math.max(0, totalSec - INCLUDED_VIDEO_SECONDS);
+          return (
+            <div
+              className="se-image-limit-info"
+              style={{
+                marginBottom: 8,
+                fontSize: 13,
+                color: extraSec > 0 ? "#a855f7" : "#10b981",
+              }}
+            >
+              <MdVideocam /> {totalSec} сек
+              {totalSec <= INCLUDED_VIDEO_SECONDS ? (
+                <span style={{ marginLeft: 8, fontWeight: 600, color: "#10b981" }}>
+                  ✓ {INCLUDED_VIDEO_SECONDS} сек хүртэл үнэгүй
+                </span>
+              ) : (
+                <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
+                  <MdStar style={{color:'#9C27B0'}} /> +{extraSec} сек нэмэлт (₮{EXTRA_VIDEO_PRICE}/{VIDEO_CHUNK_SECONDS} сек)
+                </span>
+              )}
+            </div>
+          );
+        })()}
 
         <button type="button" className="se-add-card-btn" onClick={addVideo}>
           <span>＋</span> Бичлэг нэмэх
