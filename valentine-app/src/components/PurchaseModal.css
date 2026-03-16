@@ -36,6 +36,13 @@
   position: relative;
 }
 
+/* Wider variant for plan-based modal */
+.purchase-modal-plans {
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 .purchase-modal::before {
   content: "";
   position: absolute;

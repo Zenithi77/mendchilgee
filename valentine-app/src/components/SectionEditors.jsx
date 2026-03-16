@@ -8,6 +8,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { getSectionLimits } from "../config/featureRegistry";
 import { TIERS, TIER_META } from "../config/tiers";
+import { INCLUDED_IMAGES, EXTRA_IMAGE_PRICE } from "../config/plans";
 import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 import "./SectionEditors.css";
 
@@ -280,7 +281,7 @@ function VideoUploader({ src, onUploaded }) {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
 
-  const MAX_DURATION = 30; // seconds
+  const MAX_DURATION = 60; // seconds (1 minute max)
 
   const checkDuration = (file) =>
     new Promise((resolve, reject) => {
@@ -626,30 +627,21 @@ export function QuestionEditor({ section, onUpdate }) {
 // MEMORY GALLERY EDITOR
 // ═══════════════════════════════════════════════════════════════
 
-export function MemoryGalleryEditor({ section, onUpdate }) {
+export function MemoryGalleryEditor({ section, onUpdate, maxImages }) {
   const data = section?.data || {};
   const memories = data.memories || [];
 
-  // Image limits from feature registry
-  const standardLimits = getSectionLimits(
-    SECTION_TYPES.MEMORY_GALLERY,
-    TIERS.STANDARD,
-  );
-  const premiumLimits = getSectionLimits(
-    SECTION_TYPES.MEMORY_GALLERY,
-    TIERS.PREMIUM,
-  );
-  const standardMax = standardLimits?.maxImages || 6;
-  const premiumMax = premiumLimits?.maxImages || 10;
-  const isOverStandard = memories.length > standardMax;
-  const isAtPremiumMax = memories.length >= premiumMax;
+  // maxImages prop from Builder (reasonable cap, default 20)
+  const effectiveMax = maxImages || 20;
+  const isAtMax = memories.length >= effectiveMax;
+  const isOverIncluded = memories.length > INCLUDED_IMAGES;
 
   const updateMemories = (updated) => {
     onUpdate(section.id, { ...data, memories: updated });
   };
 
   const addMemory = () => {
-    if (isAtPremiumMax) return; // Hard cap at premium limit
+    if (isAtMax) return; // Hard cap at plan limit
     updateMemories([
       ...memories,
       {
@@ -726,20 +718,19 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
           ))}
         </div>
 
-        {/* Image count & tier info */}
+        {/* Image count & plan info */}
         <div
           className="se-image-limit-info"
           style={{
             marginBottom: 8,
             fontSize: 13,
-            color: isOverStandard ? "#a855f7" : "#6b7280",
+            color: isOverIncluded ? "#a855f7" : "#6b7280",
           }}
         >
-          <MdPhotoCamera /> {memories.length} / {isOverStandard ? premiumMax : standardMax}{" "}
-          зураг
-          {isOverStandard && (
+          <MdPhotoCamera /> {memories.length} зураг
+          {isOverIncluded && (
             <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
-              <MdStar style={{color:'#9C27B0'}} /> Премиум ({standardMax}-с дээш)
+              <MdStar style={{color:'#9C27B0'}} /> {memories.length - INCLUDED_IMAGES} нэмэлт зураг (+₮{EXTRA_IMAGE_PRICE}/зураг)
             </span>
           )}
         </div>
@@ -748,13 +739,13 @@ export function MemoryGalleryEditor({ section, onUpdate }) {
           type="button"
           className="se-add-card-btn"
           onClick={addMemory}
-          disabled={isAtPremiumMax}
-          style={isAtPremiumMax ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+          disabled={isAtMax}
+          style={isAtMax ? { opacity: 0.5, cursor: "not-allowed" } : {}}
         >
           <span>＋</span> Дурсамж нэмэх
-          {isAtPremiumMax && (
+          {isAtMax && (
             <span style={{ fontSize: 11, marginLeft: 6 }}>
-              (хамгийн ихдээ {premiumMax})
+              (хамгийн ихдээ {effectiveMax})
             </span>
           )}
         </button>

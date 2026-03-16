@@ -1,16 +1,24 @@
 // ═══════════════════════════════════════════════════════════════
-// UpgradeModal — Use credits to activate gift / prompt purchase
+// UpgradeModal — Pay to activate a gift (or use legacy credit)
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useMemo } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useCredit } from "../services/creditService";
 import {
-  TIER_META,
-} from "../config/tiers";
-import { getRequiredTier, getUpgradeReasons } from "../utils/tierUtils";
-import { MdAutoAwesome, MdCardGiftcard, MdShoppingCart } from "react-icons/md";
+  BASE_PRICE,
+  INCLUDED_IMAGES,
+  EXTRA_IMAGE_PRICE,
+  EXTRA_VIDEO_PRICE,
+  countGiftMedia,
+  calcGiftPrice,
+} from "../config/plans";
+import { MdAutoAwesome, MdPhotoCamera, MdVideocam } from "react-icons/md";
 import "./UpgradeModal.css";
+
+const FUNCTIONS_BASE =
+  import.meta.env.VITE_FUNCTIONS_BASE_URL ||
+  `https://us-central1-${import.meta.env.VITE_FIREBASE_PROJECT_ID}.cloudfunctions.net`;
 
 /**
  * UpgradeModal
@@ -19,26 +27,26 @@ import "./UpgradeModal.css";
  * @param {Function} onClose  — close handler
  * @param {object}   gift     — current gift object
  * @param {string}   giftId   — Firestore document ID
- * @param {Function} onPurchase — open purchase modal
  * @param {Function} onActivated — called after successful credit use
  */
-export default function UpgradeModal({ open, onClose, gift, giftId, onPurchase, onActivated }) {
+export default function UpgradeModal({ open, onClose, gift, giftId, onActivated }) {
   const { user, credits } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const requiredTier = useMemo(
-    () => getRequiredTier(gift?.sections),
-    [gift?.sections],
+  const { imageCount, videoCount } = useMemo(
+    () => countGiftMedia(gift),
+    [gift],
   );
 
-  const reasons = useMemo(
-    () => getUpgradeReasons(gift?.sections),
-    [gift?.sections],
+  const pricing = useMemo(
+    () => calcGiftPrice(imageCount, videoCount),
+    [imageCount, videoCount],
   );
 
   if (!open) return null;
 
+  // Legacy: use existing credit
   async function handleUseCredit() {
     if (!user || !giftId) return;
     setLoading(true);
@@ -50,15 +58,39 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onPurchase, 
       onClose();
     } catch (err) {
       console.error(err);
-      setError(err.message || "Эрх ашиглахад алдаа гарлаа. Дахин оролдоно уу.");
+      setError(err.message || "Алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setLoading(false);
     }
   }
 
-  function handleBuyCredits() {
-    onClose();
-    onPurchase?.();
+  // New: redirect to BYL payment
+  async function handlePay() {
+    if (!user || !giftId) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${FUNCTIONS_BASE}/createCreditCheckout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.uid,
+          type: "gift",
+          giftId,
+          imageCount,
+          videoCount,
+          totalAmount: pricing.total,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.checkoutUrl) throw new Error(data.error || "Checkout үүсгэхэд алдаа");
+      window.location.href = data.checkoutUrl;
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Төлбөр эхлүүлэхэд алдаа гарлаа.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -69,49 +101,39 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onPurchase, 
           <div className="upgrade-modal-icon"><MdAutoAwesome /></div>
           <h2 className="upgrade-modal-title">Мэндчилгээг идэвхжүүлэх</h2>
           <p className="upgrade-modal-subtitle">
-            Watermark арилгаж, бүх feature ашиглахын тулд 1 эрх шаардлагатай
+            Төлбөр төлсөнөөр мэндчилгээ идэвхждэг
           </p>
         </div>
 
-        {/* Reasons */}
-        {reasons.length > 0 && (
-          <div className="upgrade-reasons">
-            <div className="upgrade-reasons-title">Ашиглагдсан feature-ууд</div>
-            {reasons.map((reason, i) => {
-              const rMeta = TIER_META[reason.requiredTier];
-              return (
-                <div key={i} className="upgrade-reason-item">
-                  <span className="upgrade-reason-icon">{reason.icon}</span>
-                  <span className="upgrade-reason-label">{reason.labelMn}</span>
-                  <span
-                    className="upgrade-reason-tier"
-                    style={{
-                      background: rMeta.bgColor,
-                      color: rMeta.color,
-                    }}
-                  >
-                    {rMeta.badge} {rMeta.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Credits info */}
+        {/* Price breakdown */}
         <div className="upgrade-plan-box">
           <div className="upgrade-plan-row">
-            <span className="upgrade-plan-label">
-              <MdCardGiftcard style={{ verticalAlign: "middle", marginRight: 4 }} />
-              Таны эрх
-            </span>
-            <span className={`upgrade-plan-value ${credits > 0 ? "upgrade-credits-ok" : "upgrade-credits-zero"}`}>
-              {credits} эрх
-            </span>
+            <span className="upgrade-plan-label">🎁 Мэндчилгээ суурь ({INCLUDED_IMAGES} зураг)</span>
+            <span className="upgrade-plan-value">₮{BASE_PRICE.toLocaleString()}</span>
           </div>
-          <div className="upgrade-plan-row">
-            <span className="upgrade-plan-label">Шаардлагатай</span>
-            <span className="upgrade-plan-value">1 эрх</span>
+          {pricing.extraImages > 0 && (
+            <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#64748b" }}>
+              <span className="upgrade-plan-label">
+                <MdPhotoCamera style={{ verticalAlign: "middle", marginRight: 4 }} />
+                Нэмэлт зураг ×{pricing.extraImages}
+              </span>
+              <span className="upgrade-plan-value">+₮{pricing.imgCost.toLocaleString()}</span>
+            </div>
+          )}
+          {pricing.videoCount > 0 && (
+            <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#64748b" }}>
+              <span className="upgrade-plan-label">
+                <MdVideocam style={{ verticalAlign: "middle", marginRight: 4 }} />
+                Видео клип ×{pricing.videoCount}
+              </span>
+              <span className="upgrade-plan-value">+₮{pricing.vidCost.toLocaleString()}</span>
+            </div>
+          )}
+          <div className="upgrade-plan-row" style={{ borderTop: "1px solid #e2e8f0", paddingTop: 8, marginTop: 4, fontWeight: 700 }}>
+            <span className="upgrade-plan-label">Нийт</span>
+            <span className="upgrade-plan-value" style={{ color: "#e11d48", fontSize: "1.1rem" }}>
+              ₮{pricing.total.toLocaleString()}
+            </span>
           </div>
         </div>
 
@@ -140,17 +162,27 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onPurchase, 
               ) : (
                 <>
                   <MdAutoAwesome style={{ marginRight: 6 }} />
-                  1 эрх ашиглаж идэвхжүүлэх
+                  Эрх ашиглаж идэвхжүүлэх ({credits} эрх байна)
                 </>
               )}
             </button>
           ) : (
             <button
               className="upgrade-pay-btn"
-              onClick={handleBuyCredits}
+              onClick={handlePay}
+              disabled={loading}
             >
-              <MdShoppingCart style={{ marginRight: 6 }} />
-              Эрх худалдаж авах (₮5,000)
+              {loading ? (
+                <span className="upgrade-loading">
+                  <span className="upgrade-loading-spinner" />
+                  Боловсруулж байна...
+                </span>
+              ) : (
+                <>
+                  <MdAutoAwesome style={{ marginRight: 6 }} />
+                  ₮{pricing.total.toLocaleString()} төлөх
+                </>
+              )}
             </button>
           )}
           <button

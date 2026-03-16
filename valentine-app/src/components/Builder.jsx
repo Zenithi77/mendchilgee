@@ -9,12 +9,12 @@ import { useAuth } from "../contexts/AuthContext";
 
 import AddSectionModal from "./AddSectionModal";
 import UpgradeModal from "./UpgradeModal";
-import PurchaseModal from "./PurchaseModal";
 import GiftCompletionModal from "./GiftCompletionModal";
 import PreviewModal from "./PreviewModal";
 import { TEMPLATES } from "../templateConfigs";
 import { TIER_META } from "../config/tiers";
 import { FEATURE_REGISTRY } from "../config/featureRegistry";
+import { INCLUDED_IMAGES } from "../config/plans";
 import {
   getRequiredTier,
   needsUpgrade,
@@ -274,7 +274,6 @@ export default function Builder() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStylePanel, setShowStylePanel] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showFullPreviewModal, setShowFullPreviewModal] = useState(false);
 
@@ -557,6 +556,7 @@ export default function Builder() {
         <MemoryGalleryEditor
           section={selectedSection}
           onUpdate={updateSectionData}
+          maxImages={20}
         />
       );
 
@@ -624,7 +624,6 @@ export default function Builder() {
         onClose={() => setShowUpgradeModal(false)}
         gift={gift}
         giftId={gift.id}
-        onPurchase={() => setShowPurchaseModal(true)}
         onActivated={async () => {
           // Reload gift to get updated paidTier
           if (gift.id) {
@@ -636,21 +635,11 @@ export default function Builder() {
         }}
       />
 
-      <PurchaseModal
-        open={showPurchaseModal}
-        onClose={() => setShowPurchaseModal(false)}
-        onSuccess={() => {}}
-      />
-
       <GiftCompletionModal
         open={showCompletionModal}
         onClose={() => setShowCompletionModal(false)}
         gift={gift}
         onSaveGift={handleExportSave}
-        onPurchase={() => {
-          setShowCompletionModal(false);
-          setShowPurchaseModal(true);
-        }}
         onGiftReload={async (activatedGiftId) => {
           // Use explicit giftId to avoid stale closure when gift.id
           // hasn't been updated in local state yet (new gift activation)

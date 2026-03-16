@@ -277,7 +277,7 @@ exports.bylWebhook = onRequest(async (req, res) => {
         if (!clientRef) {
           console.warn("checkout.completed without client_reference_id");
         } else if (clientRef.startsWith("credit_")) {
-          // ── Credit purchase via BYL ──
+          // ── Credit / Plan purchase via BYL ──
           const creditDocRef = db.collection("credit_payments").doc(clientRef);
           await db.runTransaction(async (tx) => {
             // ── ALL READS FIRST ──
@@ -294,11 +294,19 @@ exports.bylWebhook = onRequest(async (req, res) => {
 
             const creditData = doc.data();
             const userId = creditData.userId;
-            const qty = creditData.quantity || 1;
+            const pType = creditData.purchaseType; // "gift"|"plan"|undefined
 
             // Read user profile BEFORE any writes
             const userRef = db.collection("userProfiles").doc(userId);
             const userDoc = await tx.get(userRef);
+
+            // If gift purchase, also read the gift doc
+            let giftRef = null;
+            let giftDoc = null;
+            if (pType === "gift" && creditData.giftId) {
+              giftRef = db.collection("gifts").doc(creditData.giftId);
+              giftDoc = await tx.get(giftRef);
+            }
 
             // ── ALL WRITES AFTER ──
             // Mark paid
@@ -308,23 +316,96 @@ exports.bylWebhook = onRequest(async (req, res) => {
               checkoutRaw: checkout,
             });
 
-            // Add credits to user
-            const currentCredits = userDoc.exists ?
-              (userDoc.data().credits || 0) : 0;
-            const newBalance = currentCredits + qty;
-            if (userDoc.exists) {
-              tx.update(userRef, {credits: newBalance});
+            if (pType === "gift") {
+              // ── Pay-per-gift: activate the specific gift ──
+              const now = new Date();
+              const expiresAt = new Date(
+                  now.getTime() + GIFT_DURATION_DAYS * 24 * 60 * 60 * 1000,
+              );
+
+              if (giftRef && giftDoc && giftDoc.exists) {
+                tx.update(giftRef, {
+                  creditUsed: true,
+                  status: "published",
+                  paidTier: "standard",
+                  paidAt:
+                      admin.firestore.FieldValue.serverTimestamp(),
+                  expiresAt:
+                      admin.firestore.Timestamp.fromDate(expiresAt),
+                });
+              }
+
+              // Also add 1 legacy credit to user profile for compat
+              const currentCredits = userDoc.exists ?
+                (userDoc.data().credits || 0) : 0;
+              if (userDoc.exists) {
+                tx.update(userRef, {credits: currentCredits + 1});
+              } else {
+                tx.set(userRef, {credits: currentCredits + 1}, {merge: true});
+              }
+            } else if (pType === "plan") {
+              // ── Legacy plan purchase ──
+              const pId = creditData.planId;
+              const durationDays = PLAN_DURATION_DAYS[pId] ||
+                  PLAN_DURATION_DAYS.basic;
+              const now = new Date();
+              const expiresAt = new Date(
+                  now.getTime() + durationDays * 24 * 60 * 60 * 1000,
+              );
+
+              const currentCredits = userDoc.exists ?
+                (userDoc.data().credits || 0) : 0;
+
+              const planUpdate = {
+                credits: currentCredits + 1,
+                currentPlanId: pId,
+                planExtraImages: creditData.extraImages || 0,
+                planExtraVideoSeconds: creditData.extraVideoSeconds || 0,
+                planTotalAmount: creditData.totalAmount || creditData.amount,
+                planActivatedAt:
+                    admin.firestore.FieldValue.serverTimestamp(),
+                planExpiresAt:
+                    admin.firestore.Timestamp.fromDate(expiresAt),
+              };
+
+              if (userDoc.exists) {
+                tx.update(userRef, planUpdate);
+              } else {
+                tx.set(userRef, planUpdate, {merge: true});
+              }
             } else {
-              tx.set(userRef, {credits: newBalance}, {merge: true});
+              // ── Legacy credit purchase: just add credits ──
+              const qty = creditData.quantity || 1;
+              const currentCredits = userDoc.exists ?
+                (userDoc.data().credits || 0) : 0;
+              const newBalance = currentCredits + qty;
+              if (userDoc.exists) {
+                tx.update(userRef, {credits: newBalance});
+              } else {
+                tx.set(userRef, {credits: newBalance}, {merge: true});
+              }
             }
           });
 
           const creditDoc = await creditDocRef.get();
           if (creditDoc.exists) {
-            console.log(
-                `Credit purchase: ${creditDoc.data().quantity} credits ` +
-                `added to user ${creditDoc.data().userId}`,
-            );
+            const cd = creditDoc.data();
+            if (cd.purchaseType === "gift") {
+              console.log(
+                  `Gift purchase: gift ${cd.giftId} activated ` +
+                  `for user ${cd.userId} (₮${cd.totalAmount})`,
+              );
+            } else if (cd.purchaseType === "plan") {
+              console.log(
+                  `Plan purchase: ${cd.planId} activated ` +
+                  `for user ${cd.userId} (₮${cd.totalAmount})`,
+              );
+            } else {
+              console.log(
+                  `Credit purchase: ${cd.quantity} credits ` +
+                  `added to user ${cd.userId}`,
+              );
+            }
           }
         } else {
           const paymentDocRef = db.collection("demo_payments").doc(clientRef);
@@ -560,12 +641,38 @@ exports.checkExpiredGifts = onRequest(async (req, res) => {
 // BYL Credit Purchase Functions
 // ═══════════════════════════════════════════════════════════════════════════
 
-const CREDIT_PRICE = 5000; // MNT per credit
+const CREDIT_PRICE = 5000; // MNT per credit (legacy)
+
+// ── Pricing constants (mirror of frontend plans.js) ─────────────────────
+const BASE_GIFT_PRICE = 5000; // base price per gift
+const INCLUDED_IMAGES = 4; // images included in base price
+const EXTRA_IMG_PRICE = 500; // per extra image
+const EXTRA_VID_PRICE = 500; // per video clip
+const GIFT_DURATION_DAYS = 14; // how long a paid gift stays active
+
+// Legacy plan pricing (kept for backward compat)
+const PLAN_PRICES = {
+  basic: 5000,
+  standard: 8000,
+  premium: 12000,
+};
+const PLAN_LABELS = {
+  basic: "Энгийн",
+  standard: "Стандарт",
+  premium: "Премиум",
+};
+const PLAN_DURATION_DAYS = {
+  basic: 7,
+  standard: 14,
+  premium: 30,
+};
 
 // ── createCreditCheckout ─────────────────────────────────────────────────
-// Creates a BYL checkout session specifically for purchasing credits.
-// client_reference_id format: credit_<ts>_<rand>_<qty>
-// userId is saved in credit_payments collection for webhook lookup.
+// Creates a BYL checkout session.
+// type "gift":   pay-per-gift { userId, giftId, imageCount, videoCount }
+// type "plan":   (legacy) plan purchase
+// type "credit": (legacy) credit purchase
+// client_reference_id format: credit_<ts>_<rand>_<tag>
 
 exports.createCreditCheckout = onRequest(async (req, res) => {
   const cfg = getConfig();
@@ -579,15 +686,78 @@ exports.createCreditCheckout = onRequest(async (req, res) => {
 
   const body = req.body || {};
   const userId = body.userId;
-  const quantity = Math.max(1, Math.min(10, parseInt(body.quantity) || 1));
+  const purchaseType = body.type || "credit";
 
   if (!userId) {
     return res.status(400).json({error: "Missing userId"});
   }
 
-  const amount = CREDIT_PRICE * quantity;
+  let amount;
+  let quantity = 1;
+  let clientRef;
+  let productName;
   const randomStr = Math.random().toString(36).slice(2, 9);
-  const clientRef = `credit_${Date.now()}_${randomStr}_${quantity}`;
+
+  // Extra metadata to store
+  const meta = {};
+
+  if (purchaseType === "gift") {
+    // ── Pay-per-gift purchase ──
+    const giftId = body.giftId;
+    const imageCount = Math.max(0, parseInt(body.imageCount) || 0);
+    const videoCount = Math.max(0, parseInt(body.videoCount) || 0);
+
+    if (!giftId) {
+      return res.status(400).json({error: "Missing giftId"});
+    }
+
+    const extraImages = Math.max(0, imageCount - INCLUDED_IMAGES);
+    const imgCost = extraImages * EXTRA_IMG_PRICE;
+    const vidCost = videoCount * EXTRA_VID_PRICE;
+    amount = BASE_GIFT_PRICE + imgCost + vidCost;
+
+    clientRef = `credit_${Date.now()}_${randomStr}_gift`;
+    productName = `Мэндчилгээ`;
+    if (extraImages > 0) productName += ` +${extraImages} зураг`;
+    if (videoCount > 0) productName += ` +${videoCount} видео`;
+
+    meta.purchaseType = "gift";
+    meta.giftId = giftId;
+    meta.imageCount = imageCount;
+    meta.videoCount = videoCount;
+    meta.extraImages = extraImages;
+    meta.imgCost = imgCost;
+    meta.vidCost = vidCost;
+    meta.totalAmount = amount;
+  } else if (purchaseType === "plan") {
+    // ── Legacy plan-based purchase ──
+    const planId = body.planId;
+    if (!planId || !PLAN_PRICES[planId]) {
+      return res.status(400).json({error: "Invalid planId"});
+    }
+    const extraImages = Math.max(0, parseInt(body.extraImages) || 0);
+    const extraVideoSeconds = Math.max(0, parseInt(body.extraVideoSeconds) || 0);
+    const basePlanPrice = PLAN_PRICES[planId];
+    const extraImgCost = extraImages * EXTRA_IMG_PRICE;
+    const videoChunks = Math.ceil(extraVideoSeconds / 10);
+    const extraVidCost = videoChunks * EXTRA_VID_PRICE;
+    amount = basePlanPrice + extraImgCost + extraVidCost;
+
+    clientRef = `credit_${Date.now()}_${randomStr}_plan`;
+    productName = `${PLAN_LABELS[planId] || planId} багц`;
+
+    meta.purchaseType = "plan";
+    meta.planId = planId;
+    meta.extraImages = extraImages;
+    meta.extraVideoSeconds = extraVideoSeconds;
+    meta.totalAmount = amount;
+  } else {
+    // ── Legacy credit purchase ──
+    quantity = Math.max(1, Math.min(10, parseInt(body.quantity) || 1));
+    amount = CREDIT_PRICE * quantity;
+    clientRef = `credit_${Date.now()}_${randomStr}_${quantity}`;
+    productName = `Мэндчилгээ эрх (x${quantity})`;
+  }
 
   const encodedRef = encodeURIComponent(clientRef);
   const payload = {
@@ -597,10 +767,10 @@ exports.createCreditCheckout = onRequest(async (req, res) => {
     items: [
       {
         price_data: {
-          unit_amount: CREDIT_PRICE,
-          product_data: {name: `Мэндчилгээ эрх (x${quantity})`},
+          unit_amount: amount,
+          product_data: {name: productName},
         },
-        quantity,
+        quantity: 1,
       },
     ],
   };
@@ -630,7 +800,7 @@ exports.createCreditCheckout = onRequest(async (req, res) => {
     const checkoutData = data.data;
 
     // Save to credit_payments collection
-    await db.collection("credit_payments").doc(clientRef).set({
+    const docData = {
       client_reference_id: clientRef,
       userId,
       quantity,
@@ -638,7 +808,10 @@ exports.createCreditCheckout = onRequest(async (req, res) => {
       status: "pending",
       checkout_id: checkoutData.id || null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+      ...meta,
+    };
+
+    await db.collection("credit_payments").doc(clientRef).set(docData);
 
     return res.json({
       checkoutUrl: checkoutData.url,
@@ -673,11 +846,30 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
 
   // If already paid, return immediately
   if (data?.status === "paid") {
-    return res.json({
+    const response = {
       status: "paid",
       quantity: data?.quantity || 0,
       amount: data?.amount || 0,
-    });
+      purchaseType: data?.purchaseType || "credit",
+    };
+    // Include gift details
+    if (data?.purchaseType === "gift") {
+      response.giftId = data.giftId;
+      response.imageCount = data.imageCount || 0;
+      response.videoCount = data.videoCount || 0;
+      response.extraImages = data.extraImages || 0;
+      response.imgCost = data.imgCost || 0;
+      response.vidCost = data.vidCost || 0;
+      response.totalAmount = data.totalAmount || data.amount || 0;
+    }
+    // Include plan details if this was a plan purchase
+    if (data?.purchaseType === "plan") {
+      response.planId = data.planId;
+      response.extraImages = data.extraImages || 0;
+      response.extraVideoSeconds = data.extraVideoSeconds || 0;
+      response.totalAmount = data.totalAmount || data.amount || 0;
+    }
+    return res.json(response);
   }
 
   // ── Fallback: if webhook hasn't arrived yet, check BYL API directly ──
@@ -700,7 +892,7 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
         if (checkout.status === "complete" || checkout.status === "paid") {
           // Webhook hasn't arrived yet — process payment now
           const userId = data.userId;
-          const qty = data.quantity || 1;
+          const pType = data.purchaseType; // "gift"|"plan"|undefined
 
           await db.runTransaction(async (tx) => {
             // ── ALL READS FIRST ──
@@ -720,6 +912,14 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
                 (userDoc.data().credits || 0) : 0;
             }
 
+            // Read gift doc if gift purchase
+            let giftRef = null;
+            let giftDoc = null;
+            if (pType === "gift" && data.giftId) {
+              giftRef = db.collection("gifts").doc(data.giftId);
+              giftDoc = await tx.get(giftRef);
+            }
+
             // ── ALL WRITES AFTER ──
             // Mark paid
             tx.update(creditDocRef, {
@@ -729,22 +929,92 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
               paidVia: "polling_fallback",
             });
 
-            // Add credits to user
-            if (userRef) {
-              const newBalance = currentCredits + qty;
-              if (userExists) {
-                tx.update(userRef, {credits: newBalance});
+            if (pType === "gift") {
+              // ── Gift purchase: activate the specific gift ──
+              const now = new Date();
+              const expiresAt = new Date(
+                  now.getTime() + GIFT_DURATION_DAYS * 24 * 60 * 60 * 1000,
+              );
+              if (giftRef && giftDoc && giftDoc.exists) {
+                tx.update(giftRef, {
+                  creditUsed: true,
+                  status: "published",
+                  paidTier: "standard",
+                  paidAt:
+                      admin.firestore.FieldValue.serverTimestamp(),
+                  expiresAt:
+                      admin.firestore.Timestamp.fromDate(expiresAt),
+                });
+              }
+              // Add 1 legacy credit for compat
+              if (userRef) {
+                if (userExists) {
+                  tx.update(userRef, {credits: currentCredits + 1});
+                } else {
+                  tx.set(userRef, {credits: currentCredits + 1}, {merge: true});
+                }
+              }
+            } else if (userRef) {
+              if (pType === "plan") {
+                // ── Plan purchase: set plan + 1 credit ──
+                const pId = data.planId;
+                const durationDays = PLAN_DURATION_DAYS[pId] ||
+                    PLAN_DURATION_DAYS.basic;
+                const now = new Date();
+                const expiresAt = new Date(
+                    now.getTime() + durationDays * 24 * 60 * 60 * 1000,
+                );
+                const planUpdate = {
+                  credits: currentCredits + 1,
+                  currentPlanId: pId,
+                  planExtraImages: data.extraImages || 0,
+                  planExtraVideoSeconds: data.extraVideoSeconds || 0,
+                  planTotalAmount: data.totalAmount || data.amount,
+                  planActivatedAt:
+                      admin.firestore.FieldValue.serverTimestamp(),
+                  planExpiresAt:
+                      admin.firestore.Timestamp.fromDate(expiresAt),
+                };
+                if (userExists) {
+                  tx.update(userRef, planUpdate);
+                } else {
+                  tx.set(userRef, planUpdate, {merge: true});
+                }
               } else {
-                tx.set(userRef, {credits: newBalance}, {merge: true});
+                // ── Legacy credit: add credits ──
+                const qty = data.quantity || 1;
+                const newBalance = currentCredits + qty;
+                if (userExists) {
+                  tx.update(userRef, {credits: newBalance});
+                } else {
+                  tx.set(userRef, {credits: newBalance}, {merge: true});
+                }
               }
             }
           });
 
-          return res.json({
+          const paidResponse = {
             status: "paid",
             quantity: data?.quantity || 0,
             amount: data?.amount || 0,
-          });
+            purchaseType: data?.purchaseType || "credit",
+          };
+          if (pType === "gift") {
+            paidResponse.giftId = data.giftId;
+            paidResponse.imageCount = data.imageCount || 0;
+            paidResponse.videoCount = data.videoCount || 0;
+            paidResponse.extraImages = data.extraImages || 0;
+            paidResponse.imgCost = data.imgCost || 0;
+            paidResponse.vidCost = data.vidCost || 0;
+            paidResponse.totalAmount = data.totalAmount || data.amount || 0;
+          }
+          if (pType === "plan") {
+            paidResponse.planId = data.planId;
+            paidResponse.extraImages = data.extraImages || 0;
+            paidResponse.extraVideoSeconds = data.extraVideoSeconds || 0;
+            paidResponse.totalAmount = data.totalAmount || data.amount || 0;
+          }
+          return res.json(paidResponse);
         }
       }
     } catch (err) {
@@ -753,11 +1023,28 @@ exports.checkCreditPayment = onRequest(async (req, res) => {
     }
   }
 
-  return res.json({
+  const pendingResponse = {
     status: data?.status || "pending",
     quantity: data?.quantity || 0,
     amount: data?.amount || 0,
-  });
+    purchaseType: data?.purchaseType || "credit",
+  };
+  if (data?.purchaseType === "gift") {
+    pendingResponse.giftId = data.giftId;
+    pendingResponse.imageCount = data.imageCount || 0;
+    pendingResponse.videoCount = data.videoCount || 0;
+    pendingResponse.extraImages = data.extraImages || 0;
+    pendingResponse.imgCost = data.imgCost || 0;
+    pendingResponse.vidCost = data.vidCost || 0;
+    pendingResponse.totalAmount = data.totalAmount || data.amount || 0;
+  }
+  if (data?.purchaseType === "plan") {
+    pendingResponse.planId = data.planId;
+    pendingResponse.extraImages = data.extraImages || 0;
+    pendingResponse.extraVideoSeconds = data.extraVideoSeconds || 0;
+    pendingResponse.totalAmount = data.totalAmount || data.amount || 0;
+  }
+  return res.json(pendingResponse);
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

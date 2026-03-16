@@ -18,10 +18,9 @@ import PrivacyPage from "./components/PrivacyPage";
 import TermsReacceptModal from "./components/TermsReacceptModal";
 import PromoRedeemPage from "./components/PromoRedeemPage";
 import PromoCodeModal from "./components/PromoCodeModal";
-import PurchaseModal from "./components/PurchaseModal";
 import AdminPromoPanel from "./components/AdminPromoPanel";
 import FloatingHearts from "./components/FloatingHearts";
-import { MdPerson, MdCardGiftcard, MdAdd, MdConfirmationNumber, MdLogout, MdAdminPanelSettings } from "react-icons/md";
+import { MdPerson, MdConfirmationNumber, MdLogout, MdAdminPanelSettings } from "react-icons/md";
 import "./App.css";
 
 // Mendchilgee.site — Дижитал мэндчилгээний платформ
@@ -92,13 +91,12 @@ function AuthGuard({ children }) {
 }
 
 function MainApp() {
-  const { user, loading, logout, credits, needsTermsReaccept, isAdmin } = useAuth();
+  const { user, loading, logout, needsTermsReaccept, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
   const [template, setTemplate] = useState(null); // kept for theme/effects at app level
   const [page, setPage] = useState("list"); // "list" | "category" | "template"
   const [showPromo, setShowPromo] = useState(false);
-  const [showPurchase, setShowPurchase] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
 
   // Apply theme CSS variables when template changes
@@ -204,21 +202,6 @@ function MainApp() {
       <header className="app-header">
         <div className="header-left">
           <button
-            className="header-credits-badge"
-            onClick={() => setShowPurchase(true)}
-            title="Мэндчилгээний эрх"
-          >
-            <MdCardGiftcard className="credits-icon" />
-            <span className="credits-count">{credits}</span>
-            <span className="credits-label">эрх</span>
-          </button>
-          <button
-            className="header-btn header-btn-add"
-            onClick={() => setShowPurchase(true)}
-          >
-            <MdAdd /> <span>Нэмэх</span>
-          </button>
-          <button
             className="header-btn header-btn-promo"
             onClick={() => setShowPromo(true)}
           >
@@ -256,12 +239,6 @@ function MainApp() {
         onClose={() => setShowPromo(false)}
         onSuccess={() => {}}
       />
-      <PurchaseModal
-        open={showPurchase}
-        onClose={() => setShowPurchase(false)}
-        onSuccess={() => {}}
-      />
-
       {/* ── Admin Panel ── */}
       {showAdmin && isAdmin ? (
         <div style={{ paddingTop: 56 }}>

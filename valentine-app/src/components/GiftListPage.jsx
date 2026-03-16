@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getUserGifts, deleteGift } from "../services/giftService";
 import { generateShapedQR } from "../utils/heartQr";
-import PurchaseModal from "./PurchaseModal";
-import { MdMail, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdFavorite, MdDownload, MdPrint, MdLock, MdShoppingCart } from "react-icons/md";
+import { MdMail, MdEdit, MdVisibility, MdSend, MdDelete, MdClose, MdAutoAwesome, MdFavorite, MdDownload, MdPrint, MdLock } from "react-icons/md";
 import "./GiftListPage.css";
 
 export default function GiftListPage({ onCreateNew, onEditGift }) {
@@ -16,8 +15,19 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [sharePanel, setSharePanel] = useState(null);
   const [shareShape, setShareShape] = useState("heart");
-  const [showPurchase, setShowPurchase] = useState(false);
+  const [shareColor, setShareColor] = useState("#e60023");
   const [unpaidPromptId, setUnpaidPromptId] = useState(null);
+
+  const QR_COLORS = [
+    { color: "#e60023", label: "Улаан" },
+    { color: "#d63384", label: "Ягаан" },
+    { color: "#9b59b6", label: "Нил ягаан" },
+    { color: "#2563eb", label: "Цэнхэр" },
+    { color: "#059669", label: "Ногоон" },
+    { color: "#d97706", label: "Шар" },
+    { color: "#1a0e12", label: "Хар" },
+    { color: "#6b8f9e", label: "Саарал" },
+  ];
 
   const fetchGifts = useCallback(async () => {
     if (!user) return;
@@ -101,7 +111,7 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
       }
 
       try {
-        const qr = await generateShapedQR(url, { size: 400, color: "#e60023", shape: shareShape });
+        const qr = await generateShapedQR(url, { size: 400, color: shareColor, shape: shareShape });
         setSharePanel((prev) =>
           prev?.id === gift.id ? { ...prev, qr, loading: false } : prev,
         );
@@ -122,11 +132,11 @@ export default function GiftListPage({ onCreateNew, onEditGift }) {
     if (!sharePanel?.id || !sharePanel?.url) return;
     let cancelled = false;
     setSharePanel((prev) => prev ? { ...prev, loading: true, qr: null } : prev);
-    generateShapedQR(sharePanel.url, { size: 400, color: "#e60023", shape: shareShape })
+    generateShapedQR(sharePanel.url, { size: 400, color: shareColor, shape: shareShape })
       .then((qr) => { if (!cancelled) setSharePanel((prev) => prev ? { ...prev, qr, loading: false } : prev); })
       .catch(() => { if (!cancelled) setSharePanel((prev) => prev ? { ...prev, loading: false, error: "QR алдаа" } : prev); });
     return () => { cancelled = true; };
-  }, [shareShape]);
+  }, [shareShape, shareColor]);
 
   const handleShareDownload = () => {
     if (!sharePanel?.qr) return;
@@ -198,12 +208,6 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
 
   return (
     <div className="gift-list-page">
-      <PurchaseModal
-        open={showPurchase}
-        onClose={() => setShowPurchase(false)}
-        onSuccess={() => {}}
-      />
-
       <div className="gift-list-container">
         {/* Header */}
         <div className="gift-list-header">
@@ -315,21 +319,14 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                     </div>
                     <h4 className="gift-unpaid-title">Мэндчилгээ идэвхжүүлэгдээгүй</h4>
                     <p className="gift-unpaid-text">
-                      Мэндчилгээг хуваалцахын тулд эрх худалдаж аваад Export хийх шаардлагатай.
-                      Copy link, QR код болон линкээр хуваалцах боломжгүй.
+                      Мэндчилгээг хуваалцахын тулд төлбөр төлөөд идэвхжүүлэх шаардлагатай.
                     </p>
                     <div className="gift-unpaid-actions">
                       <button
-                        className="gift-unpaid-buy-btn"
-                        onClick={() => setShowPurchase(true)}
-                      >
-                        <MdShoppingCart /> Эрх худалдаж авах (₮5,000)
-                      </button>
-                      <button
                         className="gift-unpaid-export-btn"
-                        onClick={() => navigate(`/builder/${gift.id}`)}
+                        onClick={() => navigate(`/builder/${gift.id}?upgrade=true`)}
                       >
-                        <MdAutoAwesome /> Builder-д очиж Export хийх
+                        <MdAutoAwesome /> Төлбөр төлж идэвхжүүлэх
                       </button>
                     </div>
                   </div>
@@ -369,6 +366,21 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
                           <span className="gift-share-shape-icon">{s.icon}</span>
                           <span className="gift-share-shape-label">{s.label}</span>
                         </button>
+                      ))}
+                    </div>
+
+                    {/* Color selector */}
+                    <div className="gift-share-colors">
+                      <span className="gift-share-color-label">Өнгө:</span>
+                      {QR_COLORS.map((c) => (
+                        <button
+                          key={c.color}
+                          className={`gift-share-color-btn ${shareColor === c.color ? "gift-share-color-active" : ""}`}
+                          style={{ background: c.color }}
+                          onClick={() => setShareColor(c.color)}
+                          title={c.label}
+                          aria-label={c.label}
+                        />
                       ))}
                     </div>
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { TIER_META, TIER_DURATION_DAYS } from "../config/tiers";
-import { MdHelp, MdCelebration, MdAutoAwesome, MdSearch, MdPayment } from "react-icons/md";
+import { BASE_PRICE, INCLUDED_IMAGES, EXTRA_IMAGE_PRICE, EXTRA_VIDEO_PRICE } from "../config/plans";
+import { MdHelp, MdCelebration, MdAutoAwesome, MdSearch, MdPayment, MdReceipt, MdPhotoCamera, MdVideocam, MdCheckCircle } from "react-icons/md";
 import "./DemoPaymentPage.css";
 
 const FUNCTIONS_BASE =
@@ -75,46 +75,116 @@ export default function PaymentSuccessPage() {
   }
 
   if (status === "paid") {
-    // Credit purchase success
+    // ── Gift payment receipt (new flow) ──
     if (isCredit) {
-      const qty = paymentData?.quantity || 1;
+      const d = paymentData || {};
+      const pType = d.purchaseType || "credit";
+
+      if (pType === "gift") {
+        const extraImages = d.extraImages || 0;
+        const imgCost = d.imgCost || extraImages * EXTRA_IMAGE_PRICE;
+        const videoCount = d.videoCount || 0;
+        const vidCost = d.vidCost || videoCount * EXTRA_VIDEO_PRICE;
+        const totalAmount = d.totalAmount || d.amount || 0;
+        const gId = d.giftId || giftId;
+
+        return (
+          <div className="payment-status-page">
+            <div className="status-icon" style={{ color: "#22c55e" }}><MdCelebration /></div>
+            <h1>Төлбөр амжилттай!</h1>
+            <p style={{ color: "#64748b", marginBottom: 24 }}>
+              Таны мэндчилгээ идэвхжлээ <MdAutoAwesome />
+            </p>
+
+            <div className="receipt-card">
+              <div className="receipt-header">
+                <MdReceipt style={{ fontSize: 20 }} />
+                <span>Төлбөрийн баримт</span>
+              </div>
+
+              {/* Base price */}
+              <div className="receipt-row">
+                <span className="receipt-label">🎁 Мэндчилгээ суурь</span>
+                <span className="receipt-amount">₮{BASE_PRICE.toLocaleString()}</span>
+              </div>
+              <div className="receipt-detail">
+                <span><MdPhotoCamera /> {INCLUDED_IMAGES} зураг орсон</span>
+              </div>
+
+              {/* Extra images */}
+              {extraImages > 0 && (
+                <div className="receipt-row receipt-row-extra">
+                  <span className="receipt-label">
+                    <MdPhotoCamera /> Нэмэлт зураг ×{extraImages}
+                  </span>
+                  <span className="receipt-amount">₮{imgCost.toLocaleString()}</span>
+                </div>
+              )}
+
+              {/* Video clips */}
+              {videoCount > 0 && (
+                <div className="receipt-row receipt-row-extra">
+                  <span className="receipt-label">
+                    <MdVideocam /> Видео клип ×{videoCount}
+                  </span>
+                  <span className="receipt-amount">₮{vidCost.toLocaleString()}</span>
+                </div>
+              )}
+
+              <div className="receipt-divider" />
+
+              <div className="receipt-total">
+                <span>Нийт төлсөн</span>
+                <span className="receipt-total-amount">
+                  ₮{totalAmount.toLocaleString()}
+                </span>
+              </div>
+
+              <div className="receipt-badge">
+                <MdCheckCircle /> Төлбөр баталгаажсан
+              </div>
+            </div>
+
+            {gId ? (
+              <Link to={`/${gId}`} style={{ marginTop: 20 }}>← Мэндчилгээг харах</Link>
+            ) : (
+              <Link to="/" style={{ marginTop: 20 }}>← Нүүр хуудас руу буцах</Link>
+            )}
+          </div>
+        );
+      }
+
+      // Legacy credit/plan receipt fallback
+      const qty = d.quantity || 1;
+      const totalAmount = d.totalAmount || d.amount || 0;
       return (
         <div className="payment-status-page">
-          <div className="status-icon"><MdCelebration /></div>
+          <div className="status-icon" style={{ color: "#22c55e" }}><MdCelebration /></div>
           <h1>Төлбөр амжилттай!</h1>
-          <p>
-            <strong>{qty} эрх</strong> таны данс руу нэмэгдлээ.
-          </p>
-          <p style={{ color: "#64748b", fontSize: "0.85rem" }}>
-            Одоо мэндчилгээ үүсгэж эхлээрэй! <MdAutoAwesome />
-          </p>
-          <Link to="/">← Нүүр хуудас руу буцах</Link>
+          <div className="receipt-card">
+            <div className="receipt-header">
+              <MdReceipt style={{ fontSize: 20 }} />
+              <span>Төлбөрийн баримт</span>
+            </div>
+            <div className="receipt-row">
+              <span className="receipt-label">Худалдан авалт</span>
+              <span className="receipt-amount">₮{totalAmount.toLocaleString()}</span>
+            </div>
+            <div className="receipt-badge">
+              <MdCheckCircle /> Төлбөр баталгаажсан
+            </div>
+          </div>
+          <Link to="/" style={{ marginTop: 20 }}>← Нүүр хуудас руу буцах</Link>
         </div>
       );
     }
 
-    // Tier purchase success
-    const tier = paymentData?.plan || "standard";
-    const tierMeta = TIER_META[tier] || TIER_META.standard;
-    const durationDays = TIER_DURATION_DAYS[tier] || 14;
-
+    // Tier purchase success (legacy)
     return (
       <div className="payment-status-page">
         <div className="status-icon"><MdCelebration /></div>
         <h1>Төлбөр амжилттай!</h1>
-        <p>
-          Таны мэндчилгээ{" "}
-          <strong>
-            {tierMeta.badge} {tierMeta.label}
-          </strong>{" "}
-          төлөвлөгөөнд шилжлээ.
-        </p>
-        <p>
-          Идэвхтэй хугацаа: <strong>{durationDays} хоног</strong>
-        </p>
-        <p style={{ color: "#64748b", fontSize: "0.85rem" }}>
-          Watermark арилсан байна. Мэндчилгээгээ хуваалцаарай! <MdAutoAwesome />
-        </p>
+        <p>Таны мэндчилгээ идэвхжлээ.</p>
         {giftId ? (
           <Link to={`/${giftId}`}>← Мэндчилгээг харах</Link>
         ) : (

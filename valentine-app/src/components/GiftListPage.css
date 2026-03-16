@@ -424,6 +424,44 @@
   font-weight: 600;
 }
 
+/* ── Color selector in share panel ── */
+.gift-share-colors {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.gift-share-color-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.gift-share-color-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.gift-share-color-btn:hover {
+  transform: scale(1.18);
+}
+
+.gift-share-color-active {
+  border-color: #fff !important;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 /* ── Share panel actions (download / print) ── */
 .gift-share-panel-actions {
   display: flex;

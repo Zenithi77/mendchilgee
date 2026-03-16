@@ -17,10 +17,22 @@ const SHAPES = QR_SHAPES.map((s) => ({
  *  - giftId: string
  *  - giftTitle: string
  */
+const QR_COLORS = [
+  { color: "#e60023", label: "Улаан" },
+  { color: "#d63384", label: "Ягаан" },
+  { color: "#9b59b6", label: "Нил ягаан" },
+  { color: "#2563eb", label: "Цэнхэр" },
+  { color: "#059669", label: "Ногоон" },
+  { color: "#d97706", label: "Шар" },
+  { color: "#1a0e12", label: "Хар" },
+  { color: "#6b8f9e", label: "Саарал" },
+];
+
 export default function ShareModal({ open, onClose, giftId, giftTitle }) {
   const [qrDataUrl, setQrDataUrl] = useState(null);
   const [copied, setCopied] = useState(false);
   const [shape, setShape] = useState("heart");
+  const [qrColor, setQrColor] = useState("#e60023");
   const [generating, setGenerating] = useState(false);
   const canvasRef = useRef(null);
 
@@ -33,7 +45,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
     setQrDataUrl(null);
     setGenerating(true);
 
-    generateShapedQR(shareUrl, { size: 400, color: "#e60023", shape })
+    generateShapedQR(shareUrl, { size: 400, color: qrColor, shape })
       .then((url) => {
         if (!cancelled) { setQrDataUrl(url); setGenerating(false); }
       })
@@ -43,7 +55,7 @@ export default function ShareModal({ open, onClose, giftId, giftTitle }) {
       });
 
     return () => { cancelled = true; };
-  }, [open, giftId, shareUrl, shape]);
+  }, [open, giftId, shareUrl, shape, qrColor]);
 
   if (!open) return null;
 
@@ -103,6 +115,21 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
               <span className="share-shape-icon">{s.icon}</span>
               <span className="share-shape-label">{s.label}</span>
             </button>
+          ))}
+        </div>
+
+        {/* Color selector */}
+        <div className="share-color-selector">
+          <span className="share-color-label">Өнгө:</span>
+          {QR_COLORS.map((c) => (
+            <button
+              key={c.color}
+              className={`share-color-btn ${qrColor === c.color ? "share-color-active" : ""}`}
+              style={{ background: c.color }}
+              onClick={() => setQrColor(c.color)}
+              title={c.label}
+              aria-label={c.label}
+            />
           ))}
         </div>
 

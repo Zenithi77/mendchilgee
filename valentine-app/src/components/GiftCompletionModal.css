@@ -243,6 +243,35 @@
   line-height: 1;
 }
 
+/* ── Color selector ── */
+.gc-color-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.gc-color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  outline: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+.gc-color-btn:hover {
+  transform: scale(1.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.gc-color-active {
+  border-color: #333 !important;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 .gc-qr-display {
   display: flex;
   align-items: center;
@@ -278,28 +307,46 @@
   margin: 0;
 }
 
-.gc-download-btn {
+/* ── QR actions row ── */
+.gc-qr-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.gc-download-btn,
+.gc-print-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 10px 22px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ff6b8a, #e60023);
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
 }
-.gc-download-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(230, 0, 35, 0.3);
+.gc-download-btn {
+  background: linear-gradient(135deg, #ff6b8a, #e60023);
 }
-.gc-download-btn:active {
+.gc-print-btn {
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+.gc-download-btn:hover:not(:disabled),
+.gc-print-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.gc-download-btn:active,
+.gc-print-btn:active {
   transform: scale(0.97);
 }
-.gc-download-btn:disabled {
+.gc-download-btn:disabled,
+.gc-print-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
@@ -398,6 +445,62 @@
 }
 .gc-buy-btn:active {
   transform: scale(0.97);
+}
+.gc-buy-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Price Card ── */
+.gc-price-card {
+  width: 100%;
+  max-width: 300px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.gc-price-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  color: #333;
+}
+.gc-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 0.88rem;
+  color: #444;
+}
+.gc-price-extra {
+  color: #666;
+  font-size: 0.84rem;
+}
+.gc-price-divider {
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  margin: 8px 0;
+}
+.gc-price-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0 2px;
+  font-weight: 700;
+}
+.gc-price-total-amount {
+  font-size: 1.2rem;
+  color: #e60023;
+  font-weight: 800;
 }
 
 .gc-later-btn {
