@@ -2,14 +2,14 @@
 // GiftCompletionModal — Save & pay flow
 //
 // Flow:
-//   1. Save gift as draft
-//   2. Count images/videos → calculate price
-//   3. Show price breakdown → "Төлөх" button
-//   4. Redirect to BYL checkout
-//   5. If user has legacy credits → auto-activate for free
+//   1. Show price breakdown (NO save yet)
+//   2. "Төлөх" → save gift → create BYL checkout → redirect
+//   3. "Болих" → show warning → "Ойлголоо" → navigate home
+//   4. If user has legacy credits → save + auto-activate
 // ═══════════════════════════════════════════════════════════════
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCredit as consumeCredit } from "../services/creditService";
 import { generateShapedQR, QR_SHAPES } from "../utils/heartQr";
@@ -35,6 +35,7 @@ import {
   MdPhotoCamera,
   MdVideocam,
   MdReceipt,
+  MdWarning,
 } from "react-icons/md";
 import "./GiftCompletionModal.css";
 
@@ -76,9 +77,10 @@ export default function GiftCompletionModal({
   onGiftReload,
 }) {
   const { user, credits } = useAuth();
+  const navigate = useNavigate();
 
-  // Steps: "saving" → "pricing" | "activated" | "paying"
-  const [step, setStep] = useState("saving");
+  // Steps: "pricing" → "saving" → "paying" | "activated" | "warning"
+  const [step, setStep] = useState("pricing");
   const [error, setError] = useState(null);
   const [savedGiftId, setSavedGiftId] = useState(null);
   const [paying, setPaying] = useState(false);
@@ -90,45 +92,23 @@ export default function GiftCompletionModal({
   const [qrColor, setQrColor] = useState("#e60023");
   const [copied, setCopied] = useState(false);
 
-  const hasRun = useRef(false);
-
   const shareUrl = savedGiftId ? `${window.location.origin}/${savedGiftId}` : "";
 
   // Price calculation
   const { imageCount, totalVideoSeconds } = countGiftMedia(gift);
   const pricing = calcGiftPrice(imageCount, totalVideoSeconds);
 
-  // ── Step 1: Save gift, then decide if free-activate or show price ──
+  // Reset state when modal opens
   useEffect(() => {
-    if (!open || !gift || !user) return;
-    if (hasRun.current) return;
-    hasRun.current = true;
-
-    setStep("saving");
-    setError(null);
-
-    onSaveGift()
-      .then((docId) => {
-        if (!docId) throw new Error("Хадгалахад алдаа гарлаа");
-        setSavedGiftId(docId);
-
-        // Legacy: if user has credits, auto-activate for free
-        if (credits > 0) {
-          return consumeCredit(user.uid, docId).then(() => {
-            setStep("activated");
-            onGiftReload?.(docId);
-          });
-        }
-
-        // Otherwise show price
-        setStep("pricing");
-      })
-      .catch((err) => {
-        console.error("Save failed:", err);
-        setError(err.message || "Хадгалахад алдаа гарлаа");
-        setStep("pricing");
-      });
-  }, [open, gift, user, credits, onSaveGift, onGiftReload]);
+    if (open) {
+      setStep("pricing");
+      setError(null);
+      setSavedGiftId(null);
+      setPaying(false);
+      setQrDataUrl(null);
+      setCopied(false);
+    }
+  }, [open]);
 
   // ── Generate QR when activated ──
   useEffect(() => {
@@ -153,20 +133,36 @@ export default function GiftCompletionModal({
     };
   }, [step, shareUrl, shape, qrColor]);
 
-  // ── Pay button: create BYL checkout ──
+  // ── Pay button: save gift FIRST, then create BYL checkout ──
   const handlePay = async () => {
-    if (!user || !savedGiftId) return;
+    if (!user || !gift) return;
     setPaying(true);
     setError(null);
+    setStep("saving");
 
     try {
+      // Step 1: Save gift to Firestore
+      const docId = await onSaveGift();
+      if (!docId) throw new Error("Хадгалахад алдаа гарлаа");
+      setSavedGiftId(docId);
+
+      // Legacy: if user has credits, auto-activate for free
+      if (credits > 0) {
+        await consumeCredit(user.uid, docId);
+        setStep("activated");
+        onGiftReload?.(docId);
+        setPaying(false);
+        return;
+      }
+
+      // Step 2: Create BYL checkout
       const res = await fetch(`${FUNCTIONS_BASE}/createCreditCheckout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user.uid,
           type: "gift",
-          giftId: savedGiftId,
+          giftId: docId,
           imageCount,
           totalVideoSeconds,
           totalAmount: pricing.total,
@@ -180,21 +176,42 @@ export default function GiftCompletionModal({
     } catch (err) {
       console.error("Checkout error:", err);
       setError(err.message);
+      setStep("pricing");
       setPaying(false);
     }
   };
 
+  // ── Cancel button: show warning ──
+  const handleCancel = useCallback(() => {
+    setStep("warning");
+  }, []);
+
+  // ── Warning: user confirms leaving ──
+  const handleConfirmLeave = useCallback(() => {
+    onClose();
+    navigate("/");
+  }, [onClose, navigate]);
+
+  // ── Warning: user goes back to pricing ──
+  const handleBackToPricing = useCallback(() => {
+    setStep("pricing");
+  }, []);
+
   // ── Reset on close ──
   const handleClose = useCallback(() => {
-    hasRun.current = false;
-    setStep("saving");
+    // If on pricing or warning, show warning first
+    if (step === "pricing") {
+      setStep("warning");
+      return;
+    }
+    setStep("pricing");
     setError(null);
     setSavedGiftId(null);
     setQrDataUrl(null);
     setCopied(false);
     setPaying(false);
     onClose();
-  }, [onClose]);
+  }, [onClose, step]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -243,7 +260,43 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
             <div className="gc-spinner-wrap">
               <span className="gc-spinner" />
             </div>
-            <p className="gc-loading-text">Мэндчилгээг хадгалж байна...</p>
+            <p className="gc-loading-text">Мэндчилгээг хадгалж, төлбөр үүсгэж байна...</p>
+          </div>
+        )}
+
+        {/* ── Step: Warning before leaving ── */}
+        {step === "warning" && (
+          <div className="gc-body gc-center">
+            <div className="gc-nocredit-header">
+              <div className="gc-nocredit-icon" style={{ background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)" }}>
+                <MdWarning />
+              </div>
+              <h2 className="gc-nocredit-title font-script" style={{ color: "#d97706" }}>
+                Анхааруулга!
+              </h2>
+              <p className="gc-nocredit-subtitle" style={{ color: "#92400e", lineHeight: 1.6 }}>
+                Төлбөр төлөхгүй бол мэндчилгээ <strong>үүсэхгүй</strong> бөгөөд
+                таны оруулсан зураг, бичлэг, бичвэр зэрэг бүх зүйлс
+                <strong> устахыг</strong> анхаарна уу.
+              </p>
+            </div>
+
+            <button
+              className="gc-buy-btn"
+              onClick={handleBackToPricing}
+              style={{ marginTop: 16 }}
+            >
+              <MdPayment style={{ marginRight: 6 }} />
+              Буцаж төлбөр төлөх
+            </button>
+
+            <button
+              className="gc-later-btn"
+              onClick={handleConfirmLeave}
+              style={{ color: "#dc2626", fontWeight: 600 }}
+            >
+              Ойлголоо, гарах
+            </button>
           </div>
         )}
 
@@ -328,8 +381,8 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
               )}
             </button>
 
-            <button className="gc-later-btn" onClick={handleClose}>
-              Дараа болох
+            <button className="gc-later-btn" onClick={handleCancel}>
+              Болих
             </button>
           </div>
         )}

@@ -7,6 +7,7 @@ import {
   doc,
   addDoc,
   getDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -20,17 +21,59 @@ import { db } from "../firebase";
 const COLLECTION = "gifts";
 
 /**
+ * Deep-sanitize an object for Firestore compatibility.
+ * - Strips undefined values (Firestore rejects them)
+ * - Converts NaN/Infinity to null
+ * - Preserves arrays, nested objects, strings, numbers, booleans
+ * - Removes functions / symbols
+ */
+function sanitizeForFirestore(obj) {
+  if (obj === null || obj === undefined) return null;
+  if (typeof obj === "string" || typeof obj === "boolean") return obj;
+  if (typeof obj === "number") {
+    if (Number.isNaN(obj) || !Number.isFinite(obj)) return null;
+    return obj;
+  }
+  if (typeof obj === "function" || typeof obj === "symbol") return undefined;
+
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeForFirestore).filter((v) => v !== undefined);
+  }
+
+  if (typeof obj === "object") {
+    // Preserve Firestore Timestamps and special objects (they have toMillis, etc.)
+    if (obj.toMillis || obj._methodName) return obj;
+
+    const clean = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const sanitized = sanitizeForFirestore(value);
+      if (sanitized !== undefined) {
+        clean[key] = sanitized;
+      }
+    }
+    return clean;
+  }
+
+  return obj;
+}
+
+/**
  * Save a new gift to Firestore. Returns the generated document ID.
  */
 export async function saveGift(gift, userId) {
-  const payload = {
+  const raw = {
     ...gift,
     userId,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
-  // Remove the local `id` field (Firestore manages the doc ID)
-  delete payload.id;
+  delete raw.id;
+
+  // Deep-sanitize to prevent Firestore serialization issues
+  const payload = sanitizeForFirestore(raw);
+  // Re-apply server timestamps (sanitizer might not preserve sentinel values)
+  payload.createdAt = serverTimestamp();
+  payload.updatedAt = serverTimestamp();
 
   const docRef = await addDoc(collection(db, COLLECTION), payload);
   return docRef.id;
@@ -38,11 +81,20 @@ export async function saveGift(gift, userId) {
 
 /**
  * Update an existing gift in Firestore.
+ * Uses setDoc with merge to ensure ALL fields are written,
+ * including deeply nested arrays like sections.
  */
 export async function updateGift(giftId, gift) {
-  const payload = { ...gift, updatedAt: serverTimestamp() };
-  delete payload.id; // Don't store the doc ID inside the document
-  await updateDoc(doc(db, COLLECTION, giftId), payload);
+  const raw = { ...gift, updatedAt: serverTimestamp() };
+  delete raw.id;
+
+  // Deep-sanitize
+  const payload = sanitizeForFirestore(raw);
+  payload.updatedAt = serverTimestamp();
+
+  // Use setDoc with merge: true to reliably write the entire document
+  // This avoids updateDoc's issues with nested array replacement
+  await setDoc(doc(db, COLLECTION, giftId), payload, { merge: true });
 }
 
 /**

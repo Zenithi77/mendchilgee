@@ -87,11 +87,16 @@ export default function AdminPromoPanel({ onBack }) {
     totalGifts: 0,
     paidSales: 0,
     totalRevenue: 0,
+    todayRevenue: 0,
+    todaySales: 0,
     totalUsers: 0,
     totalViews: 0,
     promoUsed: 0,
   });
   const [statsLoading, setStatsLoading] = useState(true);
+
+  // ── Today's live transactions ──
+  const [todayTransactions, setTodayTransactions] = useState([]);
 
   // ── Top Buyers ──
   const [topBuyers, setTopBuyers] = useState([]);
@@ -168,21 +173,49 @@ export default function AdminPromoPanel({ onBack }) {
     return () => unsubscribe();
   }, []);
 
-  // ── Live subscription: paid purchases + top buyers (single listener) ──
-  // Computes both stats and top buyers from one credit_payments snapshot
+  // ── Live subscription: paid purchases + top buyers + today's revenue (single listener) ──
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "credit_payments"), (snap) => {
       const paidDocs = snap.docs
-        .map((d) => d.data())
+        .map((d) => ({ docId: d.id, ...d.data() }))
         .filter((d) => d.status === "paid");
 
       // Stats: revenue from actual payment amounts
       const totalRevenue = paidDocs.reduce((sum, d) => sum + (d.totalAmount || d.amount || 0), 0);
+
+      // Today's boundary (00:00 local time)
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+      // Filter today's transactions
+      const todayDocs = paidDocs.filter((d) => {
+        const ts = d.paidAt?.toMillis?.() || d.createdAt?.toMillis?.() || 0;
+        return ts >= todayStart;
+      });
+
+      const todayRevenue = todayDocs.reduce((sum, d) => sum + (d.totalAmount || d.amount || 0), 0);
+
       setStats((prev) => ({
         ...prev,
         paidSales: paidDocs.length,
         totalRevenue,
+        todayRevenue,
+        todaySales: todayDocs.length,
       }));
+
+      // Today's transactions list (sorted newest first)
+      const txns = todayDocs
+        .map((d) => ({
+          id: d.docId,
+          userId: d.userId || "unknown",
+          amount: d.totalAmount || d.amount || 0,
+          giftId: d.giftId || d.meta?.giftId || null,
+          imageCount: d.meta?.imageCount || d.imageCount || 0,
+          totalVideoSeconds: d.meta?.totalVideoSeconds || d.totalVideoSeconds || 0,
+          time: d.paidAt?.toMillis?.() || d.createdAt?.toMillis?.() || 0,
+        }))
+        .sort((a, b) => b.time - a.time);
+      setTodayTransactions(txns);
 
       // Top buyers: group by userId
       const userMap = {};
@@ -394,6 +427,17 @@ export default function AdminPromoPanel({ onBack }) {
           </div>
         </div>
 
+        <div className="admin-stat-card admin-stat-today" style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)", border: "2px solid #10b981" }}>
+          <div className="admin-stat-icon" style={{ background: "#10b981", color: "#fff" }}>
+            📈
+          </div>
+          <div className="admin-stat-info">
+            <AnimatedCounter value={stats.todayRevenue} />
+            <span className="admin-stat-label">Өнөөдрийн орлого ₮</span>
+            <span style={{ fontSize: 11, color: "#059669" }}>{stats.todaySales} борлуулалт</span>
+          </div>
+        </div>
+
         <div className="admin-stat-card admin-stat-users">
           <div className="admin-stat-icon">
             <MdPeople />
@@ -423,6 +467,71 @@ export default function AdminPromoPanel({ onBack }) {
             <span className="admin-stat-label">Промо ашигласан</span>
           </div>
         </div>
+      </div>
+
+      {/* ── Today's Live Transactions ── */}
+      <div className="admin-section-header">
+        <h3 className="admin-section-title">
+          💰 Өнөөдрийн гүйлгээ ({new Date().toLocaleDateString("mn-MN")})
+        </h3>
+        <span style={{ fontSize: 13, color: "#10b981", fontWeight: 700 }}>
+          LIVE 🔴
+        </span>
+      </div>
+      <div style={{
+        background: "#f8fafc",
+        borderRadius: 12,
+        padding: "12px 16px",
+        marginBottom: 20,
+        border: "1px solid #e2e8f0",
+        maxHeight: 360,
+        overflowY: "auto",
+      }}>
+        {todayTransactions.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "20px 0", color: "#94a3b8" }}>
+            <span style={{ fontSize: 28 }}>📭</span>
+            <p style={{ marginTop: 8 }}>Өнөөдөр гүйлгээ байхгүй</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {todayTransactions.map((tx) => (
+              <div
+                key={tx.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "10px 14px",
+                  background: "#fff",
+                  borderRadius: 10,
+                  border: "1px solid #e2e8f0",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                }}
+              >
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>
+                    🧑 {tx.userId.length > 14 ? tx.userId.slice(0, 6) + "..." + tx.userId.slice(-4) : tx.userId}
+                  </span>
+                  <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                    {tx.time > 0 ? new Date(tx.time).toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" }) : "—"}
+                    {tx.imageCount > 0 && ` • 📷${tx.imageCount}`}
+                    {tx.totalVideoSeconds > 0 && ` • 🎬${tx.totalVideoSeconds}с`}
+                  </span>
+                </div>
+                <span style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: "#059669",
+                  background: "#ecfdf5",
+                  padding: "4px 12px",
+                  borderRadius: 8,
+                }}>
+                  +₮{tx.amount.toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Webhook URL Management ── */}
