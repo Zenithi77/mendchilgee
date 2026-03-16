@@ -97,6 +97,7 @@ export default function AdminPromoPanel({ onBack }) {
 
   // ── Today's live transactions ──
   const [todayTransactions, setTodayTransactions] = useState([]);
+  const [showRevenueModal, setShowRevenueModal] = useState(false);
 
   // ── Top Buyers ──
   const [topBuyers, setTopBuyers] = useState([]);
@@ -426,14 +427,17 @@ export default function AdminPromoPanel({ onBack }) {
           </div>
         </div>
 
-        <div className="admin-stat-card admin-stat-today" style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)", border: "2px solid #10b981" }}>
+        <div
+          className="admin-stat-card admin-stat-today"
+          style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)", border: "2px solid #10b981", cursor: "pointer" }}
+          onClick={() => setShowRevenueModal(true)}
+        >
           <div className="admin-stat-icon" style={{ background: "#10b981", color: "#fff" }}>
-            📈
+            💰
           </div>
           <div className="admin-stat-info">
-            <AnimatedCounter value={stats.todayRevenue} />
-            <span className="admin-stat-label">3/16-с хойших орлого ₮</span>
-            <span style={{ fontSize: 11, color: "#059669" }}>{stats.todaySales} борлуулалт</span>
+            <span className="admin-stat-number" style={{ color: "#10b981" }}>₮{(stats.todayRevenue || 0).toLocaleString()}</span>
+            <span className="admin-stat-label" style={{ color: "#94a3b8" }}>Орлого харах →</span>
           </div>
         </div>
 
@@ -468,72 +472,156 @@ export default function AdminPromoPanel({ onBack }) {
         </div>
       </div>
 
-      {/* ── Today's Live Transactions ── */}
-      <div className="admin-section-header">
-        <h3 className="admin-section-title">
-          💰 Гүйлгээний жагсаалт (3/16-с хойш)
-        </h3>
-        <span style={{ fontSize: 13, color: "#10b981", fontWeight: 700 }}>
-          LIVE 🔴
-        </span>
-      </div>
-      <div style={{
-        background: "#f8fafc",
-        borderRadius: 12,
-        padding: "12px 16px",
-        marginBottom: 20,
-        border: "1px solid #e2e8f0",
-        maxHeight: 360,
-        overflowY: "auto",
-      }}>
-        {todayTransactions.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "20px 0", color: "#94a3b8" }}>
-            <span style={{ fontSize: 28 }}>📭</span>
-            <p style={{ marginTop: 8 }}>3/16-с хойш гүйлгээ байхгүй</p>
+      {/* ══ Revenue Full-screen Modal ══ */}
+      {showRevenueModal && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+          display: "flex", flexDirection: "column",
+          animation: "revenueSlideIn 0.3s ease",
+        }}>
+          {/* Top bar */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}>
+            <button
+              onClick={() => setShowRevenueModal(false)}
+              style={{
+                background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 10,
+                color: "#e2e8f0", padding: "8px 16px", fontSize: 14, fontWeight: 600,
+                cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              <MdArrowBack /> Буцах
+            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{
+                width: 8, height: 8, borderRadius: "50%", background: "#ef4444",
+                animation: "revenuePulse 1.5s ease infinite", display: "inline-block",
+              }} />
+              <span style={{ color: "#94a3b8", fontSize: 13, fontWeight: 600 }}>LIVE</span>
+            </div>
           </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {todayTransactions.map((tx) => (
-              <div
-                key={tx.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "10px 14px",
-                  background: "#fff",
-                  borderRadius: 10,
-                  border: "1px solid #e2e8f0",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-                }}
-              >
-                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>
-                    🧑 {tx.userId.length > 14 ? tx.userId.slice(0, 6) + "..." + tx.userId.slice(-4) : tx.userId}
-                  </span>
-                  <span style={{ fontSize: 11, color: "#94a3b8" }}>
-                    {tx.time > 0 ? new Date(tx.time).toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" }) : "—"}
-                    {tx.imageCount > 0 && ` • 📷${tx.imageCount}`}
-                    {tx.totalVideoSeconds > 0 && ` • 🎬${tx.totalVideoSeconds}с`}
-                  </span>
-                </div>
-                <span style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#059669",
-                  background: "#ecfdf5",
-                  padding: "4px 12px",
-                  borderRadius: 8,
-                }}>
-                  +₮{tx.amount.toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* ── Webhook URL Management ── */}
+          {/* Hero revenue */}
+          <div style={{
+            textAlign: "center", padding: "32px 20px 24px",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+          }}>
+            <p style={{ color: "#64748b", fontSize: 13, fontWeight: 500, margin: 0, letterSpacing: 2, textTransform: "uppercase" }}>
+              3 сарын 16-с хойших нийт орлого
+            </p>
+            <div style={{
+              fontSize: "clamp(36px, 8vw, 56px)", fontWeight: 800, letterSpacing: -1,
+              background: "linear-gradient(135deg, #10b981 0%, #34d399 50%, #a7f3d0 100%)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              margin: "12px 0 8px", lineHeight: 1.1,
+            }}>
+              ₮{(stats.todayRevenue || 0).toLocaleString()}
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 12 }}>
+              <div style={{ textAlign: "center" }}>
+                <span style={{ fontSize: 22, fontWeight: 700, color: "#e2e8f0" }}>{stats.todaySales}</span>
+                <p style={{ color: "#64748b", fontSize: 12, margin: "2px 0 0" }}>Борлуулалт</p>
+              </div>
+              <div style={{ width: 1, background: "rgba(255,255,255,0.1)" }} />
+              <div style={{ textAlign: "center" }}>
+                <span style={{ fontSize: 22, fontWeight: 700, color: "#e2e8f0" }}>
+                  ₮{stats.todaySales > 0 ? Math.round((stats.todayRevenue || 0) / stats.todaySales).toLocaleString() : 0}
+                </span>
+                <p style={{ color: "#64748b", fontSize: 12, margin: "2px 0 0" }}>Дундаж дүн</p>
+              </div>
+              <div style={{ width: 1, background: "rgba(255,255,255,0.1)" }} />
+              <div style={{ textAlign: "center" }}>
+                <span style={{ fontSize: 22, fontWeight: 700, color: "#e2e8f0" }}>₮{(stats.totalRevenue || 0).toLocaleString()}</span>
+                <p style={{ color: "#64748b", fontSize: 12, margin: "2px 0 0" }}>Бүх цагийн</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Transaction list */}
+          <div style={{
+            flex: 1, overflowY: "auto", padding: "16px 16px 80px",
+            WebkitOverflowScrolling: "touch",
+          }}>
+            <p style={{ color: "#64748b", fontSize: 12, fontWeight: 600, margin: "0 0 12px 4px", letterSpacing: 1, textTransform: "uppercase" }}>
+              Гүйлгээнүүд ({todayTransactions.length})
+            </p>
+            {todayTransactions.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "40px 0", color: "#475569" }}>
+                <span style={{ fontSize: 40 }}>📭</span>
+                <p style={{ marginTop: 12, fontSize: 15 }}>Гүйлгээ байхгүй байна</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {todayTransactions.map((tx, i) => (
+                  <div
+                    key={tx.id}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "14px 16px",
+                      background: "rgba(255,255,255,0.04)",
+                      borderRadius: 14,
+                      border: "1px solid rgba(255,255,255,0.06)",
+                      backdropFilter: "blur(8px)",
+                      animation: `revenueFadeIn 0.3s ease ${i * 0.05}s both`,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 10,
+                        background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 16, color: "#fff", fontWeight: 700, flexShrink: 0,
+                      }}>
+                        {i + 1}
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>
+                          {tx.userId.length > 14 ? tx.userId.slice(0, 6) + "..." + tx.userId.slice(-4) : tx.userId}
+                        </span>
+                        <span style={{ fontSize: 11, color: "#64748b" }}>
+                          {tx.time > 0 ? new Date(tx.time).toLocaleDateString("mn-MN", { month: "numeric", day: "numeric" }) + " • " + new Date(tx.time).toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" }) : "—"}
+                          {tx.imageCount > 0 && ` • 📷${tx.imageCount}`}
+                          {tx.totalVideoSeconds > 0 && ` • 🎬${tx.totalVideoSeconds}с`}
+                        </span>
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 16, fontWeight: 700,
+                      color: "#34d399",
+                      background: "rgba(16,185,129,0.12)",
+                      padding: "6px 14px",
+                      borderRadius: 10,
+                      whiteSpace: "nowrap",
+                    }}>
+                      +₮{tx.amount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <style>{`
+            @keyframes revenueSlideIn {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes revenuePulse {
+              0%, 100% { opacity: 1; transform: scale(1); }
+              50% { opacity: 0.4; transform: scale(0.8); }
+            }
+            @keyframes revenueFadeIn {
+              from { opacity: 0; transform: translateX(-10px); }
+              to { opacity: 1; transform: translateX(0); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      {/* ── Webhook URL Management ── */
       <div className="admin-section-header">
         <h3 className="admin-section-title">
           🔗 Webhook URL тохиргоо
