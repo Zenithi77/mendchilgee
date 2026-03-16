@@ -621,7 +621,7 @@ export default function AdminPromoPanel({ onBack }) {
         </div>
       )}
 
-      {/* ── Webhook URL Management ── */
+      {/* ── Webhook URL Management ── */}
       <div className="admin-section-header">
         <h3 className="admin-section-title">
           🔗 Webhook URL тохиргоо
