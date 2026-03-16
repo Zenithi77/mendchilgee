@@ -183,28 +183,27 @@ export default function AdminPromoPanel({ onBack }) {
       // Stats: revenue from actual payment amounts
       const totalRevenue = paidDocs.reduce((sum, d) => sum + (d.totalAmount || d.amount || 0), 0);
 
-      // Today's boundary (00:00 local time)
-      const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      // Fixed start: 2026-03-16 00:00 local time (launch date)
+      const launchStart = new Date(2026, 2, 16, 0, 0, 0).getTime(); // March = month index 2
 
-      // Filter today's transactions
-      const todayDocs = paidDocs.filter((d) => {
+      // Filter transactions since launch
+      const recentDocs = paidDocs.filter((d) => {
         const ts = d.paidAt?.toMillis?.() || d.createdAt?.toMillis?.() || 0;
-        return ts >= todayStart;
+        return ts >= launchStart;
       });
 
-      const todayRevenue = todayDocs.reduce((sum, d) => sum + (d.totalAmount || d.amount || 0), 0);
+      const recentRevenue = recentDocs.reduce((sum, d) => sum + (d.totalAmount || d.amount || 0), 0);
 
       setStats((prev) => ({
         ...prev,
         paidSales: paidDocs.length,
         totalRevenue,
-        todayRevenue,
-        todaySales: todayDocs.length,
+        todayRevenue: recentRevenue,
+        todaySales: recentDocs.length,
       }));
 
-      // Today's transactions list (sorted newest first)
-      const txns = todayDocs
+      // Recent transactions list (sorted newest first)
+      const txns = recentDocs
         .map((d) => ({
           id: d.docId,
           userId: d.userId || "unknown",
@@ -433,7 +432,7 @@ export default function AdminPromoPanel({ onBack }) {
           </div>
           <div className="admin-stat-info">
             <AnimatedCounter value={stats.todayRevenue} />
-            <span className="admin-stat-label">Өнөөдрийн орлого ₮</span>
+            <span className="admin-stat-label">3/16-с хойших орлого ₮</span>
             <span style={{ fontSize: 11, color: "#059669" }}>{stats.todaySales} борлуулалт</span>
           </div>
         </div>
@@ -472,7 +471,7 @@ export default function AdminPromoPanel({ onBack }) {
       {/* ── Today's Live Transactions ── */}
       <div className="admin-section-header">
         <h3 className="admin-section-title">
-          💰 Өнөөдрийн гүйлгээ ({new Date().toLocaleDateString("mn-MN")})
+          💰 Гүйлгээний жагсаалт (3/16-с хойш)
         </h3>
         <span style={{ fontSize: 13, color: "#10b981", fontWeight: 700 }}>
           LIVE 🔴
@@ -490,7 +489,7 @@ export default function AdminPromoPanel({ onBack }) {
         {todayTransactions.length === 0 ? (
           <div style={{ textAlign: "center", padding: "20px 0", color: "#94a3b8" }}>
             <span style={{ fontSize: 28 }}>📭</span>
-            <p style={{ marginTop: 8 }}>Өнөөдөр гүйлгээ байхгүй</p>
+            <p style={{ marginTop: 8 }}>3/16-с хойш гүйлгээ байхгүй</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
