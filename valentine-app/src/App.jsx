@@ -1,27 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { templateToGift } from "./models/gift";
-import AuthPage from "./components/AuthPage";
-import GiftListPage from "./components/GiftListPage";
-import CategorySelector from "./components/CategorySelector";
-import TemplateSelector from "./components/TemplateSelector";
-import Builder from "./components/Builder";
-import GiftPreviewPage from "./components/GiftPreviewPage";
-import BuilderPreview from "./components/BuilderPreview";
-import GiftResponsesPage from "./components/GiftResponsesPage";
-import DemoPaymentPage from "./components/DemoPaymentPage";
-import PaymentSuccessPage from "./components/PaymentSuccessPage";
-import PaymentCancelPage from "./components/PaymentCancelPage";
-import TermsPage from "./components/TermsPage";
-import PrivacyPage from "./components/PrivacyPage";
-import TermsReacceptModal from "./components/TermsReacceptModal";
-import PromoRedeemPage from "./components/PromoRedeemPage";
-import PromoCodeModal from "./components/PromoCodeModal";
-import AdminPromoPanel from "./components/AdminPromoPanel";
 import FloatingHearts from "./components/FloatingHearts";
 import { MdPerson, MdConfirmationNumber, MdLogout, MdAdminPanelSettings } from "react-icons/md";
 import "./App.css";
+
+// ── Lazy-loaded route components ──
+const AuthPage = lazy(() => import("./components/AuthPage"));
+const GiftListPage = lazy(() => import("./components/GiftListPage"));
+const CategorySelector = lazy(() => import("./components/CategorySelector"));
+const TemplateSelector = lazy(() => import("./components/TemplateSelector"));
+const Builder = lazy(() => import("./components/Builder"));
+const GiftPreviewPage = lazy(() => import("./components/GiftPreviewPage"));
+const BuilderPreview = lazy(() => import("./components/BuilderPreview"));
+const GiftResponsesPage = lazy(() => import("./components/GiftResponsesPage"));
+const DemoPaymentPage = lazy(() => import("./components/DemoPaymentPage"));
+const PaymentSuccessPage = lazy(() => import("./components/PaymentSuccessPage"));
+const PaymentCancelPage = lazy(() => import("./components/PaymentCancelPage"));
+const TermsPage = lazy(() => import("./components/TermsPage"));
+const PrivacyPage = lazy(() => import("./components/PrivacyPage"));
+const TermsReacceptModal = lazy(() => import("./components/TermsReacceptModal"));
+const PromoRedeemPage = lazy(() => import("./components/PromoRedeemPage"));
+const PromoCodeModal = lazy(() => import("./components/PromoCodeModal"));
+const AdminPromoPanel = lazy(() => import("./components/AdminPromoPanel"));
 
 // Mendchilgee.site — Дижитал мэндчилгээний платформ
 
@@ -33,8 +35,21 @@ import "./App.css";
   Builder — Standalone full-screen gift builder (separate from the numbered flow)
 */
 
+// ── Loading fallback for lazy components ──
+function PageLoader() {
+  return (
+    <div className="app">
+      <div className="loader-wrap">
+        <div className="loader-ring" />
+        <span className="loader-text">Ачааллаж байна</span>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
+    <Suspense fallback={<PageLoader />}>
     <Routes>
       <Route
         path="/builder/:giftId"
@@ -65,6 +80,7 @@ function App() {
       <Route path="/:giftId" element={<GiftPreviewPage />} />
       <Route path="*" element={<MainApp />} />
     </Routes>
+    </Suspense>
   );
 }
 

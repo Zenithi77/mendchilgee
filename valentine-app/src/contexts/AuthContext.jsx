@@ -10,7 +10,6 @@ import {
   getTermsAgreement,
   saveTermsAgreement,
 } from "../services/firestoreService";
-import { subscribeToCredits } from "../services/creditService";
 import { TERMS_VERSION } from "../legal/terms";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
@@ -57,31 +56,21 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // Real-time credits subscription
+  // Real-time credits + role subscription (single listener on userProfiles doc)
   useEffect(() => {
     if (!user || user.isAnonymous) {
       setCredits(0);
-      return;
-    }
-
-    const unsubscribe = subscribeToCredits(user.uid, (newCredits) => {
-      setCredits(newCredits);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
-
-  // Real-time role subscription
-  useEffect(() => {
-    if (!user || user.isAnonymous) {
       setRole(null);
       return;
     }
 
     const unsubscribe = onSnapshot(doc(db, "userProfiles", user.uid), (snap) => {
       if (snap.exists()) {
-        setRole(snap.data().role || null);
+        const data = snap.data();
+        setCredits(data.credits || 0);
+        setRole(data.role || null);
       } else {
+        setCredits(0);
         setRole(null);
       }
     });

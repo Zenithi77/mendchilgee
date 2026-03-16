@@ -2,63 +2,69 @@
 // Pricing Configuration — Simple pay-per-gift
 // ═══════════════════════════════════════════════════════════════
 //
-// Base price: ₮5,000  (includes 4 images)
-// Extra images beyond 4: ₮500 each
-// Extra video clips: ₮500 each
+// Base price: ₮5,000
+// Every image: ₮500 each
+// Video: ₮500 per 10 seconds
 // Max video duration: 60 seconds (1 minute)
 // ═══════════════════════════════════════════════════════════════
 
 /** Base price for every gift */
 export const BASE_PRICE = 5000;
 
-/** Number of images included in the base price */
-export const INCLUDED_IMAGES = 4;
+/** Number of images included in the base price (0 = every image costs extra) */
+export const INCLUDED_IMAGES = 0;
 
-/** Price per extra image beyond the included amount */
+/** Price per image */
 export const EXTRA_IMAGE_PRICE = 500;
 
-/** Price per video clip */
+/** Price per 10-second video chunk */
 export const EXTRA_VIDEO_PRICE = 500;
+
+/** Seconds per video pricing chunk */
+export const VIDEO_CHUNK_SECONDS = 10;
 
 /** Absolute maximum video duration in seconds (1 minute) */
 export const MAX_VIDEO_SECONDS = 60;
 
 /**
- * Count images and videos from a gift's sections.
+ * Count images, videos, and total video seconds from a gift's sections.
  */
 export function countGiftMedia(gift) {
   let imageCount = 0;
   let videoCount = 0;
+  let totalVideoSeconds = 0;
 
   for (const section of gift?.sections || []) {
     if (section.type === "memoryGallery") {
       imageCount += (section.data?.memories || []).filter((m) => m.src).length;
     }
     if (section.type === "memoryVideo") {
-      videoCount += (section.data?.videos || []).filter((v) => v.src).length;
+      const vids = (section.data?.videos || []).filter((v) => v.src);
+      videoCount += vids.length;
+      totalVideoSeconds += vids.reduce((sum, v) => sum + (v.duration || 0), 0);
     }
   }
 
-  return { imageCount, videoCount };
+  return { imageCount, videoCount, totalVideoSeconds };
 }
 
 /**
  * Calculate the total price for a gift based on its content.
  * @param {number} imageCount — total uploaded images
- * @param {number} videoCount — total uploaded video clips
- * @returns {{ base, includedImages, extraImages, imgCost, videoCount, vidCost, total }}
+ * @param {number} totalVideoSeconds — total video duration in seconds
+ * @returns {{ base, imageCount, imgCost, videoChunks, vidCost, totalVideoSeconds, total }}
  */
-export function calcGiftPrice(imageCount, videoCount) {
-  const extraImages = Math.max(0, imageCount - INCLUDED_IMAGES);
-  const imgCost = extraImages * EXTRA_IMAGE_PRICE;
-  const vidCost = videoCount * EXTRA_VIDEO_PRICE;
+export function calcGiftPrice(imageCount, totalVideoSeconds = 0) {
+  const imgCost = imageCount * EXTRA_IMAGE_PRICE;
+  const videoChunks = totalVideoSeconds > 0 ? Math.ceil(totalVideoSeconds / VIDEO_CHUNK_SECONDS) : 0;
+  const vidCost = videoChunks * EXTRA_VIDEO_PRICE;
 
   return {
     base: BASE_PRICE,
-    includedImages: INCLUDED_IMAGES,
-    extraImages,
+    imageCount,
     imgCost,
-    videoCount,
+    videoChunks,
+    totalVideoSeconds,
     vidCost,
     total: BASE_PRICE + imgCost + vidCost,
   };

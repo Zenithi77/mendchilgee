@@ -8,7 +8,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import { getSectionLimits } from "../config/featureRegistry";
 import { TIERS, TIER_META } from "../config/tiers";
-import { INCLUDED_IMAGES, EXTRA_IMAGE_PRICE } from "../config/plans";
+import { EXTRA_IMAGE_PRICE, EXTRA_VIDEO_PRICE, VIDEO_CHUNK_SECONDS } from "../config/plans";
 import { ensureYTApi, parseYouTubeId } from "../utils/youtube";
 import "./SectionEditors.css";
 
@@ -288,16 +288,17 @@ function VideoUploader({ src, onUploaded }) {
       const video = document.createElement("video");
       video.preload = "metadata";
       video.onloadedmetadata = () => {
+        const dur = Math.round(video.duration);
         URL.revokeObjectURL(video.src);
         if (video.duration > MAX_DURATION) {
-          reject(new Error(`Бичлэг хамгийн ихдээ ${MAX_DURATION} секунд байна. (${Math.round(video.duration)}с)`));
+          reject(new Error(`Бичлэг хамгийн ихдээ ${MAX_DURATION} секунд байна. (${dur}с)`));
         } else {
-          resolve();
+          resolve(dur);
         }
       };
       video.onerror = () => {
         URL.revokeObjectURL(video.src);
-        resolve(); // can't check — let upload proceed
+        resolve(0); // can't check — let upload proceed
       };
       video.src = URL.createObjectURL(file);
     });
@@ -307,11 +308,11 @@ function VideoUploader({ src, onUploaded }) {
     if (!file || !user) return;
     setError(null);
     try {
-      await checkDuration(file);
+      const duration = await checkDuration(file);
       setUploading(true);
       setProgress(0);
       const url = await uploadMemoryVideo(file, user.uid, (p) => setProgress(p));
-      onUploaded(url);
+      onUploaded(url, duration);
     } catch (err) {
       if (err.message.includes("секунд")) {
         setError(err.message);
@@ -634,7 +635,7 @@ export function MemoryGalleryEditor({ section, onUpdate, maxImages }) {
   // maxImages prop from Builder (reasonable cap, default 20)
   const effectiveMax = maxImages || 20;
   const isAtMax = memories.length >= effectiveMax;
-  const isOverIncluded = memories.length > INCLUDED_IMAGES;
+  const hasImages = memories.filter(m => m.src).length > 0;
 
   const updateMemories = (updated) => {
     onUpdate(section.id, { ...data, memories: updated });
@@ -718,19 +719,19 @@ export function MemoryGalleryEditor({ section, onUpdate, maxImages }) {
           ))}
         </div>
 
-        {/* Image count & plan info */}
+        {/* Image count & pricing info */}
         <div
           className="se-image-limit-info"
           style={{
             marginBottom: 8,
             fontSize: 13,
-            color: isOverIncluded ? "#a855f7" : "#6b7280",
+            color: hasImages ? "#a855f7" : "#6b7280",
           }}
         >
-          <MdPhotoCamera /> {memories.length} зураг
-          {isOverIncluded && (
+          <MdPhotoCamera /> {memories.filter(m => m.src).length} зураг
+          {hasImages && (
             <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
-              <MdStar style={{color:'#9C27B0'}} /> {memories.length - INCLUDED_IMAGES} нэмэлт зураг (+₮{EXTRA_IMAGE_PRICE}/зураг)
+              <MdStar style={{color:'#9C27B0'}} /> ₮{EXTRA_IMAGE_PRICE}/зураг
             </span>
           )}
         </div>
@@ -1314,7 +1315,7 @@ export function MemoryVideoEditor({ section, onUpdate }) {
   };
 
   const addVideo = () => {
-    updateVideos([...videos, { src: "", caption: "", date: "" }]);
+    updateVideos([...videos, { src: "", caption: "", date: "", duration: 0 }]);
   };
 
   const removeVideo = (idx) => {
@@ -1358,7 +1359,11 @@ export function MemoryVideoEditor({ section, onUpdate }) {
               <FieldRow label="Бичлэг оруулах">
                 <VideoUploader
                   src={vid.src}
-                  onUploaded={(url) => editVideo(idx, "src", url)}
+                  onUploaded={(url, duration) => {
+                    const updated = [...videos];
+                    updated[idx] = { ...updated[idx], src: url, duration: duration || 0 };
+                    updateVideos(updated);
+                  }}
                 />
               </FieldRow>
 
@@ -1380,6 +1385,23 @@ export function MemoryVideoEditor({ section, onUpdate }) {
             </div>
           ))}
         </div>
+
+        {/* Video pricing info */}
+        {videos.filter(v => v.src).length > 0 && (
+          <div
+            className="se-image-limit-info"
+            style={{
+              marginBottom: 8,
+              fontSize: 13,
+              color: "#a855f7",
+            }}
+          >
+            <MdVideocam /> {videos.filter(v => v.src).reduce((s, v) => s + (v.duration || 0), 0)} сек
+            <span style={{ marginLeft: 8, color: "#a855f7", fontWeight: 600 }}>
+              <MdStar style={{color:'#9C27B0'}} /> ₮{EXTRA_VIDEO_PRICE}/{VIDEO_CHUNK_SECONDS} секунд
+            </span>
+          </div>
+        )}
 
         <button type="button" className="se-add-card-btn" onClick={addVideo}>
           <span>＋</span> Бичлэг нэмэх

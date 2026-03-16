@@ -241,8 +241,8 @@ export default function Builder() {
     } catch {}
   }, [activeSlideIndex]);
 
-  // ── Send gift data to preview iframes via postMessage ──
-  const sendGiftToPreview = useCallback(() => {
+  // ── Send gift data to preview iframes via postMessage (debounced) ──
+  const sendGiftToPreviewImmediate = useCallback(() => {
     const msg = { type: 'builder-preview-data', gift };
     try {
       desktopIframeRef.current?.contentWindow?.postMessage(msg, window.location.origin);
@@ -254,9 +254,20 @@ export default function Builder() {
     } catch {}
   }, [gift]);
 
-  // Send gift data whenever gift changes
+  const previewTimerRef = useRef(null);
+  const sendGiftToPreview = useCallback(() => {
+    if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
+    previewTimerRef.current = setTimeout(() => {
+      sendGiftToPreviewImmediate();
+    }, 300);
+  }, [sendGiftToPreviewImmediate]);
+
+  // Send gift data whenever gift changes (debounced)
   useEffect(() => {
     sendGiftToPreview();
+    return () => {
+      if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
+    };
   }, [sendGiftToPreview]);
 
   // Listen for preview-ready messages from iframes

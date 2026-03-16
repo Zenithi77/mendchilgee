@@ -7,9 +7,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { useCredit } from "../services/creditService";
 import {
   BASE_PRICE,
-  INCLUDED_IMAGES,
   EXTRA_IMAGE_PRICE,
   EXTRA_VIDEO_PRICE,
+  VIDEO_CHUNK_SECONDS,
   countGiftMedia,
   calcGiftPrice,
 } from "../config/plans";
@@ -34,14 +34,14 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onActivated 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { imageCount, videoCount } = useMemo(
+  const { imageCount, totalVideoSeconds } = useMemo(
     () => countGiftMedia(gift),
     [gift],
   );
 
   const pricing = useMemo(
-    () => calcGiftPrice(imageCount, videoCount),
-    [imageCount, videoCount],
+    () => calcGiftPrice(imageCount, totalVideoSeconds),
+    [imageCount, totalVideoSeconds],
   );
 
   if (!open) return null;
@@ -79,7 +79,7 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onActivated 
           type: "gift",
           giftId,
           imageCount,
-          videoCount,
+          totalVideoSeconds,
           totalAmount: pricing.total,
         }),
       });
@@ -108,23 +108,23 @@ export default function UpgradeModal({ open, onClose, gift, giftId, onActivated 
         {/* Price breakdown */}
         <div className="upgrade-plan-box">
           <div className="upgrade-plan-row">
-            <span className="upgrade-plan-label">🎁 Мэндчилгээ суурь ({INCLUDED_IMAGES} зураг)</span>
+            <span className="upgrade-plan-label">🎁 Мэндчилгээ суурь</span>
             <span className="upgrade-plan-value">₮{BASE_PRICE.toLocaleString()}</span>
           </div>
-          {pricing.extraImages > 0 && (
+          {pricing.imageCount > 0 && (
             <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#64748b" }}>
               <span className="upgrade-plan-label">
                 <MdPhotoCamera style={{ verticalAlign: "middle", marginRight: 4 }} />
-                Нэмэлт зураг ×{pricing.extraImages}
+                Зураг ×{pricing.imageCount}
               </span>
               <span className="upgrade-plan-value">+₮{pricing.imgCost.toLocaleString()}</span>
             </div>
           )}
-          {pricing.videoCount > 0 && (
+          {pricing.videoChunks > 0 && (
             <div className="upgrade-plan-row" style={{ fontSize: "0.85rem", color: "#64748b" }}>
               <span className="upgrade-plan-label">
                 <MdVideocam style={{ verticalAlign: "middle", marginRight: 4 }} />
-                Видео клип ×{pricing.videoCount}
+                Бичлэг {pricing.totalVideoSeconds}сек ({pricing.videoChunks}×{VIDEO_CHUNK_SECONDS}с)
               </span>
               <span className="upgrade-plan-value">+₮{pricing.vidCost.toLocaleString()}</span>
             </div>

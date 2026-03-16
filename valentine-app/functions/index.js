@@ -406,6 +406,32 @@ exports.bylWebhook = onRequest(async (req, res) => {
                   `added to user ${cd.userId}`,
               );
             }
+
+            // ── Forward payment notification to admin's custom webhook URL ──
+            try {
+              const webhookDoc = await db.collection("appSettings").doc("webhook").get();
+              const adminWebhookUrl = webhookDoc.exists ? webhookDoc.data().url : null;
+              if (adminWebhookUrl) {
+                await fetch(adminWebhookUrl, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    type: "payment.completed",
+                    purchaseType: cd.purchaseType || "credit",
+                    userId: cd.userId,
+                    giftId: cd.giftId || null,
+                    amount: cd.totalAmount || cd.amount || 0,
+                    imageCount: cd.imageCount || 0,
+                    totalVideoSeconds: cd.totalVideoSeconds || 0,
+                    paidAt: new Date().toISOString(),
+                    clientRef: clientRef,
+                  }),
+                }).catch((e) => console.warn("Admin webhook forward failed:", e.message));
+                console.log("Forwarded payment to admin webhook:", adminWebhookUrl);
+              }
+            } catch (webhookErr) {
+              console.warn("Admin webhook notification error:", webhookErr.message);
+            }
           }
         } else {
           const paymentDocRef = db.collection("demo_payments").doc(clientRef);
@@ -645,9 +671,10 @@ const CREDIT_PRICE = 5000; // MNT per credit (legacy)
 
 // ── Pricing constants (mirror of frontend plans.js) ─────────────────────
 const BASE_GIFT_PRICE = 5000; // base price per gift
-const INCLUDED_IMAGES = 4; // images included in base price
-const EXTRA_IMG_PRICE = 500; // per extra image
-const EXTRA_VID_PRICE = 500; // per video clip
+const INCLUDED_IMAGES = 0; // every image costs extra
+const EXTRA_IMG_PRICE = 500; // per image
+const EXTRA_VID_PRICE = 500; // per 10-second video chunk
+const VIDEO_CHUNK_SECONDS = 10; // seconds per video pricing chunk
 const GIFT_DURATION_DAYS = 14; // how long a paid gift stays active
 
 // Legacy plan pricing (kept for backward compat)
@@ -713,18 +740,21 @@ exports.createCreditCheckout = onRequest(async (req, res) => {
 
     const extraImages = Math.max(0, imageCount - INCLUDED_IMAGES);
     const imgCost = extraImages * EXTRA_IMG_PRICE;
-    const vidCost = videoCount * EXTRA_VID_PRICE;
+    const totalVideoSeconds = Math.max(0, parseInt(body.totalVideoSeconds) || 0);
+    const videoChunks = totalVideoSeconds > 0 ? Math.ceil(totalVideoSeconds / VIDEO_CHUNK_SECONDS) : 0;
+    const vidCost = videoChunks * EXTRA_VID_PRICE;
     amount = BASE_GIFT_PRICE + imgCost + vidCost;
 
     clientRef = `credit_${Date.now()}_${randomStr}_gift`;
     productName = `Мэндчилгээ`;
-    if (extraImages > 0) productName += ` +${extraImages} зураг`;
-    if (videoCount > 0) productName += ` +${videoCount} видео`;
+    if (imageCount > 0) productName += ` +${imageCount} зураг`;
+    if (videoChunks > 0) productName += ` +${totalVideoSeconds}сек видео`;
 
     meta.purchaseType = "gift";
     meta.giftId = giftId;
     meta.imageCount = imageCount;
-    meta.videoCount = videoCount;
+    meta.totalVideoSeconds = totalVideoSeconds;
+    meta.videoChunks = videoChunks;
     meta.extraImages = extraImages;
     meta.imgCost = imgCost;
     meta.vidCost = vidCost;

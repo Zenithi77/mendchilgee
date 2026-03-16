@@ -124,5 +124,24 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname, "");
   return {
     plugins: [react(), googleAuthDevPlugin(env)],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split vendor chunks so app code loads faster
+            "vendor-react": ["react", "react-dom", "react-router-dom"],
+            "vendor-firebase": [
+              "firebase/app",
+              "firebase/auth",
+              "firebase/firestore",
+              "firebase/storage",
+            ],
+            "vendor-icons": ["react-icons/md"],
+          },
+        },
+      },
+      // Increase chunk size warning limit (vendor chunks are larger)
+      chunkSizeWarningLimit: 600,
+    },
   };
 });

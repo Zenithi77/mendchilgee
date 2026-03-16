@@ -15,9 +15,9 @@ import { useCredit as consumeCredit } from "../services/creditService";
 import { generateShapedQR, QR_SHAPES } from "../utils/heartQr";
 import {
   BASE_PRICE,
-  INCLUDED_IMAGES,
   EXTRA_IMAGE_PRICE,
   EXTRA_VIDEO_PRICE,
+  VIDEO_CHUNK_SECONDS,
   countGiftMedia,
   calcGiftPrice,
 } from "../config/plans";
@@ -94,8 +94,8 @@ export default function GiftCompletionModal({
   const shareUrl = savedGiftId ? `${window.location.origin}/${savedGiftId}` : "";
 
   // Price calculation
-  const { imageCount, videoCount } = countGiftMedia(gift);
-  const pricing = calcGiftPrice(imageCount, videoCount);
+  const { imageCount, totalVideoSeconds } = countGiftMedia(gift);
+  const pricing = calcGiftPrice(imageCount, totalVideoSeconds);
 
   // ── Step 1: Save gift, then decide if free-activate or show price ──
   useEffect(() => {
@@ -167,7 +167,7 @@ export default function GiftCompletionModal({
           type: "gift",
           giftId: savedGiftId,
           imageCount,
-          videoCount,
+          totalVideoSeconds,
           totalAmount: pricing.total,
         }),
       });
@@ -271,23 +271,23 @@ p{font-size:0.82rem;color:#888;word-break:break-all}
               </div>
 
               <div className="gc-price-row">
-                <span>🎁 Мэндчилгээ ({INCLUDED_IMAGES} зураг орсон)</span>
+                <span>🎁 Мэндчилгээ суурь</span>
                 <span>₮{BASE_PRICE.toLocaleString()}</span>
               </div>
 
-              {pricing.extraImages > 0 && (
+              {pricing.imageCount > 0 && (
                 <div className="gc-price-row gc-price-extra">
                   <span>
-                    <MdPhotoCamera /> Нэмэлт зураг ×{pricing.extraImages}
+                    <MdPhotoCamera /> Зураг ×{pricing.imageCount}
                   </span>
                   <span>₮{pricing.imgCost.toLocaleString()}</span>
                 </div>
               )}
 
-              {pricing.videoCount > 0 && (
+              {pricing.videoChunks > 0 && (
                 <div className="gc-price-row gc-price-extra">
                   <span>
-                    <MdVideocam /> Видео бичлэг ×{pricing.videoCount}
+                    <MdVideocam /> Бичлэг {pricing.totalVideoSeconds}сек ({pricing.videoChunks}×{VIDEO_CHUNK_SECONDS}с)
                   </span>
                   <span>₮{pricing.vidCost.toLocaleString()}</span>
                 </div>

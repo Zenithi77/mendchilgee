@@ -10,6 +10,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  getDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
@@ -106,6 +107,37 @@ export default function AdminPromoPanel({ onBack }) {
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(null);
 
+  // ── Webhook URL management ──
+  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookSaving, setWebhookSaving] = useState(false);
+  const [webhookSaved, setWebhookSaved] = useState(false);
+
+  // Load saved webhook URL from Firestore
+  useEffect(() => {
+    getDoc(doc(db, "appSettings", "webhook")).then((snap) => {
+      if (snap.exists()) {
+        setWebhookUrl(snap.data().url || "");
+      }
+    }).catch(() => {});
+  }, []);
+
+  // Save webhook URL
+  const saveWebhookUrl = async () => {
+    setWebhookSaving(true);
+    try {
+      await setDoc(doc(db, "appSettings", "webhook"), {
+        url: webhookUrl.trim(),
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+      setWebhookSaved(true);
+      setTimeout(() => setWebhookSaved(false), 2000);
+    } catch (err) {
+      console.error("Webhook URL save error:", err);
+    } finally {
+      setWebhookSaving(false);
+    }
+  };
+
   // Subscribe to promoCodes collection
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "promoCodes"), (snap) => {
@@ -136,24 +168,41 @@ export default function AdminPromoPanel({ onBack }) {
     return () => unsubscribe();
   }, []);
 
-  // ── Live subscription: paid purchases (real money only) ──
-  // Only count credit_payments with status "paid" — these are confirmed BYL payments
-  // Each credit = ₮5,000. demo_payments is the old tier flow, not counted.
+  // ── Live subscription: paid purchases + top buyers (single listener) ──
+  // Computes both stats and top buyers from one credit_payments snapshot
   useEffect(() => {
-    const CREDIT_PRICE = 5000; // ₮ per credit
-
     const unsub = onSnapshot(collection(db, "credit_payments"), (snap) => {
       const paidDocs = snap.docs
         .map((d) => d.data())
         .filter((d) => d.status === "paid");
-      // Total credits sold (sum of quantity from each paid transaction)
-      const creditsSold = paidDocs.reduce((sum, d) => sum + (d.quantity || 1), 0);
-      const totalRevenue = creditsSold * CREDIT_PRICE;
+
+      // Stats: revenue from actual payment amounts
+      const totalRevenue = paidDocs.reduce((sum, d) => sum + (d.totalAmount || d.amount || 0), 0);
       setStats((prev) => ({
         ...prev,
-        paidSales: creditsSold,
+        paidSales: paidDocs.length,
         totalRevenue,
       }));
+
+      // Top buyers: group by userId
+      const userMap = {};
+      paidDocs.forEach((d) => {
+        const uid = d.userId || "unknown";
+        if (!userMap[uid]) {
+          userMap[uid] = { userId: uid, purchases: 0, totalCredits: 0, totalSpent: 0, lastPurchase: null };
+        }
+        userMap[uid].purchases += 1;
+        userMap[uid].totalCredits += d.quantity || 1;
+        userMap[uid].totalSpent += d.totalAmount || d.amount || 0;
+        const paidAt = d.paidAt?.toMillis?.() || 0;
+        if (!userMap[uid].lastPurchase || paidAt > userMap[uid].lastPurchase) {
+          userMap[uid].lastPurchase = paidAt;
+        }
+      });
+
+      const sorted = Object.values(userMap).sort((a, b) => b.purchases - a.purchases);
+      setTopBuyers(sorted);
+      setBuyersLoading(false);
     });
 
     return () => unsub();
@@ -165,38 +214,6 @@ export default function AdminPromoPanel({ onBack }) {
       setStats((prev) => ({ ...prev, totalUsers: snap.size }));
     });
     return () => unsubscribe();
-  }, []);
-
-  // ── Live subscription: top buyers (grouped credit_payments by userId) ──
-  useEffect(() => {
-    const CREDIT_PRICE = 5000;
-    const unsub = onSnapshot(collection(db, "credit_payments"), (snap) => {
-      const paidDocs = snap.docs
-        .map((d) => d.data())
-        .filter((d) => d.status === "paid");
-
-      // Group by userId
-      const userMap = {};
-      paidDocs.forEach((d) => {
-        const uid = d.userId || "unknown";
-        if (!userMap[uid]) {
-          userMap[uid] = { userId: uid, purchases: 0, totalCredits: 0, totalSpent: 0, lastPurchase: null };
-        }
-        userMap[uid].purchases += 1;
-        userMap[uid].totalCredits += d.quantity || 1;
-        userMap[uid].totalSpent += (d.quantity || 1) * CREDIT_PRICE;
-        const paidAt = d.paidAt?.toMillis?.() || 0;
-        if (!userMap[uid].lastPurchase || paidAt > userMap[uid].lastPurchase) {
-          userMap[uid].lastPurchase = paidAt;
-        }
-      });
-
-      // Sort by purchase count descending
-      const sorted = Object.values(userMap).sort((a, b) => b.purchases - a.purchases);
-      setTopBuyers(sorted);
-      setBuyersLoading(false);
-    });
-    return () => unsub();
   }, []);
 
   // Generate random code
@@ -405,6 +422,59 @@ export default function AdminPromoPanel({ onBack }) {
             <AnimatedCounter value={stats.promoUsed} />
             <span className="admin-stat-label">Промо ашигласан</span>
           </div>
+        </div>
+      </div>
+
+      {/* ── Webhook URL Management ── */}
+      <div className="admin-section-header">
+        <h3 className="admin-section-title">
+          🔗 Webhook URL тохиргоо
+        </h3>
+      </div>
+      <div style={{
+        background: "#f8fafc",
+        borderRadius: 12,
+        padding: "16px 20px",
+        marginBottom: 20,
+        border: "1px solid #e2e8f0",
+      }}>
+        <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 10px" }}>
+          Нийт үүссэн webhook-ийн URL хаягийг оруулна уу. Төлбөр амжилттай болоход энэ хаяг руу мэдэгдэл илгэнэ.
+        </p>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input
+            type="url"
+            value={webhookUrl}
+            onChange={(e) => setWebhookUrl(e.target.value)}
+            placeholder="https://example.com/webhook"
+            style={{
+              flex: 1,
+              padding: "10px 14px",
+              borderRadius: 8,
+              border: "1px solid #cbd5e1",
+              fontSize: 14,
+              outline: "none",
+              fontFamily: "monospace",
+            }}
+          />
+          <button
+            onClick={saveWebhookUrl}
+            disabled={webhookSaving}
+            style={{
+              padding: "10px 20px",
+              borderRadius: 8,
+              border: "none",
+              background: webhookSaved ? "#10b981" : "#3b82f6",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: webhookSaving ? "wait" : "pointer",
+              transition: "background 0.2s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {webhookSaving ? "Хадгалж байна..." : webhookSaved ? "✓ Хадгалсан" : "Хадгалах"}
+          </button>
         </div>
       </div>
 
