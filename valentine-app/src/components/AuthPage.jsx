@@ -7,6 +7,8 @@ import {
 import { saveTermsAgreement } from "../services/firestoreService";
 import { TERMS_VERSION } from "../legal/terms";
 import { MdCelebration, MdWarning } from "react-icons/md";
+import ChristmasDecor from "./ChristmasDecor";
+import NewYearBanner from "./NewYearBanner";
 import "./AuthPage.css";
 import "./LegalPage.css";
 
@@ -105,7 +107,8 @@ const AuthPage = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page xmas-theme">
+      <ChristmasDecor />
       <div className="auth-background">
         <div className="auth-heart auth-heart-1">🎉</div>
         <div className="auth-heart auth-heart-2">✨</div>
@@ -114,6 +117,7 @@ const AuthPage = ({ onAuthSuccess }) => {
       </div>
 
       <div className="auth-container">
+        <NewYearBanner compact />
         <div className="auth-card">
           <div className="auth-header">
             <div className="auth-icon"><MdCelebration /></div>

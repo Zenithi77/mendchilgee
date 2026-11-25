@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import { templateToGift } from "./models/gift";
-import FloatingHearts from "./components/FloatingHearts";
+import ChristmasDecor from "./components/ChristmasDecor";
+import NewYearBanner from "./components/NewYearBanner";
 import { MdPerson, MdConfirmationNumber, MdLogout, MdAdminPanelSettings } from "react-icons/md";
 import "./App.css";
 
@@ -213,7 +214,7 @@ function MainApp() {
   }
 
   return (
-    <div className={`app ${themeClass}`}>
+    <div className={`app xmas-theme ${themeClass}`}>
       {/* ── App Header ── */}
       <header className="app-header">
         <div className="header-left">
@@ -262,14 +263,8 @@ function MainApp() {
         </div>
       ) : (
         <>
-          {/* Background effects */}
-          <div className="bg-effects">
-            <div className="bg-orb" />
-            <div className="bg-orb" />
-            <div className="bg-orb" />
-          </div>
-
-          <FloatingHearts emojis={template?.effects?.floatingHearts} />
+          {/* Christmas / New Year background (Vegas Gold) */}
+          <ChristmasDecor />
 
           {/* Back buttons */}
           {page === "category" && (
@@ -284,6 +279,7 @@ function MainApp() {
           )}
 
           {/* Pages */}
+          {page === "list" && <NewYearBanner />}
           {page === "list" && (
             <GiftListPage
               onCreateNew={handleCreateNew}
