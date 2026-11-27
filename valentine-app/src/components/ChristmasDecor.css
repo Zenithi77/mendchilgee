@@ -1,0 +1,514 @@
+/* ═══════════════════════════════════════════════════════════════
+   CHRISTMAS / ШИНЭ ЖИЛ — VEGAS GOLD THEME  (#C5B358)
+   ═══════════════════════════════════════════════════════════════ */
+
+.xmas-theme {
+  --vegas: #c5b358;
+  --vegas-light: #e6d690;
+  --vegas-deep: #8f7f2e;
+  --xmas-red: #b3122e;
+  --xmas-green: #0f6b3a;
+  --xmas-ink: #2a2208;
+  /* glass cards: dark so white text stays readable on gold */
+  --glass: rgba(34, 26, 6, 0.62);
+  --glass-border: rgba(255, 240, 180, 0.45);
+  --xmas-top: 0px;
+  background: var(--vegas) !important;
+  isolation: isolate;
+}
+.app.xmas-theme { --xmas-top: 56px; }
+.auth-page.xmas-theme { padding-top: 56px; }
+
+/* Lift real content above the decor */
+.xmas-theme > *:not(.xmas-bg):not(.xmas-top):not(.xmas-trail-layer) {
+  position: relative;
+  z-index: 2;
+}
+.xmas-theme > .app-header { position: fixed; z-index: 1000; }
+.xmas-theme .bg-effects,
+.xmas-theme .hearts-canvas,
+.xmas-theme .auth-background { display: none; }
+
+.xmas-theme .app-header {
+  background: linear-gradient(90deg, rgba(60, 10, 18, 0.82), rgba(40, 30, 6, 0.82), rgba(8, 48, 26, 0.82));
+  border-bottom: 1px solid rgba(255, 236, 160, 0.4);
+  box-shadow: 0 6px 24px rgba(60, 45, 0, 0.35);
+}
+
+.xmas-theme .auth-card {
+  background: rgba(34, 26, 6, 0.68);
+  border-color: rgba(255, 236, 160, 0.5);
+  box-shadow:
+    0 30px 60px -12px rgba(60, 40, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 80px rgba(255, 240, 170, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+/* light sweep across cards */
+.xmas-theme .auth-card::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(115deg, transparent 42%, rgba(255, 248, 210, 0.16) 50%, transparent 58%);
+  animation: xmasSweep 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Background ── */
+.xmas-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 0%, #f3e7ae 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 120%, var(--vegas-deep, #8f7f2e) 0%, transparent 60%),
+    linear-gradient(180deg, #d4c46e 0%, #c5b358 45%, #b5a24a 100%);
+}
+.xmas-bg-glow {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 15% 30%, rgba(255, 255, 255, 0.35), transparent 30%),
+    radial-gradient(circle at 85% 70%, rgba(255, 250, 220, 0.3), transparent 28%),
+    radial-gradient(circle at 70% 15%, rgba(179, 18, 46, 0.12), transparent 25%),
+    radial-gradient(circle at 25% 85%, rgba(15, 107, 58, 0.14), transparent 25%);
+  animation: xmasGlow 16s ease-in-out infinite alternate;
+}
+.xmas-bg-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 252, 230, 0.35) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: xmasShimmer 7s linear infinite;
+  mix-blend-mode: soft-light;
+}
+
+/* Twinkling 4-point stars */
+.xmas-star {
+  position: absolute;
+  background: #fffbe6;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 4px #fff);
+  animation: xmasTwinkle ease-in-out infinite;
+  opacity: 0;
+}
+
+/* Snow */
+.xmas-flake {
+  position: absolute;
+  top: -10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  animation: xmasSnow linear infinite;
+}
+
+/* Floating emojis */
+.xmas-float-layer { position: absolute; inset: 0; }
+.xmas-float {
+  position: absolute;
+  bottom: -60px;
+  opacity: 0;
+  animation: xmasRise linear forwards;
+  filter: drop-shadow(0 4px 8px rgba(80, 60, 0, 0.35));
+  will-change: transform, opacity;
+}
+
+/* Tree + drift */
+.xmas-tree-wrap {
+  position: absolute;
+  right: 2vw;
+  bottom: 18px;
+  width: clamp(110px, 14vw, 210px);
+  z-index: 1;
+}
+.xmas-tree { width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 10px 20px rgba(60, 40, 0, 0.4)); }
+.xmas-tree-tinsel {
+  fill: none;
+  stroke: #ffe58a;
+  stroke-width: 2.4;
+  stroke-dasharray: 6 5;
+  animation: xmasDash 1.6s linear infinite;
+}
+.xmas-tree-light { animation: xmasBlink 1.4s ease-in-out infinite; filter: drop-shadow(0 0 4px currentColor); }
+.xmas-tree-star {
+  transform-origin: 100px 28px;
+  animation: xmasStarSpin 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px #ffe680);
+}
+.xmas-gifts {
+  position: absolute;
+  bottom: -4px;
+  left: -26%;
+  font-size: clamp(26px, 3vw, 40px);
+  animation: xmasBob 2.4s ease-in-out infinite;
+}
+.xmas-gifts span { font-size: 0.75em; margin-left: -6px; display: inline-block; animation: xmasBob 2.4s ease-in-out infinite -1.2s; }
+
+.xmas-snowdrift {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: -30px;
+  height: 70px;
+  background: #fffdf5;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: 0 -6px 30px rgba(255, 255, 255, 0.7);
+  opacity: 0.92;
+}
+
+/* ── Top: light string + ornaments ── */
+.xmas-top {
+  position: fixed;
+  top: var(--xmas-top);
+  left: 0;
+  right: 0;
+  height: 0;
+  z-index: 999;
+  pointer-events: none;
+}
+.xmas-lights { position: absolute; left: 0; right: 0; top: 0; height: 40px; }
+.xmas-wire { position: absolute; inset: 0; width: 100%; height: 40px; }
+.xmas-wire path { fill: none; stroke: #2b3a1c; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.xmas-bulb {
+  position: absolute;
+  width: 9px;
+  height: 14px;
+  margin-left: -4.5px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  background: currentColor;
+  box-shadow: 0 0 10px 3px currentColor, inset -2px -3px 3px rgba(0, 0, 0, 0.25), inset 2px 2px 2px rgba(255, 255, 255, 0.6);
+  animation: xmasBulb 1.5s ease-in-out infinite;
+}
+.xmas-bulb::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 1.5px;
+  width: 6px;
+  height: 5px;
+  border-radius: 1px;
+  background: #3b3b2a;
+}
+
+.xmas-ornament {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  animation: xmasSwing 3.2s ease-in-out infinite;
+}
+.xmas-ornament-string { width: 1.5px; background: linear-gradient(#fff3b0, #c9a640); }
+.xmas-ornament-cap {
+  width: 10px;
+  height: 7px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, #8c7428, #f6e7a1, #8c7428);
+}
+.xmas-ornament-ball {
+  border-radius: 50%;
+  margin-top: -1px;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95) 0 8%, rgba(255, 255, 255, 0.25) 18%, transparent 40%),
+    radial-gradient(circle at 50% 50%, var(--c) 55%, color-mix(in srgb, var(--c) 55%, #000) 100%);
+  box-shadow: 0 6px 16px rgba(40, 20, 0, 0.35), 0 0 18px color-mix(in srgb, var(--c) 50%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+.xmas-ornament-ball::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.55) 45%, transparent 60%);
+  transform: translateX(-120%);
+  animation: xmasBallShine 3.5s ease-in-out infinite;
+}
+
+/* Sparkle trail */
+.xmas-trail-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
+.xmas-trail {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 0 6px #fff, 0 0 12px #ffe27a;
+  animation: xmasTrail 0.9s ease-out forwards;
+}
+
+/* ═══════ NEW YEAR BANNER ═══════ */
+.ny-banner {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 70px auto 0;
+  padding: 34px 24px 26px;
+  text-align: center;
+  border-radius: 28px;
+  background:
+    linear-gradient(160deg, rgba(120, 12, 30, 0.88), rgba(60, 8, 18, 0.9) 55%, rgba(10, 60, 32, 0.9));
+  border: 2px solid rgba(255, 232, 150, 0.75);
+  box-shadow:
+    0 0 0 6px rgba(255, 245, 200, 0.25),
+    0 24px 60px rgba(70, 50, 0, 0.45),
+    0 0 90px rgba(255, 240, 160, 0.55);
+  overflow: hidden;
+  animation: nyIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ny-banner--compact { margin: 0 auto 22px; padding: 22px 16px 18px; max-width: 440px; }
+.ny-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 245, 200, 0.22) 50%, transparent 60%);
+  background-size: 260% 100%;
+  animation: xmasShimmer 4s linear infinite;
+  pointer-events: none;
+}
+.ny-ribbon {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent calc(50% - 9px), rgba(230, 200, 100, 0.9) calc(50% - 9px), #fff1b8 50%, rgba(230, 200, 100, 0.9) calc(50% + 9px), transparent calc(50% + 9px));
+  opacity: 0.18;
+}
+.ny-ribbon-bow {
+  position: absolute;
+  top: 4px;
+  left: calc(50% - 17px);
+  font-size: 34px;
+  opacity: 1;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+  animation: xmasBob 2.6s ease-in-out infinite;
+}
+.ny-kicker {
+  position: relative;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ffe9a6;
+  margin-top: 14px;
+}
+.ny-kicker span { display: inline-block; animation: xmasSpin 6s linear infinite; }
+.ny-title { position: relative; margin: 6px 0 4px; line-height: 1; }
+.ny-title-line {
+  display: block;
+  font-family: "Alex Brush", "Pinyon Script", cursive;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  background: linear-gradient(90deg, #b8932f, #fff6c8, #e8c862, #fffbe6, #b8932f);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: xmasGoldText 4s linear infinite;
+  filter: drop-shadow(0 2px 0 rgba(60, 30, 0, 0.6)) drop-shadow(0 0 18px rgba(255, 230, 140, 0.55));
+}
+.ny-banner--compact .ny-title-line { font-size: 2.4rem; }
+.ny-year {
+  display: inline-flex;
+  gap: 4px;
+  margin-top: 4px;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: #fff;
+  text-shadow: 0 0 10px #ffe58a, 0 0 26px #ffcf40;
+}
+.ny-banner--compact .ny-year { font-size: 1.8rem; }
+.ny-year span { display: inline-block; animation: nyBounce 2.2s ease-in-out infinite; }
+.ny-sub {
+  position: relative;
+  max-width: 520px;
+  margin: 10px auto 0;
+  font-size: 1.15rem;
+  color: rgba(255, 250, 230, 0.92);
+}
+.ny-countdown {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+.ny-cell {
+  min-width: 70px;
+  padding: 10px 6px 8px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 248, 215, 0.16), rgba(255, 248, 215, 0.04));
+  border: 1px solid rgba(255, 232, 150, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ny-banner--compact .ny-cell { min-width: 56px; padding: 7px 4px 6px; }
+.ny-num {
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #fff6cf;
+  text-shadow: 0 0 10px rgba(255, 220, 110, 0.8);
+  animation: nyTick 0.45s ease-out;
+}
+.ny-banner--compact .ny-num { font-size: 1.3rem; }
+.ny-lbl { font-family: "Josefin Sans", sans-serif; font-size: 0.68rem; letter-spacing: 0.1em; color: rgba(255, 240, 200, 0.75); text-transform: uppercase; }
+
+/* ═══════ KEYFRAMES ═══════ */
+@keyframes xmasShimmer { from { background-position: 150% 0; } to { background-position: -150% 0; } }
+@keyframes xmasSweep { 0%, 100% { transform: translateX(-60%); } 50% { transform: translateX(60%); } }
+@keyframes xmasGlow { from { transform: translate(0, 0) scale(1); } to { transform: translate(3%, -2%) scale(1.08); } }
+@keyframes xmasTwinkle {
+  0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50% { opacity: 0.95; transform: scale(1) rotate(45deg); }
+}
+@keyframes xmasSnow {
+  from { transform: translate(0, -10px); }
+  to { transform: translate(var(--drift), 105vh); }
+}
+@keyframes xmasRise {
+  0% { transform: translate(0, 0) rotate(0deg) scale(0.6); opacity: 0; }
+  10% { opacity: 0.85; }
+  50% { transform: translate(var(--sway), -55vh) rotate(180deg) scale(1); opacity: 0.9; }
+  90% { opacity: 0.4; }
+  100% { transform: translate(0, -115vh) rotate(360deg) scale(0.6); opacity: 0; }
+}
+@keyframes xmasDash { to { stroke-dashoffset: -22; } }
+@keyframes xmasBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes xmasBulb {
+  0%, 100% { opacity: 1; filter: brightness(1.2); }
+  50% { opacity: 0.45; filter: brightness(0.7); }
+}
+@keyframes xmasStarSpin {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.18) rotate(12deg); }
+}
+@keyframes xmasBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes xmasSwing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
+@keyframes xmasBallShine { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+@keyframes xmasTrail {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2) rotate(180deg); }
+}
+@keyframes xmasGoldText { from { background-position: 0% 0; } to { background-position: 300% 0; } }
+@keyframes xmasSpin { to { transform: rotate(360deg); } }
+@keyframes nyIn { from { opacity: 0; transform: translateY(24px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes nyBounce { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-8px); } 60% { transform: translateY(0); } }
+@keyframes nyTick { from { transform: translateY(-6px); opacity: 0.2; } to { transform: none; opacity: 1; } }
+
+@media (max-width: 640px) {
+  .xmas-ornament:nth-child(n + 4):nth-child(-n + 5) { display: none; }
+  .xmas-tree-wrap { width: 90px; right: 8px; opacity: 0.9; }
+  .ny-banner { margin: 56px 12px 0; padding: 28px 14px 20px; }
+  .ny-cell { min-width: 58px; }
+  .ny-num { font-size: 1.35rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xmas-theme *,
+  .xmas-bg *,
+  .xmas-top * { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; }
+}
+
+/* ═══════ FESTIVE RESKIN OF KEY UI ═══════ */
+.xmas-theme .auth-title {
+  background: linear-gradient(90deg, #d9b24a, #fff7cf, #e8c862, #fffbe6, #d9b24a);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: xmasGoldText 4s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(255, 220, 120, 0.45));
+}
+.xmas-theme .auth-icon { color: #ffe58a; filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.7)); animation: xmasBob 2.4s ease-in-out infinite; }
+.xmas-theme .auth-subtitle,
+.xmas-theme .auth-label { color: rgba(255, 246, 214, 0.85); }
+.xmas-theme .auth-input {
+  background: rgba(255, 250, 230, 0.08);
+  border-color: rgba(255, 232, 150, 0.35);
+  color: #fff;
+}
+.xmas-theme .auth-input:focus {
+  border-color: #ffe58a;
+  box-shadow: 0 0 0 3px rgba(255, 229, 138, 0.25), 0 0 20px rgba(255, 229, 138, 0.25);
+}
+.xmas-theme .auth-button-primary,
+.xmas-theme .btn-create-new,
+.xmas-theme .gl-create-btn {
+  position: relative;
+  overflow: hidden;
+  color: #fff !important;
+  background: linear-gradient(135deg, #c8102e, #8e0c21 55%, #0f6b3a) !important;
+  border: 1px solid rgba(255, 232, 150, 0.7) !important;
+  box-shadow: 0 8px 24px rgba(140, 10, 30, 0.4), 0 0 18px rgba(255, 220, 120, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.xmas-theme .auth-button-primary::after,
+.xmas-theme .btn-create-new::after,
+.xmas-theme .gl-create-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 245, 200, 0.55) 50%, transparent 70%);
+  transform: translateX(-130%);
+  animation: xmasBallShine 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.xmas-theme .auth-toggle-button { color: #ffe58a; }
+
+/* Cards on the logged-in pages: dark festive glass so white text reads on gold */
+.xmas-theme .gift-card,
+.xmas-theme .gift-list-empty,
+.xmas-theme .cat-card,
+.xmas-theme .template-card {
+  background: linear-gradient(160deg, rgba(40, 30, 6, 0.78), rgba(30, 22, 4, 0.72)) !important;
+  border: 1px solid rgba(255, 232, 150, 0.45) !important;
+  box-shadow: 0 12px 30px rgba(70, 50, 0, 0.35), inset 0 1px 0 rgba(255, 250, 220, 0.12);
+  backdrop-filter: blur(10px);
+}
+.xmas-theme .gift-card:hover,
+.xmas-theme .cat-card:hover,
+.xmas-theme .template-card:hover {
+  border-color: #ffe58a !important;
+  box-shadow: 0 16px 40px rgba(70, 50, 0, 0.45), 0 0 26px rgba(255, 229, 138, 0.45);
+}
+.xmas-theme .gift-list-title,
+.xmas-theme .cat-header-title,
+.xmas-theme .selector-title {
+  background: linear-gradient(90deg, #5a0a18, #b3122e, #0f6b3a, #b3122e, #5a0a18) !important;
+  background-size: 300% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  animation: xmasGoldText 6s linear infinite;
+  filter: drop-shadow(0 1px 0 rgba(255, 250, 220, 0.8));
+}
+.xmas-theme .gift-list-subtitle,
+.xmas-theme .cat-header-sub,
+.xmas-theme .selector-subtitle { color: #3a2e08 !important; font-weight: 600; }
+.xmas-theme .btn-create-gift {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #c8102e, #8e0c21 55%, #0f6b3a) !important;
+  border: 1px solid rgba(255, 232, 150, 0.8) !important;
+  box-shadow: 0 8px 24px rgba(140, 10, 30, 0.4), 0 0 18px rgba(255, 220, 120, 0.4) !important;
+}
+.xmas-theme .btn-create-gift::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 245, 200, 0.55) 50%, transparent 70%);
+  transform: translateX(-130%);
+  animation: xmasBallShine 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.xmas-theme .back-to-selector {
+  background: rgba(60, 10, 18, 0.8) !important;
+  border-color: rgba(255, 232, 150, 0.6) !important;
+  color: #fff6cf !important;
+}
